@@ -1,0 +1,160 @@
+PROJECT REQUIREMENT (COPY/PASTE) — “Scholarship + Govt Job Finder + Tools + Personal Vault” (Next.js + Supabase)
+
+GOAL
+Build a modern, fast Indian portal that lists Govt Jobs + Scholarships with clean filters, includes free utility tools (image KB reducer), and later offers a “Personal Vault” for user documents + Premium WhatsApp notifications.
+
+TECH STACK (INITIAL)
+- Frontend/Fullstack: Next.js (App Router) + TypeScript
+- Styling/UI: Tailwind CSS + shadcn/ui + lucide-react
+- Backend: Next.js Server Actions / Route Handlers
+- Database + Auth + Storage: Supabase (Postgres + Auth + RLS + Storage)
+- Hosting: Vercel (app) + Supabase (DB)
+- State/Data fetching: TanStack React Query (optional but preferred)
+- Forms/Validation: react-hook-form + zod
+
+PHASE 1 (MVP) — JOB POSTING ONLY (MANUAL ENTRY)
+1) Public Job Portal
+- Home page shows: Latest Jobs (published only)
+- Jobs listing page with filters:
+  - Category: job | result | admit_card | answer_key | syllabus | scholarship (future)
+  - State
+  - Qualification (10th/12th/Graduate/Diploma/B.Tech/etc)
+  - Search (title/organization)
+  - Sorting (newest, last date, featured)
+- Job detail page:
+  - Title, organization, category, state
+  - Post date, last date, total posts, fee, age limit
+  - Short description
+  - Links: Notification PDF, Apply link
+  - Tags
+- SEO:
+  - Clean slugs or ID-based route
+  - Dynamic metadata (title/description)
+  - Sitemap + robots
+  - Fast page load + mobile-first UI
+
+2) Admin Panel (Manual Data Publishing)
+- Admin authentication (Supabase Auth)
+- Admin-only routes protected via middleware
+- Admin pages:
+  - /admin/login
+  - /admin/jobs (table view)
+  - /admin/jobs/new (create)
+  - /admin/jobs/[id]/edit (update)
+- Admin features:
+  - Create job post
+  - Save as draft (is_published = false)
+  - Publish/unpublish toggle
+  - Featured toggle
+  - Delete post (admin only)
+  - Basic validation + toast messages
+
+DATABASE (SUPABASE) — PHASE 1 TABLES
+Table: jobs
+Fields:
+- id (uuid, pk)
+- title (text, required)
+- organization (text)
+- category (text, default 'job')
+- state (text)
+- qualification (text)
+- tags (text array)
+- post_date (date, default now)
+- last_date (date, nullable)
+- total_posts (int, nullable)
+- fee (text, nullable)
+- age_limit (text, nullable)
+- short_description (text, nullable)
+- notification_url (text, nullable)
+- apply_url (text, nullable)
+- is_published (bool, default false)
+- is_featured (bool, default false)
+- created_by (uuid, nullable)
+- created_at (timestamptz, default now)
+- updated_at (timestamptz)
+
+Security: RLS
+- Public: can SELECT only where is_published = true
+- Admins: can INSERT/UPDATE/DELETE any jobs
+Admins table:
+- admins (user_id uuid pk)
+Policy: job changes allowed only if auth.uid exists in admins
+
+FEATURE ROADMAP (NEXT PHASES)
+
+PHASE 2 — SCHOLARSHIPS (MANUAL FIRST)
+- Add scholarships category or separate scholarships table
+- Filters: state, category, income/caste (optional), course level
+- Similar admin workflow: draft/publish/featured
+
+PHASE 3 — FREE TOOLS (TRAFFIC MAGNET)
+Tool #1: Image size reducer/compressor
+- Target sizes: under 50KB, 100KB, 200KB, 500KB
+- Client-side compression first (fast, no server cost)
+- Export formats: JPG/PNG/WebP
+- Optional: PDF tools later (merge/compress)
+Pages:
+- /tools
+- /tools/image-compressor
+
+PHASE 4 — PERSONAL VAULT (USER DATA STORAGE)
+- Users can create profile (name, phone, qualification, state)
+- Store documents: photo, signature, marksheets, ID proofs
+- Use Supabase Storage buckets with per-user access rules
+- “One platform for all documents” dashboard
+Pages:
+- /dashboard
+- /dashboard/documents
+- /dashboard/profile
+
+PHASE 5 — PREMIUM NOTIFICATIONS (WHATSAPP)
+Premium plan:
+- WhatsApp alerts for new jobs matching:
+  - qualification, state, category preferences
+Implementation plan:
+- Add tables: subscriptions, user_preferences, notifications_log
+- Use a WhatsApp provider (Twilio / Meta WhatsApp Cloud API / other)
+- Cron job:
+  - checks newly published jobs
+  - matches users
+  - sends messages
+- Store logs to prevent duplicates
+
+NON-FUNCTIONAL REQUIREMENTS
+- Mobile-first UI (90% users mobile)
+- Fast pages (SSR/ISR where needed)
+- Clean admin UX
+- No scraping initially (manual entry only)
+- Strong security (RLS + protected admin routes)
+- Analytics ready (PostHog / GA optional)
+- Monitization-ready (Ads + Premium)
+
+DELIVERABLES FOR AI BUILD
+- Next.js project scaffold (TS + Tailwind + shadcn/ui)
+- Supabase client setup (SSR compatible)
+- Auth flow (login/logout)
+- RLS policies + SQL schema scripts
+- Admin CRUD for jobs
+- Public list + filter + detail pages
+- Basic SEO: metadata + sitemap + robots
+
+NPM DEPENDENCIES (INSTALL)
+Core:
+- next, react, react-dom, typescript
+- @supabase/supabase-js, @supabase/ssr
+- tailwindcss, postcss, autoprefixer
+UI/Forms:
+- zod, react-hook-form, @hookform/resolvers
+- lucide-react, clsx, tailwind-merge
+Data:
+- @tanstack/react-query (optional)
+Utilities:
+- date-fns
+UX:
+- sonner (toast)
+
+DONE CRITERIA (PHASE 1)
+- Public can browse published jobs with filters
+- Admin can create/edit/publish jobs securely
+- RLS ensures public cannot see drafts, cannot modify anything
+- Deployed successfully on Vercel with Supabase DB

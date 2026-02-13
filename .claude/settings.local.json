@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest:*)",
+      "Bash(xcopy:*)",
+      "Bash(robocopy:*)",
+      "Bash(powershell -Command:*)",
+      "Bash(dir:*)",
+      "Bash(npm install:*)",
+      "Bash(npx shadcn@latest init:*)",
+      "Bash(npx shadcn@latest add:*)",
+      "Bash(npm run build:*)",
+      "Bash(npx next build:*)"
+    ]
+  }
+}
