@@ -132,42 +132,51 @@ export default async function HomePage() {
       <div className="page-bg-orb w-[400px] h-[400px] bg-indigo-200/[0.06] top-[50%] -right-[8%] animate-float-delayed" />
       <div className="page-bg-orb w-[350px] h-[350px] bg-violet-200/[0.05] bottom-[10%] left-[20%] animate-float" />
 
-      {/* Hero Section - Compact */}
+      {/* Hero Section */}
       <section className="relative gradient-hero overflow-hidden">
-        {/* Background dot pattern */}
-        <div className="absolute inset-0 opacity-10">
+        {/* Mesh grid background */}
+        <div className="absolute inset-0 opacity-[0.07]">
           <div
             className="absolute inset-0"
             style={{
               backgroundImage:
-                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
-              backgroundSize: "32px 32px",
+                "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
             }}
           />
         </div>
 
-        {/* Floating orbs */}
-        <div className="absolute top-5 left-[10%] w-48 h-48 bg-white/10 rounded-full blur-3xl animate-float" />
-        <div className="absolute bottom-5 right-[10%] w-40 h-40 bg-blue-300/10 rounded-full blur-3xl animate-float-delayed" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-indigo-400/5 rounded-full blur-3xl animate-float-slow" />
+        {/* Live wandering white blush */}
+        <div
+          className="absolute top-[-10%] left-[5%] w-[300px] h-[300px] rounded-full bg-white/30 blur-[80px]"
+          style={{ animation: "blushDrift1 6s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute bottom-[-5%] right-[10%] w-[260px] h-[260px] rounded-full bg-white/25 blur-[70px]"
+          style={{ animation: "blushDrift2 8s ease-in-out infinite" }}
+        />
+        <div
+          className="absolute top-[20%] left-[45%] w-[220px] h-[220px] rounded-full bg-white/20 blur-[60px]"
+          style={{ animation: "blushDrift3 10s ease-in-out infinite" }}
+        />
 
-        <div className="relative container mx-auto px-4 py-10 md:py-14">
+        <div className="relative container mx-auto px-4 py-8 md:py-10">
           <div className="text-center max-w-3xl mx-auto">
-            <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 mb-4">
-              <Zap className="h-3 w-3 text-amber-300" />
-              <span className="text-white/90 text-xs font-bold">
+            <div className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 mb-4 bg-white/[0.12] backdrop-blur-md border border-white/20">
+              <Zap className="h-3.5 w-3.5 text-amber-400" />
+              <span className="text-white text-xs font-bold tracking-wide">
                 India&apos;s Trusted Govt Job Portal
               </span>
             </div>
 
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-tight">
+            <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight leading-[1.1]">
               Your Gateway to{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-200 via-cyan-200 to-blue-200">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-violet-300">
                 Government Jobs
               </span>
             </h1>
 
-            <p className="mt-3 text-blue-100/80 text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
+            <p className="mt-3 text-blue-200/90 text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
               Latest sarkari naukri, results, admit cards, answer keys &
               scholarships — all in one place.
             </p>
@@ -176,7 +185,7 @@ export default async function HomePage() {
               <Link href="/jobs">
                 <Button
                   size="lg"
-                  className="btn-3d bg-white text-slate-900 hover:bg-blue-50 hover:text-blue-800 font-black shadow-lg shadow-blue-900/20 px-7 h-11 shine"
+                  className="bg-white text-slate-900 hover:bg-blue-50 hover:text-blue-800 font-black shadow-lg shadow-black/20 px-7 h-11 text-sm shine"
                 >
                   Browse All Jobs
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -186,27 +195,33 @@ export default async function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="glass border-white/30 text-white hover:bg-white/20 font-black px-7 h-11"
+                  className="bg-white/[0.08] backdrop-blur-md border-white/20 text-white hover:bg-white/[0.15] font-black px-7 h-11 text-sm"
                 >
-                  <Star className="mr-2 h-4 w-4" />
+                  <Star className="mr-2 h-4 w-4 text-amber-400" />
                   Featured Jobs
                 </Button>
               </Link>
             </div>
 
-            {/* Inline stats */}
-            <div className="mt-8 flex items-center justify-center gap-4 md:gap-8 flex-wrap">
-              <div className="flex items-center gap-2 glass rounded-full px-4 py-2">
-                <Shield className="h-4 w-4 text-emerald-300" />
-                <span className="text-white/90 text-xs font-bold">100% Free</span>
+            {/* Stat pills */}
+            <div className="mt-6 flex items-center justify-center gap-3 md:gap-4 flex-wrap">
+              <div className="flex items-center gap-2 rounded-full px-4 py-2 bg-white/[0.1] backdrop-blur-md border border-white/[0.15]">
+                <div className="h-5 w-5 rounded-full bg-emerald-400/20 flex items-center justify-center">
+                  <Shield className="h-3 w-3 text-emerald-400" />
+                </div>
+                <span className="text-white text-xs font-bold">100% Free</span>
               </div>
-              <div className="flex items-center gap-2 glass rounded-full px-4 py-2">
-                <Clock className="h-4 w-4 text-cyan-300" />
-                <span className="text-white/90 text-xs font-bold">Daily Updated</span>
+              <div className="flex items-center gap-2 rounded-full px-4 py-2 bg-white/[0.1] backdrop-blur-md border border-white/[0.15]">
+                <div className="h-5 w-5 rounded-full bg-cyan-400/20 flex items-center justify-center">
+                  <Clock className="h-3 w-3 text-cyan-400" />
+                </div>
+                <span className="text-white text-xs font-bold">Daily Updated</span>
               </div>
-              <div className="flex items-center gap-2 glass rounded-full px-4 py-2">
-                <TrendingUp className="h-4 w-4 text-amber-300" />
-                <span className="text-white/90 text-xs font-bold">All India</span>
+              <div className="flex items-center gap-2 rounded-full px-4 py-2 bg-white/[0.1] backdrop-blur-md border border-white/[0.15]">
+                <div className="h-5 w-5 rounded-full bg-amber-400/20 flex items-center justify-center">
+                  <TrendingUp className="h-3 w-3 text-amber-400" />
+                </div>
+                <span className="text-white text-xs font-bold">All India</span>
               </div>
             </div>
           </div>

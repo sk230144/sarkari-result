@@ -10,24 +10,24 @@ export function PromoBanner() {
   if (pathname !== "/") return null;
 
   return (
-    <div className="bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white overflow-hidden">
+    <div className="bg-slate-800 text-slate-300 overflow-hidden">
       <Link
         href="/membership"
-        className="block py-2 hover:opacity-90 transition-opacity"
+        className="block py-1.5 hover:text-white transition-colors"
       >
         <div className="flex items-center gap-4 animate-marquee whitespace-nowrap">
           {[0, 1].map((i) => (
             <span key={i} className="inline-flex items-center gap-3 shrink-0">
-              <Gift className="h-4 w-4 shrink-0" />
-              <span className="text-xs sm:text-sm font-bold">
-                🎉 अगर आप हमारे प्लेटफ़ॉर्म के मेंबर हैं और किसी भी परीक्षा में
-                पास होते हैं, तो आपकी आवेदन फीस वापस की जाएगी! 🎉
+              <Gift className="h-3.5 w-3.5 shrink-0 text-slate-400" />
+              <span className="text-[11px] sm:text-xs font-semibold">
+                अगर आप हमारे Premium मेंबर हैं और किसी भी परीक्षा में पास होते
+                हैं, तो आपकी आवेदन फीस वापस की जाएगी
               </span>
-              <span className="text-xs sm:text-sm font-bold mx-8">•</span>
-              <span className="text-xs sm:text-sm font-bold">
-                ₹99/महीने से शुरू — अभी Premium Member बनें!
+              <span className="text-[11px] sm:text-xs font-semibold mx-6 text-slate-500">•</span>
+              <span className="text-[11px] sm:text-xs font-semibold">
+                ₹99/महीने से शुरू — अभी Premium Member बनें
               </span>
-              <span className="text-xs sm:text-sm font-bold mx-8">•</span>
+              <span className="text-[11px] sm:text-xs font-semibold mx-6 text-slate-500">•</span>
             </span>
           ))}
         </div>

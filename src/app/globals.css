@@ -105,7 +105,11 @@
 
   /* === GRADIENTS === */
   .gradient-hero {
-    background: linear-gradient(135deg, #1e3a8a 0%, #1d4ed8 30%, #2563eb 55%, #3b82f6 80%, #60a5fa 100%);
+    background:
+      radial-gradient(ellipse 80% 50% at 20% 80%, rgba(99, 102, 241, 0.3) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 40% at 80% 20%, rgba(14, 165, 233, 0.25) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 60% at 50% 50%, rgba(124, 58, 237, 0.15) 0%, transparent 70%),
+      linear-gradient(135deg, #0f172a 0%, #1e3a8a 25%, #1d4ed8 50%, #1e40af 75%, #172554 100%);
   }
   .gradient-hero-glow {
     background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #7c3aed 100%);
@@ -399,6 +403,28 @@
 @keyframes marquee {
   0% { transform: translateX(0); }
   100% { transform: translateX(-50%); }
+}
+
+@keyframes blushDrift1 {
+  0%   { transform: translate(0, 0); }
+  25%  { transform: translate(120px, -60px); }
+  50%  { transform: translate(60px, 80px); }
+  75%  { transform: translate(-80px, 20px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes blushDrift2 {
+  0%   { transform: translate(0, 0); }
+  33%  { transform: translate(-100px, 70px); }
+  66%  { transform: translate(90px, -50px); }
+  100% { transform: translate(0, 0); }
+}
+
+@keyframes blushDrift3 {
+  0%   { transform: translate(0, 0); }
+  30%  { transform: translate(70px, 90px); }
+  60%  { transform: translate(-110px, -30px); }
+  100% { transform: translate(0, 0); }
 }
 
 .animate-marquee {

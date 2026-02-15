@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Briefcase, Crown, Menu, MoreVertical, Search } from "lucide-react";
+import { Briefcase, Crown, LogIn, LogOut, Menu, MoreVertical, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -14,6 +14,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { CATEGORIES } from "@/lib/constants";
+import { getUser, signOut } from "@/lib/actions/auth";
 
 const toolLinks = [
   { href: "/tools", label: "All Tools" },
@@ -41,11 +42,13 @@ const allNavLinks = [
   })),
 ];
 
-export function Header() {
+export async function Header() {
+  const user = await getUser();
+
   return (
     <header className="sticky top-0 z-50 w-full glass-strong border-b border-white/40">
       <div className="container mx-auto flex h-16 items-center px-4">
-        {/* 3D Logo */}
+        {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 group">
           <div className="h-10 w-10 rounded-xl gradient-hero flex items-center justify-center glow-blue group-hover:glow-blue-strong transition-all duration-300 group-hover:scale-105">
             <Briefcase className="h-5 w-5 text-white drop-shadow-sm" />
@@ -93,7 +96,7 @@ export function Header() {
         </nav>
 
         {/* Right side */}
-        <div className="ml-auto flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-1.5">
           <Link href="/jobs" className="hidden sm:block">
             <Button
               variant="ghost"
@@ -103,6 +106,52 @@ export function Header() {
               <Search className="h-4.5 w-4.5" />
             </Button>
           </Link>
+
+          {/* Auth - Desktop */}
+          <div className="hidden sm:block">
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg font-bold gap-2"
+                  >
+                    <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
+                      <User className="h-3.5 w-3.5 text-blue-600" />
+                    </div>
+                    <span className="max-w-[100px] truncate text-xs">
+                      {user.user_metadata?.full_name || user.email?.split("@")[0]}
+                    </span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem className="text-xs text-slate-400 font-medium focus:bg-transparent" disabled>
+                    {user.email}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <form action={signOut} className="w-full">
+                      <button type="submit" className="flex items-center gap-2 w-full text-red-600 font-semibold text-sm">
+                        <LogOut className="h-3.5 w-3.5" />
+                        Sign Out
+                      </button>
+                    </form>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/auth/login">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-600 hover:text-blue-700 hover:bg-blue-50/80 font-bold rounded-lg"
+                >
+                  <LogIn className="h-4 w-4 mr-1.5" />
+                  Sign In
+                </Button>
+              </Link>
+            )}
+          </div>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -153,6 +202,21 @@ export function Header() {
                   <p className="text-blue-200 text-xs mt-1.5 relative font-semibold tracking-wide">
                     Government Jobs Portal
                   </p>
+                  {user && (
+                    <div className="mt-3 flex items-center gap-2 relative">
+                      <div className="h-7 w-7 rounded-full bg-white/20 flex items-center justify-center">
+                        <User className="h-3.5 w-3.5 text-white" />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-white text-xs font-bold truncate">
+                          {user.user_metadata?.full_name || "User"}
+                        </p>
+                        <p className="text-blue-200/70 text-[10px] truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
                 <nav className="flex flex-col p-4 gap-0.5">
                   {allNavLinks.map((link) => (
@@ -178,6 +242,31 @@ export function Header() {
                       Premium Membership
                     </Button>
                   </Link>
+                  <div className="my-3 border-t border-slate-100" />
+                  {user ? (
+                    <form action={signOut}>
+                      <Button
+                        type="submit"
+                        variant="ghost"
+                        className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 font-bold rounded-lg"
+                        size="sm"
+                      >
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </Button>
+                    </form>
+                  ) : (
+                    <Link href="/auth/login">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-blue-600 hover:text-blue-700 hover:bg-blue-50 font-bold rounded-lg"
+                        size="sm"
+                      >
+                        <LogIn className="h-4 w-4 mr-2" />
+                        Sign In
+                      </Button>
+                    </Link>
+                  )}
                 </nav>
               </SheetContent>
             </Sheet>

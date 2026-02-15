@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
@@ -9,44 +10,56 @@ import {
   Crown,
   ArrowLeft,
   QrCode,
-  Clock,
   Shield,
   Check,
   Copy,
+  MessageCircle,
+  Send,
 } from "lucide-react";
 import { toast } from "sonner";
 
 const PLANS: Record<
   string,
-  { name: string; price: number; priceLabel: string; duration: string }
+  {
+    name: string;
+    price: number;
+    priceLabel: string;
+    duration: string;
+    qrImage: string;
+  }
 > = {
   monthly: {
     name: "Monthly",
     price: 99,
     priceLabel: "₹99",
     duration: "1 महीना",
+    qrImage: "/qr/rs99.jpeg",
   },
   "half-yearly": {
     name: "Half-Yearly",
     price: 500,
     priceLabel: "₹500",
     duration: "6 महीने",
+    qrImage: "/qr/rs500.jpeg",
   },
   yearly: {
     name: "Yearly",
     price: 900,
     priceLabel: "₹900",
     duration: "12 महीने",
+    qrImage: "/qr/rs900.jpeg",
   },
   lifetime: {
     name: "Lifetime",
     price: 5000,
     priceLabel: "₹5,000",
     duration: "हमेशा के लिए",
+    qrImage: "/qr/5000rs.jpeg",
   },
 };
 
-const DUMMY_UPI = "sarkariresult@upi";
+const UPI_ID = "risabht043@okaxis";
+const WHATSAPP_NUMBER = "916392891566";
 
 interface Props {
   user: { name: string; email: string };
@@ -57,6 +70,10 @@ export function PaymentClient({ user, selectedPlan }: Props) {
   const searchParams = useSearchParams();
   const planId = searchParams.get("plan") || selectedPlan;
   const plan = PLANS[planId] || PLANS.yearly;
+
+  const whatsappMessage = `Hello Sarkari Result Team,\n\nI want to activate my Premium Membership.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}\n\nI have completed the payment. Please activate my account.`;
+
+  const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
   return (
     <div className="min-h-screen page-bg">
@@ -76,7 +93,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
           />
         </div>
 
-        <div className="relative container mx-auto px-4 py-10 md:py-12">
+        <div className="relative container mx-auto px-4 py-8 md:py-10">
           <Link
             href="/membership"
             className="inline-flex items-center gap-2 text-blue-200 hover:text-white text-sm font-bold mb-4 transition-colors"
@@ -166,56 +183,16 @@ export function PaymentClient({ user, selectedPlan }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Dummy QR Code */}
               <div className="flex justify-center">
-                <div className="relative p-4 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-                  <svg
-                    width="180"
-                    height="180"
-                    viewBox="0 0 180 180"
+                <div className="relative p-3 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
+                  <Image
+                    src={plan.qrImage}
+                    alt={`${plan.name} Plan QR Code - ${plan.priceLabel}`}
+                    width={200}
+                    height={200}
                     className="rounded-lg"
-                  >
-                    {/* QR code pattern placeholder */}
-                    <rect width="180" height="180" fill="white" />
-                    {/* Corner squares */}
-                    <rect x="10" y="10" width="40" height="40" rx="4" fill="#1e293b" />
-                    <rect x="16" y="16" width="28" height="28" rx="2" fill="white" />
-                    <rect x="22" y="22" width="16" height="16" rx="1" fill="#1e293b" />
-
-                    <rect x="130" y="10" width="40" height="40" rx="4" fill="#1e293b" />
-                    <rect x="136" y="16" width="28" height="28" rx="2" fill="white" />
-                    <rect x="142" y="22" width="16" height="16" rx="1" fill="#1e293b" />
-
-                    <rect x="10" y="130" width="40" height="40" rx="4" fill="#1e293b" />
-                    <rect x="16" y="136" width="28" height="28" rx="2" fill="white" />
-                    <rect x="22" y="142" width="16" height="16" rx="1" fill="#1e293b" />
-
-                    {/* Random data blocks */}
-                    {[
-                      [60, 10], [70, 10], [80, 10], [100, 10], [110, 10],
-                      [60, 20], [90, 20], [110, 20],
-                      [60, 30], [70, 30], [80, 30], [90, 30], [100, 30], [110, 30],
-                      [60, 40], [80, 40], [100, 40],
-                      [10, 60], [20, 60], [40, 60], [60, 60], [80, 60], [90, 60], [120, 60], [140, 60], [160, 60],
-                      [10, 70], [30, 70], [50, 70], [70, 70], [100, 70], [110, 70], [130, 70], [150, 70],
-                      [20, 80], [40, 80], [60, 80], [70, 80], [80, 80], [110, 80], [120, 80], [140, 80], [160, 80],
-                      [10, 90], [30, 90], [50, 90], [80, 90], [90, 90], [100, 90], [130, 90], [150, 90],
-                      [20, 100], [40, 100], [70, 100], [90, 100], [110, 100], [120, 100], [140, 100], [160, 100],
-                      [10, 110], [30, 110], [60, 110], [80, 110], [100, 110], [130, 110], [150, 110],
-                      [60, 120], [70, 120], [80, 120], [90, 120], [100, 120], [110, 120],
-                      [60, 130], [80, 130], [100, 130], [120, 130], [140, 130], [160, 130],
-                      [60, 140], [70, 140], [90, 140], [110, 140], [130, 140], [150, 140],
-                      [60, 150], [80, 150], [90, 150], [100, 150], [120, 150], [140, 150], [160, 150],
-                      [60, 160], [70, 160], [80, 160], [110, 160], [130, 160], [150, 160], [160, 160],
-                    ].map(([cx, cy], i) => (
-                      <rect key={i} x={cx} y={cy} width="8" height="8" rx="1" fill="#1e293b" />
-                    ))}
-                  </svg>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="bg-white p-1.5 rounded-lg shadow-sm">
-                      <Crown className="h-5 w-5 text-violet-600" />
-                    </div>
-                  </div>
+                    priority
+                  />
                 </div>
               </div>
 
@@ -235,7 +212,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                     UPI ID
                   </p>
                   <p className="text-sm font-bold text-slate-700 truncate">
-                    {DUMMY_UPI}
+                    {UPI_ID}
                   </p>
                 </div>
                 <Button
@@ -243,19 +220,12 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                   size="sm"
                   className="shrink-0 text-slate-500 hover:text-blue-600"
                   onClick={() => {
-                    navigator.clipboard.writeText(DUMMY_UPI);
+                    navigator.clipboard.writeText(UPI_ID);
                     toast.success("UPI ID copied!");
                   }}
                 >
                   <Copy className="h-4 w-4" />
                 </Button>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200">
-                <Clock className="h-4 w-4 text-amber-600 shrink-0" />
-                <p className="text-xs text-amber-700 font-semibold">
-                  भुगतान के बाद 24 घंटे में आपका account activate हो जाएगा
-                </p>
               </div>
 
               <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
@@ -264,13 +234,62 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                   7 दिन की money-back guarantee
                 </p>
               </div>
+            </CardContent>
+          </Card>
+        </div>
 
-              <Badge
-                variant="secondary"
-                className="w-full justify-center py-2 text-xs font-bold bg-slate-100 text-slate-500"
-              >
-                Demo Mode — Payment integration जल्द आ रहा है
-              </Badge>
+        {/* WhatsApp Activation Section */}
+        <div className="max-w-3xl mx-auto mt-6">
+          <Card className="card-3d border-emerald-200/60">
+            <CardContent className="p-6">
+              <div className="flex items-start gap-4">
+                <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
+                  <MessageCircle className="h-6 w-6 text-emerald-600" />
+                </div>
+                <div className="flex-1 space-y-3">
+                  <div>
+                    <h3 className="text-base font-extrabold text-slate-800">
+                      Payment के बाद WhatsApp पर भेजें
+                    </h3>
+                    <p className="text-xs text-slate-500 font-medium mt-1">
+                      भुगतान करने के बाद नीचे दिए गए बटन पर क्लिक करें। अपना
+                      Payment ID या Screenshot भेजें — आपका Premium Account
+                      तुरंत activate कर दिया जाएगा।
+                    </p>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200">
+                    <div className="flex-1 min-w-0 space-y-1">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                        <span className="font-bold text-slate-700">Plan:</span>
+                        {plan.name} ({plan.priceLabel})
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                        <span className="font-bold text-slate-700">Name:</span>
+                        {user.name}
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
+                        <span className="font-bold text-slate-700">Email:</span>
+                        {user.email}
+                      </div>
+                    </div>
+                  </div>
+
+                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
+                    <Button className="w-full h-12 bg-[#25D366] hover:bg-[#1ebe57] text-white font-black text-sm border-0 shadow-md shadow-emerald-500/20">
+                      <Send className="h-4 w-4 mr-2" />
+                      WhatsApp पर Payment Confirm करें
+                    </Button>
+                  </a>
+
+                  <Badge
+                    variant="secondary"
+                    className="w-full justify-center py-1.5 text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
+                  >
+                    Payment confirm होने के बाद तुरंत activate किया जाएगा
+                  </Badge>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>

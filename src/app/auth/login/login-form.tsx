@@ -12,10 +12,39 @@ import { toast } from "sonner";
 
 export function LoginForm() {
   const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "";
 
+  function validate(formData: FormData) {
+    const errs: Record<string, string> = {};
+    const email = (formData.get("email") as string).trim();
+    const password = formData.get("password") as string;
+
+    if (!email) {
+      errs.email = "Email is required";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errs.email = "Enter a valid email address";
+    } else if (email.length > 100) {
+      errs.email = "Email must be under 100 characters";
+    }
+
+    if (!password) {
+      errs.password = "Password is required";
+    } else if (password.length < 6) {
+      errs.password = "Password must be at least 6 characters";
+    } else if (password.length > 72) {
+      errs.password = "Password must be under 72 characters";
+    }
+
+    return errs;
+  }
+
   async function handleSubmit(formData: FormData) {
+    const errs = validate(formData);
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
+
     setLoading(true);
     if (redirectTo) {
       formData.append("redirect", redirectTo);
@@ -42,7 +71,7 @@ export function LoginForm() {
             Sign In
           </h1>
           <p className="text-sm text-slate-500 mt-1 font-medium">
-            Access your Document Locker
+            Access your account
           </p>
         </div>
 
@@ -58,8 +87,12 @@ export function LoginForm() {
                 type="email"
                 placeholder="you@example.com"
                 required
-                className="h-11 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 focus:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.06)] rounded-lg transition-shadow"
+                maxLength={100}
+                className={`h-11 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 focus:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.06)] rounded-lg transition-shadow ${errors.email ? "border-red-400 focus:border-red-400" : ""}`}
               />
+              {errors.email && (
+                <p className="text-xs text-red-500 font-medium">{errors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
               <Label htmlFor="password" className="text-sm font-semibold text-slate-700">
@@ -71,8 +104,13 @@ export function LoginForm() {
                 type="password"
                 placeholder="Enter your password"
                 required
-                className="h-11 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 focus:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.06)] rounded-lg transition-shadow"
+                minLength={6}
+                maxLength={72}
+                className={`h-11 bg-slate-50 border-slate-200 focus:bg-white focus:border-blue-300 focus:shadow-[inset_2px_2px_4px_rgba(0,0,0,0.06)] rounded-lg transition-shadow ${errors.password ? "border-red-400 focus:border-red-400" : ""}`}
               />
+              {errors.password && (
+                <p className="text-xs text-red-500 font-medium">{errors.password}</p>
+              )}
             </div>
             <Button
               type="submit"

@@ -3,7 +3,7 @@ import { Briefcase, ExternalLink, LayoutDashboard, LogOut, Users } from "lucide-
 import { Button } from "@/components/ui/button";
 import { logoutAdmin } from "@/lib/actions/admin";
 
-export default function AdminJobsLayout({
+export default function AdminUsersLayout({
   children,
 }: {
   children: React.ReactNode;
