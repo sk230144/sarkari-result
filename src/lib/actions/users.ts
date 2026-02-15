@@ -11,6 +11,10 @@ export interface UserProfile {
   premium_plan: string | null;
   premium_started_at: string | null;
   premium_expires_at: string | null;
+  qualification: string | null;
+  degree_stream: string | null;
+  whatsapp_number: string | null;
+  wants_notifications: boolean;
   created_at: string;
 }
 
@@ -90,6 +94,39 @@ export async function toggleUserPremium(
   }
 
   revalidatePath("/admin/users");
+}
+
+export async function getJobsForUserQualification(qualification: string) {
+  const supabase = await createClient();
+
+  // Map user qualification to matching job qualification values
+  const qualificationMap: Record<string, string[]> = {
+    "10th Pass": ["8th Pass", "10th Pass"],
+    "12th Pass": ["8th Pass", "10th Pass", "12th Pass"],
+    Graduate: ["8th Pass", "10th Pass", "12th Pass", "Graduate", "B.Tech/B.E."],
+    "Post Graduate": [
+      "8th Pass", "10th Pass", "12th Pass", "Graduate",
+      "B.Tech/B.E.", "Post Graduate", "M.Tech/M.E.",
+    ],
+    Diploma: ["8th Pass", "10th Pass", "Diploma", "ITI"],
+  };
+
+  const matchingQualifications = qualificationMap[qualification] || [qualification];
+
+  const { data, error } = await supabase
+    .from("jobs")
+    .select("id, title, organization, qualification, apply_url")
+    .eq("is_published", true)
+    .in("qualification", matchingQualifications)
+    .order("post_date", { ascending: false })
+    .limit(20);
+
+  if (error) {
+    console.error("Error fetching jobs for qualification:", error);
+    return [];
+  }
+
+  return data || [];
 }
 
 export async function deleteUser(userId: string) {

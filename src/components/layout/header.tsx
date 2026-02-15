@@ -21,6 +21,7 @@ const toolLinks = [
   { href: "/tools/image", label: "Image Tools" },
   { href: "/tools/image-to-pdf", label: "Image to PDF" },
   { href: "/tools/calendar", label: "Exam Calendar" },
+  { href: "/tools/job-alerts", label: "Job Alerts Setup" },
   { href: "/tools/document-locker", label: "Document Locker" },
 ];
 

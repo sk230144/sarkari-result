@@ -1,9 +1,10 @@
 import { getAdminUsers } from "@/lib/actions/users";
 import { Badge } from "@/components/ui/badge";
-import { Crown, Users } from "lucide-react";
+import { Bell, Crown, Users } from "lucide-react";
 import { format } from "date-fns";
 import { UserActions } from "@/components/admin/user-actions";
 import { UserSearch } from "@/components/admin/user-search";
+import { NotificationActions } from "@/components/admin/notification-actions";
 
 export default async function AdminUsersPage({
   searchParams,
@@ -81,6 +82,12 @@ export default async function AdminUsersPage({
                             : ""}
                         </Badge>
                       )}
+                      {user.wants_notifications && (
+                        <Badge className="text-[10px] bg-amber-100 text-amber-700 border-0 font-bold gap-1">
+                          <Bell className="h-2.5 w-2.5" />
+                          Alerts · {user.qualification}
+                        </Badge>
+                      )}
                     </div>
                     <p className="text-xs text-slate-400 font-medium truncate">
                       {user.email}
@@ -106,7 +113,12 @@ export default async function AdminUsersPage({
                     </p>
                   </div>
                 </div>
-                <UserActions user={user} />
+                <div className="flex items-center gap-1">
+                  {user.wants_notifications && (
+                    <NotificationActions user={user} />
+                  )}
+                  <UserActions user={user} />
+                </div>
               </div>
             </div>
           ))}

@@ -84,6 +84,16 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Protect job alerts - require user login
+  if (request.nextUrl.pathname.startsWith("/tools/job-alerts")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protect membership payment - require user login
   if (request.nextUrl.pathname.startsWith("/membership/payment")) {
     if (!user) {

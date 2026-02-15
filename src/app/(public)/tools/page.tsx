@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
+  Bell,
   Calendar,
   Crown,
   FileText,
@@ -45,6 +46,16 @@ const tools = [
     premium: true,
   },
   {
+    title: "Job Alerts Setup",
+    description:
+      "Set your qualification and get WhatsApp alerts.",
+    href: "/tools/job-alerts",
+    tags: ["WhatsApp", "Qualification"],
+    icon: Bell,
+    accent: "bg-slate-100 text-slate-700",
+    premium: false,
+  },
+  {
     title: "Document Locker",
     description:
       "Securely store Aadhar, marksheets, photo, signature & more.",
@@ -80,7 +91,7 @@ export default function ToolsHubPage() {
             <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 mb-4">
               <Sparkles className="h-3 w-3 text-amber-300" />
               <span className="text-white/90 text-xs font-bold">
-                Mobile-first · 100% Free & Premium Tools
+                Mobile-first - 100% Free & Premium Tools
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
