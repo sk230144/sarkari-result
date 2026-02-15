@@ -9,7 +9,7 @@ export async function loginAdmin(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
 
-  const { error } = await supabase.auth.signInWithPassword({
+  const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
   });
@@ -18,7 +18,36 @@ export async function loginAdmin(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect("/admin/jobs");
+  // Verify user is in admins table
+  const { data: admin } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", data.user.id)
+    .single();
+
+  if (!admin) {
+    await supabase.auth.signOut();
+    return { error: "You are not authorized as admin" };
+  }
+
+  redirect("/admin");
+}
+
+export async function isAdmin() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return false;
+
+  const { data } = await supabase
+    .from("admins")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .single();
+
+  return !!data;
 }
 
 export async function logoutAdmin() {
@@ -198,4 +227,65 @@ export async function toggleJobFeatured(id: string, isFeatured: boolean) {
   revalidatePath("/admin/jobs");
   revalidatePath("/");
   revalidatePath("/jobs");
+}
+
+export async function getDashboardStats() {
+  const supabase = await createClient();
+
+  const [usersRes, premiumRes, jobsRes, publishedRes, alertsRes] =
+    await Promise.all([
+      supabase.from("profiles").select("*", { count: "exact", head: true }),
+      supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("is_premium", true),
+      supabase.from("jobs").select("*", { count: "exact", head: true }),
+      supabase
+        .from("jobs")
+        .select("*", { count: "exact", head: true })
+        .eq("is_published", true),
+      supabase
+        .from("profiles")
+        .select("*", { count: "exact", head: true })
+        .eq("wants_notifications", true),
+    ]);
+
+  // Get user signups per day for last 30 days
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const { data: recentUsers } = await supabase
+    .from("profiles")
+    .select("created_at")
+    .gte("created_at", thirtyDaysAgo.toISOString())
+    .order("created_at", { ascending: true });
+
+  // Group by date
+  const signupsByDate: Record<string, number> = {};
+  for (let i = 0; i < 30; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    const key = d.toISOString().split("T")[0];
+    signupsByDate[key] = 0;
+  }
+  if (recentUsers) {
+    for (const u of recentUsers) {
+      const key = u.created_at.split("T")[0];
+      if (signupsByDate[key] !== undefined) {
+        signupsByDate[key]++;
+      }
+    }
+  }
+
+  return {
+    totalUsers: usersRes.count || 0,
+    premiumUsers: premiumRes.count || 0,
+    totalJobs: jobsRes.count || 0,
+    publishedJobs: publishedRes.count || 0,
+    alertUsers: alertsRes.count || 0,
+    signupChart: Object.entries(signupsByDate).map(([date, count]) => ({
+      date,
+      count,
+    })),
+  };
 }

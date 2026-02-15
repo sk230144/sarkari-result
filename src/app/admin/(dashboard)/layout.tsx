@@ -1,9 +1,15 @@
 import Link from "next/link";
-import { Briefcase, ExternalLink, LayoutDashboard, LogOut, Users } from "lucide-react";
+import {
+  Briefcase,
+  ExternalLink,
+  LayoutDashboard,
+  LogOut,
+  Users,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logoutAdmin } from "@/lib/actions/admin";
 
-export default function AdminUsersLayout({
+export default function AdminDashboardLayout({
   children,
 }: {
   children: React.ReactNode;
@@ -13,16 +19,23 @@ export default function AdminUsersLayout({
       <header className="sticky top-0 z-50 border-b border-white/20 glass-strong shadow-lg shadow-blue-900/5">
         <div className="container mx-auto flex h-14 items-center justify-between px-4">
           <div className="flex items-center gap-4">
-            <Link
-              href="/admin/jobs"
-              className="flex items-center gap-2.5"
-            >
+            <Link href="/admin" className="flex items-center gap-2.5">
               <div className="icon-3d h-8 w-8 rounded-lg gradient-hero flex items-center justify-center">
                 <LayoutDashboard className="h-4 w-4 text-white" />
               </div>
               <span className="font-extrabold text-slate-800">Admin</span>
             </Link>
             <nav className="hidden sm:flex items-center gap-1 ml-2">
+              <Link href="/admin">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-600 hover:text-blue-700 hover:bg-blue-50 font-semibold"
+                >
+                  <LayoutDashboard className="h-4 w-4 mr-1.5" />
+                  Dashboard
+                </Button>
+              </Link>
               <Link href="/admin/jobs">
                 <Button
                   variant="ghost"
@@ -68,7 +81,9 @@ export default function AdminUsersLayout({
           </form>
         </div>
       </header>
-      <main className="container mx-auto px-4 py-6 max-w-5xl">{children}</main>
+      <main className="container mx-auto px-4 py-6 max-w-5xl">
+        {children}
+      </main>
     </div>
   );
 }

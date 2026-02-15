@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Briefcase, Crown, LogIn, LogOut, Menu, MoreVertical, Search, User } from "lucide-react";
+import { ArrowUpRight, Briefcase, Crown, LogIn, LogOut, Menu, MoreVertical, Search, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -15,6 +15,8 @@ import {
 } from "@/components/ui/sheet";
 import { CATEGORIES } from "@/lib/constants";
 import { getUser, signOut } from "@/lib/actions/auth";
+import { isAdmin } from "@/lib/actions/admin";
+import { createClient } from "@/lib/supabase/server";
 
 const toolLinks = [
   { href: "/tools", label: "All Tools" },
@@ -46,6 +48,22 @@ const allNavLinks = [
 
 export async function Header() {
   const user = await getUser();
+  let userIsAdmin = false;
+  let userIsPremium = false;
+
+  if (user) {
+    const [adminCheck, supabase] = await Promise.all([
+      isAdmin(),
+      createClient(),
+    ]);
+    userIsAdmin = adminCheck;
+    const { data } = await supabase
+      .from("profiles")
+      .select("is_premium")
+      .eq("id", user.id)
+      .single();
+    userIsPremium = !!data?.is_premium;
+  }
 
   return (
     <header className="sticky top-0 z-50 w-full glass-strong border-b border-white/40">
@@ -86,15 +104,36 @@ export async function Header() {
               All Jobs
             </Button>
           </Link>
-          <Link href="/membership">
-            <Button
-              size="sm"
-              className="ml-1 gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20 hover:shadow-violet-500/40 transition-shadow"
-            >
-              <Crown className="h-3.5 w-3.5 mr-1.5" />
-              Premium
-            </Button>
-          </Link>
+          {userIsAdmin ? (
+            <Link href="/admin">
+              <Button
+                size="sm"
+                className="ml-1 bg-slate-800 hover:bg-slate-900 text-white font-black text-sm rounded-lg border-0 shadow-md shadow-slate-500/20 hover:shadow-slate-500/40 transition-shadow"
+              >
+                <Settings className="h-3.5 w-3.5 mr-1.5" />
+                Admin
+              </Button>
+            </Link>
+          ) : (
+            <Link href="/membership">
+              <Button
+                size="sm"
+                className="ml-1 gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20 hover:shadow-violet-500/40 transition-shadow"
+              >
+                {userIsPremium ? (
+                  <>
+                    <ArrowUpRight className="h-3.5 w-3.5 mr-1.5" />
+                    Upgrade
+                  </>
+                ) : (
+                  <>
+                    <Crown className="h-3.5 w-3.5 mr-1.5" />
+                    Premium
+                  </>
+                )}
+              </Button>
+            </Link>
+          )}
         </nav>
 
         {/* Right side */}
@@ -238,12 +277,30 @@ export async function Header() {
                       Browse All Jobs
                     </Button>
                   </Link>
-                  <Link href="/membership" className="mt-2">
-                    <Button className="w-full gradient-purple text-white font-black border-0 h-11 shadow-md shadow-violet-500/20">
-                      <Crown className="h-4 w-4 mr-2" />
-                      Premium Membership
-                    </Button>
-                  </Link>
+                  {userIsAdmin ? (
+                    <Link href="/admin" className="mt-2">
+                      <Button className="w-full bg-slate-800 hover:bg-slate-900 text-white font-black border-0 h-11 shadow-md shadow-slate-500/20">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Admin Panel
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link href="/membership" className="mt-2">
+                      <Button className="w-full gradient-purple text-white font-black border-0 h-11 shadow-md shadow-violet-500/20">
+                        {userIsPremium ? (
+                          <>
+                            <ArrowUpRight className="h-4 w-4 mr-2" />
+                            Upgrade Plan
+                          </>
+                        ) : (
+                          <>
+                            <Crown className="h-4 w-4 mr-2" />
+                            Premium Membership
+                          </>
+                        )}
+                      </Button>
+                    </Link>
+                  )}
                   <div className="my-3 border-t border-slate-100" />
                   {user ? (
                     <form action={signOut}>

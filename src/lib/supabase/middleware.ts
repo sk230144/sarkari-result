@@ -36,19 +36,40 @@ export async function updateSession(request: NextRequest) {
   // Protect admin routes
   if (request.nextUrl.pathname.startsWith("/admin")) {
     if (request.nextUrl.pathname === "/admin/login") {
-      // If user is already logged in, redirect to admin dashboard
       if (user) {
-        const url = request.nextUrl.clone();
-        url.pathname = "/admin/jobs";
-        return NextResponse.redirect(url);
+        // Check if user is admin before redirecting
+        const { data: admin } = await supabase
+          .from("admins")
+          .select("user_id")
+          .eq("user_id", user.id)
+          .single();
+
+        if (admin) {
+          const url = request.nextUrl.clone();
+          url.pathname = "/admin";
+          return NextResponse.redirect(url);
+        }
       }
       return supabaseResponse;
     }
 
-    // If not logged in, redirect to login
+    // If not logged in, redirect to admin login
     if (!user) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+
+    // If logged in but NOT admin, redirect to home
+    const { data: admin } = await supabase
+      .from("admins")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (!admin) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
       return NextResponse.redirect(url);
     }
   }

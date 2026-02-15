@@ -430,3 +430,54 @@
 .animate-marquee {
   animation: marquee 25s linear infinite;
 }
+
+/* === CELEBRATION GLOW BORDER === */
+@keyframes borderGlow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes celebratePulse {
+  0%, 100% { box-shadow: 0 0 20px rgba(16, 185, 129, 0.2), 0 0 40px rgba(16, 185, 129, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(16, 185, 129, 0.4), 0 0 60px rgba(16, 185, 129, 0.15), 0 0 80px rgba(52, 211, 153, 0.1); }
+}
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+/* Glowing border wrapper — sits behind the card */
+.celebration-border {
+  position: absolute;
+  inset: -2px;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #10b981, #34d399, #6ee7b7, #a7f3d0, #6ee7b7, #34d399, #10b981);
+  background-size: 300% 100%;
+  animation: borderGlow 3s linear infinite;
+  pointer-events: none;
+}
+
+.celebration-card {
+  position: relative;
+  animation: celebratePulse 2s ease-in-out infinite;
+  border-color: transparent !important;
+}
+
+.sparkle-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  animation: sparkle 2s ease-in-out infinite;
+  z-index: 30;
+  pointer-events: none;
+}
+.sparkle-dot:nth-child(2) { top: 12%; left: 6%; animation-delay: 0s; }
+.sparkle-dot:nth-child(3) { top: 8%; right: 12%; animation-delay: 0.4s; }
+.sparkle-dot:nth-child(4) { bottom: 18%; left: 12%; animation-delay: 0.8s; }
+.sparkle-dot:nth-child(5) { bottom: 12%; right: 8%; animation-delay: 1.2s; }
+.sparkle-dot:nth-child(6) { top: 50%; left: 3%; animation-delay: 1.6s; }
+.sparkle-dot:nth-child(7) { top: 35%; right: 5%; animation-delay: 0.6s; }

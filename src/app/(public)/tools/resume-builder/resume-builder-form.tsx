@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import {
+  Code,
   Download,
   FileText,
   Loader2,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { generateResumePdf } from "./generate-pdf";
+import { compileLatexToPdf, DEFAULT_LATEX_TEMPLATE } from "./latex-compiler";
 
 interface Education {
   degree: string;
@@ -59,8 +61,12 @@ interface ResumeBuilderFormProps {
   defaultEmail: string;
 }
 
+type Mode = "form" | "latex";
+
 export function ResumeBuilderForm({ defaultName, defaultEmail }: ResumeBuilderFormProps) {
+  const [mode, setMode] = useState<Mode>("form");
   const [generating, setGenerating] = useState(false);
+  const [latexCode, setLatexCode] = useState(DEFAULT_LATEX_TEMPLATE);
   const [data, setData] = useState<ResumeData>({
     fullName: defaultName,
     email: defaultEmail,
@@ -116,6 +122,22 @@ export function ResumeBuilderForm({ defaultName, defaultEmail }: ResumeBuilderFo
         i === index ? { ...exp, [field]: value } : exp
       ),
     }));
+  }
+
+  async function handleLatexDownload() {
+    if (!latexCode.trim()) {
+      toast.error("Please enter your LaTeX code");
+      return;
+    }
+    setGenerating(true);
+    try {
+      await compileLatexToPdf(latexCode);
+      toast.success("Resume PDF downloaded!");
+    } catch {
+      toast.error("Failed to compile LaTeX. Check your code and try again.");
+    } finally {
+      setGenerating(false);
+    }
   }
 
   async function handleDownload() {
@@ -183,13 +205,82 @@ export function ResumeBuilderForm({ defaultName, defaultEmail }: ResumeBuilderFo
             </h1>
             <p className="mt-3 text-blue-100/80 text-sm md:text-base max-w-xl leading-relaxed font-medium">
               Fill in your details and download a clean, professional one-page
-              resume as PDF. No signup needed for the form.
+              resume as PDF. Or use LaTeX code for advanced formatting.
             </p>
+            <div className="flex items-center gap-2 mt-5">
+              <button
+                onClick={() => setMode("form")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  mode === "form"
+                    ? "bg-white text-blue-700 shadow-lg"
+                    : "glass text-white/80 hover:text-white"
+                }`}
+              >
+                <FileText className="h-3.5 w-3.5" />
+                Form Builder
+              </button>
+              <button
+                onClick={() => setMode("latex")}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                  mode === "latex"
+                    ? "bg-white text-blue-700 shadow-lg"
+                    : "glass text-white/80 hover:text-white"
+                }`}
+              >
+                <Code className="h-3.5 w-3.5" />
+                LaTeX Code
+              </button>
+            </div>
           </div>
         </div>
       </section>
 
       <section className="container mx-auto px-4 py-8">
+        {mode === "latex" ? (
+          <div className="max-w-2xl mx-auto space-y-4">
+            <Card className="card-3d">
+              <CardHeader>
+                <CardTitle className="text-base font-extrabold text-slate-800">
+                  LaTeX Code
+                </CardTitle>
+                <p className="text-xs text-slate-500 font-medium mt-1">
+                  Paste your LaTeX resume code below. A sample template is pre-filled.
+                  Uses latex.ytotech.com to compile.
+                </p>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Textarea
+                  className="font-mono text-xs leading-relaxed min-h-[400px] bg-slate-950 text-emerald-400 border-slate-700 rounded-lg p-4"
+                  value={latexCode}
+                  onChange={(e) => setLatexCode(e.target.value)}
+                  spellCheck={false}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-xs font-bold"
+                    onClick={() => setLatexCode(DEFAULT_LATEX_TEMPLATE)}
+                  >
+                    Reset Template
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+            <Button
+              className="w-full btn-3d text-white font-black border-0 h-12 text-base"
+              onClick={handleLatexDownload}
+              disabled={generating}
+            >
+              {generating ? (
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              ) : (
+                <Download className="h-5 w-5 mr-2" />
+              )}
+              Compile & Download PDF
+            </Button>
+          </div>
+        ) : (
         <div className="max-w-2xl mx-auto space-y-4">
           {/* Personal Details */}
           <Card className="card-3d">
@@ -499,6 +590,7 @@ export function ResumeBuilderForm({ defaultName, defaultEmail }: ResumeBuilderFo
             Download Resume PDF
           </Button>
         </div>
+        )}
       </section>
     </div>
   );
