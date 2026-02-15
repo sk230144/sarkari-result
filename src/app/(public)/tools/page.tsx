@@ -8,6 +8,7 @@ import {
   Bell,
   Calendar,
   Crown,
+  FileEdit,
   FileText,
   Image as ImageIcon,
   Lock,
@@ -36,6 +37,16 @@ const tools = [
     premium: false,
   },
   {
+    title: "Resume Builder",
+    description:
+      "Build a clean one-page resume and download as PDF.",
+    href: "/tools/resume-builder",
+    tags: ["PDF", "One Page"],
+    icon: FileEdit,
+    accent: "bg-teal-50 text-teal-700",
+    premium: false,
+  },
+  {
     title: "Exam Calendar",
     description:
       "Track exam dates, results & admit card schedules.",
@@ -52,8 +63,8 @@ const tools = [
     href: "/tools/job-alerts",
     tags: ["WhatsApp", "Qualification"],
     icon: Bell,
-    accent: "bg-slate-100 text-slate-700",
-    premium: false,
+    accent: "bg-amber-50 text-amber-700",
+    premium: true,
   },
   {
     title: "Document Locker",

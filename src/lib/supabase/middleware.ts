@@ -84,6 +84,16 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Protect resume builder - require user login
+  if (request.nextUrl.pathname.startsWith("/tools/resume-builder")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
   // Protect job alerts - require user login
   if (request.nextUrl.pathname.startsWith("/tools/job-alerts")) {
     if (!user) {
