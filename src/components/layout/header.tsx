@@ -1,6 +1,12 @@
 import Link from "next/link";
-import { Briefcase, Menu, Search } from "lucide-react";
+import { Briefcase, Crown, Menu, MoreVertical, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -9,8 +15,17 @@ import {
 } from "@/components/ui/sheet";
 import { CATEGORIES } from "@/lib/constants";
 
+const toolLinks = [
+  { href: "/tools", label: "All Tools" },
+  { href: "/tools/image", label: "Image Tools" },
+  { href: "/tools/image-to-pdf", label: "Image to PDF" },
+  { href: "/tools/calendar", label: "Exam Calendar" },
+  { href: "/tools/document-locker", label: "Document Locker" },
+];
+
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/tools", label: "Tools" },
   ...CATEGORIES.slice(0, 4).map((cat) => ({
     href: `/jobs?category=${cat.value}`,
     label: cat.label,
@@ -19,6 +34,7 @@ const navLinks = [
 
 const allNavLinks = [
   { href: "/", label: "Home" },
+  { href: "/tools", label: "Tools" },
   ...CATEGORIES.map((cat) => ({
     href: `/jobs?category=${cat.value}`,
     label: cat.label,
@@ -65,6 +81,15 @@ export function Header() {
               All Jobs
             </Button>
           </Link>
+          <Link href="/membership">
+            <Button
+              size="sm"
+              className="ml-1 gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20 hover:shadow-violet-500/40 transition-shadow"
+            >
+              <Crown className="h-3.5 w-3.5 mr-1.5" />
+              Premium
+            </Button>
+          </Link>
         </nav>
 
         {/* Right side */}
@@ -78,6 +103,28 @@ export function Header() {
               <Search className="h-4.5 w-4.5" />
             </Button>
           </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-slate-500 hover:text-blue-600 hover:bg-blue-50/80 rounded-xl"
+                aria-label="Tools menu"
+              >
+                <MoreVertical className="h-4.5 w-4.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              {toolLinks.map((tool) => (
+                <DropdownMenuItem key={tool.href} asChild>
+                  <Link href={tool.href} className="font-semibold">
+                    {tool.label}
+                  </Link>
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
           {/* Mobile nav */}
           <div className="lg:hidden">
@@ -123,6 +170,12 @@ export function Header() {
                   <Link href="/jobs">
                     <Button className="w-full btn-3d text-white font-black border-0 h-11">
                       Browse All Jobs
+                    </Button>
+                  </Link>
+                  <Link href="/membership" className="mt-2">
+                    <Button className="w-full gradient-purple text-white font-black border-0 h-11 shadow-md shadow-violet-500/20">
+                      <Crown className="h-4 w-4 mr-2" />
+                      Premium Membership
                     </Button>
                   </Link>
                 </nav>

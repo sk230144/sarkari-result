@@ -53,5 +53,47 @@ export async function updateSession(request: NextRequest) {
     }
   }
 
+  // Auth pages - redirect logged-in users to document locker
+  if (request.nextUrl.pathname.startsWith("/auth/")) {
+    if (user) {
+      const redirect = request.nextUrl.searchParams.get("redirect");
+      const url = request.nextUrl.clone();
+      url.pathname = redirect || "/tools/document-locker";
+      url.searchParams.delete("redirect");
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Protect document locker - require user login
+  if (request.nextUrl.pathname.startsWith("/tools/document-locker")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Protect calendar - require user login
+  if (request.nextUrl.pathname.startsWith("/tools/calendar")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", request.nextUrl.pathname);
+      return NextResponse.redirect(url);
+    }
+  }
+
+  // Protect membership payment - require user login
+  if (request.nextUrl.pathname.startsWith("/membership/payment")) {
+    if (!user) {
+      const url = request.nextUrl.clone();
+      const fullPath = request.nextUrl.pathname + request.nextUrl.search;
+      url.pathname = "/auth/login";
+      url.searchParams.set("redirect", fullPath);
+      return NextResponse.redirect(url);
+    }
+  }
+
   return supabaseResponse;
 }
