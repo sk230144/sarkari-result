@@ -17,9 +17,52 @@ import {
   Award,
 } from "lucide-react";
 import { getLatestJobs, getFeaturedJobs } from "@/lib/actions/jobs";
-import { CATEGORIES } from "@/lib/constants";
+import { CATEGORIES, SITE_NAME, SITE_URL } from "@/lib/constants";
 import { format } from "date-fns";
 import type { Job } from "@/types";
+
+function HomeJsonLd() {
+  const orgSchema = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: SITE_NAME,
+    url: SITE_URL,
+    logo: `${SITE_URL}/favicon.ico`,
+    description:
+      "India's trusted government job portal for latest sarkari naukri, results, admit cards, answer keys and scholarships.",
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: SITE_NAME,
+    url: SITE_URL,
+    description:
+      "Find latest government jobs, sarkari result, admit cards, answer keys. सरकारी नौकरी, रिजल्ट, एडमिट कार्ड - रोज़ अपडेट।",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: {
+        "@type": "EntryPoint",
+        urlTemplate: `${SITE_URL}/jobs?search={search_term_string}`,
+      },
+      "query-input": "required name=search_term_string",
+    },
+    inLanguage: ["hi", "en"],
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(orgSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+    </>
+  );
+}
 
 const categoryConfig: Record<
   string,
@@ -127,6 +170,7 @@ export default async function HomePage() {
 
   return (
     <div className="min-h-screen page-bg">
+      <HomeJsonLd />
       {/* Floating background orbs for entire page */}
       <div className="page-bg-orb w-[500px] h-[500px] bg-blue-200/[0.07] top-[20%] -left-[10%] animate-float-slow" />
       <div className="page-bg-orb w-[400px] h-[400px] bg-indigo-200/[0.06] top-[50%] -right-[8%] animate-float-delayed" />
@@ -334,6 +378,33 @@ export default async function HomePage() {
               </p>
             </div>
           )}
+        </section>
+
+        {/* SEO Content Section */}
+        <section className="mt-10 card-3d bg-white rounded-xl border border-slate-200/60 p-6 sm:p-8">
+          <h2 className="text-lg font-extrabold text-slate-800 mb-3">
+            Sarkari Result - सरकारी रिजल्ट 2025
+          </h2>
+          <div className="space-y-3 text-sm text-slate-600 leading-relaxed font-medium">
+            <p>
+              <strong>Sarkari Result</strong> is your one-stop destination for all government job updates in India.
+              We provide the latest <strong>sarkari naukri</strong> notifications, <strong>sarkari result</strong>,
+              admit cards, answer keys, syllabus, and scholarship information from official sources.
+            </p>
+            <p>
+              <strong>सरकारी रिजल्ट</strong> पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। नवीनतम{" "}
+              <strong>सरकारी भर्ती 2025</strong>, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस
+              और रिजल्ट। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती
+              और राज्य सरकार की सभी नौकरियाँ यहाँ उपलब्ध हैं।
+            </p>
+            <p>
+              Whether you are looking for <strong>SSC CGL</strong>, <strong>UPSC Civil Services</strong>,{" "}
+              <strong>Railway RRB NTPC</strong>, <strong>Bank PO/Clerk</strong>,{" "}
+              <strong>State PSC</strong>, <strong>Defence Jobs</strong>, <strong>Police Bharti</strong>,
+              or <strong>Teaching Jobs</strong> — we cover all central and state government vacancies
+              with daily updates so you never miss an opportunity.
+            </p>
+          </div>
         </section>
       </div>
     </div>

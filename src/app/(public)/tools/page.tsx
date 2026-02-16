@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { getUser } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/server";
 import { ToolsGrid } from "./tools-grid";
+
+export const metadata: Metadata = {
+  title: "Free Tools - Image Converter, Resume Builder, Exam Calendar",
+  description:
+    "Free online tools for government job aspirants. Image resizer, passport photo maker, image to PDF converter, one-page resume builder, exam calendar & more. सरकारी नौकरी के लिए फ्री टूल्स।",
+};
 
 export default async function ToolsHubPage() {
   const user = await getUser();

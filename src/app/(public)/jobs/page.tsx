@@ -10,9 +10,19 @@ import { Briefcase, SearchX } from "lucide-react";
 import type { JobCategory } from "@/types";
 
 export const metadata: Metadata = {
-  title: "Browse Jobs",
+  title: "सरकारी नौकरी 2025 - Latest Govt Jobs, Results, Admit Cards",
   description:
-    "Browse latest government jobs, results, admit cards, answer keys, and scholarships with advanced filters.",
+    "Browse latest government jobs, sarkari naukri, results, admit cards, answer keys, and scholarships. सरकारी नौकरी भर्ती 2025 - SSC, Railway, Bank, UPSC, State Govt Jobs. Apply online with free job alerts.",
+  keywords: [
+    "sarkari naukri 2025",
+    "government jobs",
+    "latest govt jobs",
+    "online form",
+    "sarkari result",
+    "SSC recruitment",
+    "railway bharti",
+    "bank jobs",
+  ],
 };
 
 function JobListSkeleton() {

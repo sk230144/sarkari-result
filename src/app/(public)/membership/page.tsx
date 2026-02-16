@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import { getUser } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/server";
 import { MembershipContent } from "./membership-content";
+
+export const metadata: Metadata = {
+  title: "Premium Membership - Application Fee Refund, Document Locker & More",
+  description:
+    "Join Sarkari Result Premium Membership. Get application fee refund on passing exams, document locker, exam calendar, priority support & more. सरकारी रिजल्ट प्रीमियम मेंबरशिप।",
+};
 
 export default async function MembershipPage() {
   const user = await getUser();

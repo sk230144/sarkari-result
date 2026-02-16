@@ -20,7 +20,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { getJobById } from "@/lib/actions/jobs";
-import { CATEGORIES, SITE_NAME } from "@/lib/constants";
+import { CATEGORIES, SITE_NAME, SITE_URL } from "@/lib/constants";
+import type { Job } from "@/types";
 
 const categoryColors: Record<string, string> = {
   job: "bg-blue-50 text-blue-700 border-blue-200",
@@ -43,12 +44,77 @@ export async function generateMetadata({
     return { title: "Not Found" };
   }
 
+  const title = `${job.title}${job.organization ? ` - ${job.organization}` : ""}`;
+  const description =
+    job.short_description ||
+    `${job.title} - Find details about this ${job.category} including last date, eligibility, and how to apply. ${SITE_NAME}`;
+
   return {
-    title: `${job.title}${job.organization ? ` - ${job.organization}` : ""}`,
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: `${SITE_URL}/jobs/${id}`,
+      type: "article",
+      publishedTime: job.post_date,
+      modifiedTime: job.updated_at || job.post_date,
+    },
+    twitter: {
+      card: "summary",
+      title,
+      description,
+    },
+    alternates: {
+      canonical: `${SITE_URL}/jobs/${id}`,
+    },
+  };
+}
+
+function JobJsonLd({ job }: { job: Job }) {
+  const categoryLabel =
+    CATEGORIES.find((c) => c.value === job.category)?.label || job.category;
+
+  const schema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
     description:
       job.short_description ||
-      `${job.title} - Find details about this ${job.category} including last date, eligibility, and how to apply. ${SITE_NAME}`,
+      `${job.title} - ${categoryLabel}. Apply online at ${SITE_NAME}.`,
+    datePosted: job.post_date,
+    hiringOrganization: {
+      "@type": "Organization",
+      name: job.organization || "Government of India",
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressCountry: "IN",
+        addressRegion: job.state || "India",
+      },
+    },
+    employmentType: "FULL_TIME",
+    industry: "Government",
   };
+
+  if (job.last_date) {
+    schema.validThrough = job.last_date;
+  }
+  if (job.qualification) {
+    schema.qualifications = job.qualification;
+  }
+  if (job.total_posts) {
+    schema.totalJobOpenings = job.total_posts;
+  }
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
 }
 
 function InfoCard({
@@ -111,6 +177,7 @@ export default async function JobDetailPage({
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 max-w-3xl">
+      <JobJsonLd job={job} />
       {/* Back button */}
       <Link href="/jobs">
         <Button
