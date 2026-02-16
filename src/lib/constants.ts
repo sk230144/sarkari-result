@@ -1,6 +1,6 @@
-export const SITE_NAME = "Sarkari Result";
+export const SITE_NAME = "Job Alerts 24";
 export const SITE_DESCRIPTION =
-  "Find latest government jobs, results, admit cards, answer keys, and scholarships. Your one-stop portal for all sarkari naukri updates.";
+  "Find latest government jobs, results, admit cards, answer keys, and scholarships. Your 24/7 portal for all sarkari naukri updates.";
 export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
 
 export const CATEGORIES = [

@@ -93,7 +93,7 @@ export default function AdminLoginPage() {
         </div>
 
         <p className="text-center text-xs text-slate-400 mt-6 font-medium">
-          Sarkari Result Admin Portal
+          Job Alerts 24 Admin Portal
         </p>
       </div>
     </div>

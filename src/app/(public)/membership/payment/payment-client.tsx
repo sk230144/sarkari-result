@@ -71,7 +71,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
   const planId = searchParams.get("plan") || selectedPlan;
   const plan = PLANS[planId] || PLANS.yearly;
 
-  const whatsappMessage = `Hello Sarkari Result Team,\n\nI want to activate my Premium Membership.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}\n\nI have completed the payment. Please activate my account.`;
+  const whatsappMessage = `Hello Job Alerts 24 Team,\n\nI want to activate my Premium Membership.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}\n\nI have completed the payment. Please activate my account.`;
 
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 

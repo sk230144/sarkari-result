@@ -101,16 +101,17 @@ export function Footer() {
         {/* SEO Content Section */}
         <div className="mt-10 pt-6 border-t border-slate-800/60">
           <h4 className="font-bold text-white mb-3 text-sm">
-            Sarkari Result - सरकारी रिजल्ट 2025
+            Job Alerts 24 - सरकारी नौकरी अलर्ट 2025
           </h4>
           <p className="text-xs text-slate-500 leading-relaxed mb-3">
             {SITE_NAME} is India&apos;s trusted government job portal providing latest sarkari naukri updates, sarkari result, admit cards, answer keys, syllabus and scholarship information. We cover all central and state government jobs including SSC, UPSC, Railway, Bank, Defence, Police, Teaching and more.
           </p>
           <p className="text-xs text-slate-500 leading-relaxed mb-3">
-            सरकारी रिजल्ट पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। यहाँ आप नवीनतम सरकारी भर्ती 2025, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस और रिजल्ट की जानकारी पा सकते हैं। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती और राज्य सरकार की सभी नौकरियाँ एक जगह।
+            जॉब अलर्ट्स 24 पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। यहाँ आप नवीनतम सरकारी भर्ती 2025, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस और रिजल्ट की जानकारी पा सकते हैं। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती और राज्य सरकार की सभी नौकरियाँ एक जगह।
           </p>
           <div className="flex flex-wrap gap-2 mt-3">
             {[
+              "Job Alerts 24",
               "Sarkari Result",
               "Sarkari Naukri",
               "Govt Jobs 2025",

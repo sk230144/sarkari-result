@@ -75,7 +75,7 @@ export async function Header() {
           </div>
           <div>
             <span className="font-extrabold text-lg tracking-tight text-gradient">
-              Sarkari Result
+              Job Alerts 24
             </span>
             <span className="hidden sm:block text-[10px] text-slate-400 -mt-0.5 tracking-widest uppercase font-semibold">
               Govt Jobs Portal
@@ -238,7 +238,7 @@ export async function Header() {
                     <div className="h-9 w-9 rounded-lg bg-white/20 flex items-center justify-center backdrop-blur-sm">
                       <Briefcase className="h-4 w-4 text-white" />
                     </div>
-                    Sarkari Result
+                    Job Alerts 24
                   </SheetTitle>
                   <p className="text-blue-200 text-xs mt-1.5 relative font-semibold tracking-wide">
                     Government Jobs Portal

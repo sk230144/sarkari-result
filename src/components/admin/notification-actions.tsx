@@ -38,7 +38,7 @@ export function NotificationActions({ user }: { user: UserProfile }) {
   }
 
   function buildWhatsAppUrl() {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://sarkariresult.com";
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://jobalerts24.com";
     const jobLines = jobs
       .map(
         (job, i) =>
@@ -46,7 +46,7 @@ export function NotificationActions({ user }: { user: UserProfile }) {
       )
       .join("\n\n");
 
-    const message = `Hello ${user.full_name || "User"}!\n\nHere are the latest jobs matching your qualification (${user.qualification} · ${user.degree_stream}):\n\n${jobLines}\n\n---\nSarkari Result - Govt Jobs Portal`;
+    const message = `Hello ${user.full_name || "User"}!\n\nHere are the latest jobs matching your qualification (${user.qualification} · ${user.degree_stream}):\n\n${jobLines}\n\n---\nJob Alerts 24 - Govt Jobs Portal`;
 
     return `https://wa.me/91${user.whatsapp_number}?text=${encodeURIComponent(message)}`;
   }

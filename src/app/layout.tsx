@@ -18,10 +18,10 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | सरकारी रिजल्ट 2025 - Latest Govt Jobs, Results, Admit Cards`,
+    default: `${SITE_NAME} | सरकारी नौकरी 2025 - Latest Govt Jobs, Results, Admit Cards`,
     template: `%s | ${SITE_NAME}`,
   },
-  description: `${SITE_DESCRIPTION} सरकारी नौकरी, सरकारी रिजल्ट, एडमिट कार्ड, आंसर की, सिलेबस - सभी अपडेट एक जगह।`,
+  description: `${SITE_DESCRIPTION} सरकारी नौकरी, जॉब अलर्ट, एडमिट कार्ड, आंसर की, सिलेबस - सभी अपडेट एक जगह।`,
   keywords: [
     "sarkari result",
     "sarkari result 2025",
@@ -42,7 +42,8 @@ export const metadata: Metadata = {
     "state government jobs",
     "central government jobs",
     "सरकारी नौकरी",
-    "सरकारी रिजल्ट",
+    "job alerts 24",
+    "jobalerts24",
     "एडमिट कार्ड",
     "आंसर की",
     "scholarship",
@@ -68,20 +69,20 @@ export const metadata: Metadata = {
     alternateLocale: "en_IN",
     url: SITE_URL,
     siteName: SITE_NAME,
-    title: `${SITE_NAME} | सरकारी रिजल्ट - Latest Govt Jobs, Results & Admit Cards`,
+    title: `${SITE_NAME} | Sarkari Naukri - Latest Govt Jobs, Results & Admit Cards`,
     description: `${SITE_DESCRIPTION} सरकारी नौकरी, रिजल्ट, एडमिट कार्ड, आंसर की - रोज़ अपडेट।`,
     images: [
       {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: `${SITE_NAME} - सरकारी नौकरी पोर्टल`,
+        alt: `${SITE_NAME} - Govt Jobs Portal`,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: `${SITE_NAME} | Latest Govt Jobs & Sarkari Result`,
+    title: `${SITE_NAME} | Latest Govt Jobs & Sarkari Naukri`,
     description: SITE_DESCRIPTION,
     images: ["/og-image.png"],
   },

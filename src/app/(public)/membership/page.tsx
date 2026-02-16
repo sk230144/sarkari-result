@@ -6,7 +6,7 @@ import { MembershipContent } from "./membership-content";
 export const metadata: Metadata = {
   title: "Premium Membership - Application Fee Refund, Document Locker & More",
   description:
-    "Join Sarkari Result Premium Membership. Get application fee refund on passing exams, document locker, exam calendar, priority support & more. सरकारी रिजल्ट प्रीमियम मेंबरशिप।",
+    "Join Job Alerts 24 Premium Membership. Get application fee refund on passing exams, document locker, exam calendar, priority support & more. जॉब अलर्ट्स 24 प्रीमियम मेंबरशिप।",
 };
 
 export default async function MembershipPage() {

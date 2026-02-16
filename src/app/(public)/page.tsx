@@ -38,7 +38,7 @@ function HomeJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     description:
-      "Find latest government jobs, sarkari result, admit cards, answer keys. सरकारी नौकरी, रिजल्ट, एडमिट कार्ड - रोज़ अपडेट।",
+      "Find latest government jobs, sarkari naukri, admit cards, answer keys. सरकारी नौकरी, रिजल्ट, एडमिट कार्ड - 24/7 अपडेट।",
     potentialAction: {
       "@type": "SearchAction",
       target: {
@@ -383,16 +383,16 @@ export default async function HomePage() {
         {/* SEO Content Section */}
         <section className="mt-10 card-3d bg-white rounded-xl border border-slate-200/60 p-6 sm:p-8">
           <h2 className="text-lg font-extrabold text-slate-800 mb-3">
-            Sarkari Result - सरकारी रिजल्ट 2025
+            Job Alerts 24 - सरकारी नौकरी अलर्ट 2025
           </h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed font-medium">
             <p>
-              <strong>Sarkari Result</strong> is your one-stop destination for all government job updates in India.
+              <strong>Job Alerts 24</strong> is your one-stop destination for all government job updates in India.
               We provide the latest <strong>sarkari naukri</strong> notifications, <strong>sarkari result</strong>,
               admit cards, answer keys, syllabus, and scholarship information from official sources.
             </p>
             <p>
-              <strong>सरकारी रिजल्ट</strong> पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। नवीनतम{" "}
+              <strong>जॉब अलर्ट्स 24</strong> पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। नवीनतम{" "}
               <strong>सरकारी भर्ती 2025</strong>, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस
               और रिजल्ट। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती
               और राज्य सरकार की सभी नौकरियाँ यहाँ उपलब्ध हैं।
