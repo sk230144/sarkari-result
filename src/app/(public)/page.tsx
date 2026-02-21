@@ -50,6 +50,61 @@ function HomeJsonLd() {
     inLanguage: ["hi", "en"],
   };
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: "What is Job Alerts 24?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Job Alerts 24 (jobalerts24.com) is a free Indian government job portal that provides the latest sarkari naukri notifications, results, admit cards, answer keys, syllabus, and scholarships. It also offers free tools like resume builder, image converter, and image to PDF.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Is Job Alerts 24 free to use?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Job Alerts 24 is completely free to use. You can browse all government job listings, results, admit cards, and use tools like resume builder and image converter without any charges. A premium membership is also available with additional benefits.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What government jobs are listed on Job Alerts 24?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Job Alerts 24 lists all types of government jobs including SSC, UPSC, Railway (RRB), Banking (IBPS, SBI), Defence, Police, Teaching, State PSC, and all central and state government vacancies across India.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "How do I find the latest sarkari result on Job Alerts 24?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Visit jobalerts24.com and click on the 'Results' category from the homepage or filter by Results on the jobs page. All latest sarkari exam results are updated daily.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Does Job Alerts 24 have a resume builder?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Yes, Job Alerts 24 has a free resume builder tool available at jobalerts24.com/tools/resume-builder. You can build a professional resume by filling in your details or by using LaTeX code, and download it as a PDF instantly.",
+        },
+      },
+      {
+        "@type": "Question",
+        name: "What is the exam fee refund benefit in Job Alerts 24 Premium?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Job Alerts 24 Premium members who clear a government exam are eligible for a refund of their exam application fee. Terms and conditions apply. This benefit is part of the premium membership plan.",
+        },
+      },
+    ],
+  };
+
   return (
     <>
       <script
@@ -59,6 +114,10 @@ function HomeJsonLd() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
     </>
   );

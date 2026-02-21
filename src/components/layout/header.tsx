@@ -31,7 +31,8 @@ const toolLinks = [
 const navLinks = [
   { href: "/", label: "Home" },
   { href: "/tools", label: "Tools" },
-  ...CATEGORIES.slice(0, 4).map((cat) => ({
+  { href: "/blog", label: "Blog" },
+  ...CATEGORIES.slice(0, 3).map((cat) => ({
     href: `/jobs?category=${cat.value}`,
     label: cat.label,
   })),
@@ -40,6 +41,8 @@ const navLinks = [
 const allNavLinks = [
   { href: "/", label: "Home" },
   { href: "/tools", label: "Tools" },
+  { href: "/blog", label: "Blog" },
+  { href: "/about", label: "About Us" },
   ...CATEGORIES.map((cat) => ({
     href: `/jobs?category=${cat.value}`,
     label: cat.label,
@@ -69,19 +72,46 @@ export async function Header() {
     <header className="sticky top-0 z-50 w-full glass-strong border-b border-white/40">
       <div className="container mx-auto flex h-16 items-center px-4">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2.5 group">
-          <div className="h-10 w-10 rounded-xl gradient-hero flex items-center justify-center glow-blue group-hover:glow-blue-strong transition-all duration-300 group-hover:scale-105">
-            <Briefcase className="h-5 w-5 text-white drop-shadow-sm" />
+        <Link href="/" className="flex items-center gap-2.5 group shrink-0">
+          <div className="h-9 w-9 md:h-10 md:w-10 rounded-xl gradient-hero flex items-center justify-center glow-blue group-hover:glow-blue-strong transition-all duration-300 group-hover:scale-105">
+            <Briefcase className="h-4 w-4 md:h-5 md:w-5 text-white drop-shadow-sm" />
           </div>
           <div>
-            <span className="font-extrabold text-lg tracking-tight text-gradient">
+            <span className="font-extrabold text-base md:text-lg tracking-tight text-gradient">
               Job Alerts 24
             </span>
-            <span className="hidden sm:block text-[10px] text-slate-400 -mt-0.5 tracking-widest uppercase font-semibold">
+            <span className="hidden md:block text-[10px] text-slate-400 -mt-0.5 tracking-widest uppercase font-semibold">
               Govt Jobs Portal
             </span>
           </div>
         </Link>
+
+        {/* Tablet nav (md to lg) */}
+        <nav className="ml-4 hidden md:flex lg:hidden items-center gap-0.5">
+          <Link href="/jobs">
+            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-blue-700 hover:bg-blue-50/80 font-bold text-sm rounded-lg">
+              Jobs
+            </Button>
+          </Link>
+          <Link href="/tools">
+            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-blue-700 hover:bg-blue-50/80 font-bold text-sm rounded-lg">
+              Tools
+            </Button>
+          </Link>
+          <Link href="/blog">
+            <Button variant="ghost" size="sm" className="text-slate-700 hover:text-blue-700 hover:bg-blue-50/80 font-bold text-sm rounded-lg">
+              Blog
+            </Button>
+          </Link>
+          {!userIsAdmin && (
+            <Link href="/membership">
+              <Button size="sm" className="gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20">
+                <Crown className="h-3.5 w-3.5 mr-1" />
+                Premium
+              </Button>
+            </Link>
+          )}
+        </nav>
 
         {/* Desktop nav */}
         <nav className="ml-8 hidden lg:flex items-center gap-0.5">
@@ -216,8 +246,8 @@ export async function Header() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          {/* Mobile nav */}
-          <div className="lg:hidden">
+          {/* Mobile/Tablet hamburger */}
+          <div className="md:hidden">
             <Sheet>
               <SheetTrigger asChild>
                 <Button

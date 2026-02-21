@@ -5,6 +5,19 @@ import { SITE_URL, CATEGORIES } from "@/lib/constants";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const supabase = await createClient();
 
+  const { data: blogPosts } = await supabase
+    .from("blog_posts")
+    .select("slug, updated_at, published_at")
+    .eq("is_published", true)
+    .order("published_at", { ascending: false });
+
+  const blogEntries: MetadataRoute.Sitemap = (blogPosts || []).map((post) => ({
+    url: `${SITE_URL}/blog/${post.slug}`,
+    lastModified: new Date(post.updated_at || post.published_at),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   const { data: jobs } = await supabase
     .from("jobs")
     .select("id, updated_at, post_date, category")
@@ -71,7 +84,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${SITE_URL}/blog`,
+      lastModified: new Date(),
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+    {
+      url: `${SITE_URL}/about`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.5,
+    },
   ];
 
-  return [...staticPages, ...categoryEntries, ...jobEntries];
+  return [...staticPages, ...categoryEntries, ...jobEntries, ...blogEntries];
 }

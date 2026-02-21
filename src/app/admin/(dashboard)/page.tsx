@@ -1,6 +1,7 @@
+import Link from "next/link";
 import { getDashboardStats } from "@/lib/actions/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Bell, Briefcase, Crown, Eye, Users } from "lucide-react";
+import { Bell, Briefcase, BookOpen, Crown, Eye, Users, ArrowRight } from "lucide-react";
 import { SignupChart } from "@/components/admin/signup-chart";
 
 export default async function AdminDashboardPage() {
@@ -72,6 +73,53 @@ export default async function AdminDashboardPage() {
                 </div>
               </CardContent>
             </Card>
+          );
+        })}
+      </div>
+
+      {/* Quick Links */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+        {[
+          {
+            href: "/admin/jobs",
+            label: "Manage Jobs",
+            desc: "Add, edit or delete job listings",
+            icon: Briefcase,
+            color: "bg-blue-50 text-blue-600",
+          },
+          {
+            href: "/admin/blog",
+            label: "Manage Blog",
+            desc: "Write and publish blog posts",
+            icon: BookOpen,
+            color: "bg-emerald-50 text-emerald-600",
+          },
+          {
+            href: "/admin/users",
+            label: "Manage Users",
+            desc: "View and manage user accounts",
+            icon: Users,
+            color: "bg-violet-50 text-violet-600",
+          },
+        ].map((item) => {
+          const Icon = item.icon;
+          return (
+            <Link key={item.href} href={item.href}>
+              <Card className="card-3d hover:border-blue-200 transition-colors group cursor-pointer">
+                <CardContent className="p-4 flex items-center gap-3">
+                  <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${item.color}`}>
+                    <Icon className="h-5 w-5" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-extrabold text-slate-800 text-sm group-hover:text-blue-700 transition-colors">
+                      {item.label}
+                    </p>
+                    <p className="text-xs text-slate-400 font-medium">{item.desc}</p>
+                  </div>
+                  <ArrowRight className="h-4 w-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </CardContent>
+              </Card>
+            </Link>
           );
         })}
       </div>

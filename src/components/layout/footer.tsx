@@ -69,6 +69,24 @@ export function Footer() {
                   <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
                 </Link>
               </li>
+              <li>
+                <Link href="/tools" className="text-slate-400 hover:text-blue-400 hover:translate-x-1 transition-all duration-200 flex items-center gap-1 group font-medium">
+                  Free Tools
+                  <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/membership" className="text-slate-400 hover:text-blue-400 hover:translate-x-1 transition-all duration-200 flex items-center gap-1 group font-medium">
+                  Premium Membership
+                  <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="text-slate-400 hover:text-blue-400 hover:translate-x-1 transition-all duration-200 flex items-center gap-1 group font-medium">
+                  About Us
+                  <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </Link>
+              </li>
             </ul>
           </div>
 
