@@ -7,10 +7,7 @@ import { Calendar, User, ArrowLeft, Tag } from "lucide-react";
 import { format } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 
-export async function generateStaticParams() {
-  const posts = await getPublishedPosts(100);
-  return posts.map((post) => ({ slug: post.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
