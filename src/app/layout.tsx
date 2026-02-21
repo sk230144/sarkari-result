@@ -92,6 +92,9 @@ export const metadata: Metadata = {
   category: "Government Jobs",
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_VERIFICATION || "",
+    other: {
+      "msvalidate.01": "03F7D142AC79243A18F07574F9EC9900",
+    },
   },
 };
 
