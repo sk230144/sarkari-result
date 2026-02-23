@@ -76,6 +76,24 @@ function extractTagsFromTitle(title: string): string[] {
   return tags;
 }
 
+// Extract official govt website URL from description text
+// e.g. "apply through bsnl.co.in" → "https://bsnl.co.in"
+function extractOfficialUrl(description: string): string | null {
+  // Match domain patterns ending in .gov.in, .nic.in, .ac.in, .co.in, .org.in, .edu.in
+  const govDomainMatch = description.match(
+    /(?:through|visit|at|on|from)\s+([\w.-]+\.(?:gov\.in|nic\.in|ac\.in|co\.in|org\.in|edu\.in|net\.in))/i
+  );
+  if (govDomainMatch) {
+    return `https://${govDomainMatch[1]}`;
+  }
+  // Also match direct .gov.in domain mentions
+  const directMatch = description.match(/([\w-]+\.(?:gov\.in|nic\.in))/i);
+  if (directMatch) {
+    return `https://${directMatch[1]}`;
+  }
+  return null;
+}
+
 // Parse RSS XML and return jobs
 function parseRSSFeed(xml: string, source: string): ScrapedJob[] {
   const $ = cheerio.load(xml, { xmlMode: true });
@@ -83,8 +101,6 @@ function parseRSSFeed(xml: string, source: string): ScrapedJob[] {
 
   $("item").each((_, el) => {
     const title = $(el).find("title").first().text().trim();
-    const link = $(el).find("link").first().text().trim() ||
-                 $(el).find("guid").first().text().trim();
     const description = $(el).find("description").first().text().trim();
     const pubDate = $(el).find("pubDate").first().text().trim();
 
@@ -99,13 +115,15 @@ function parseRSSFeed(xml: string, source: string): ScrapedJob[] {
     }
 
     const fullText = `${title} ${description}`;
+    // Only use official govt URLs, never the RSS source site URL
+    const officialUrl = extractOfficialUrl(fullText);
 
     jobs.push({
       title: title.substring(0, 250),
       organization: extractOrgFromTitle(title),
       category: detectCategory(title),
-      notification_url: link || null,
-      apply_url: link || null,
+      notification_url: officialUrl,
+      apply_url: officialUrl,
       post_date: postDate,
       last_date: extractLastDate(fullText),
       short_description: description

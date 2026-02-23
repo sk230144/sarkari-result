@@ -58,7 +58,7 @@ export async function logoutAdmin() {
 
 export async function getAdminJobs(page = 1, search = "") {
   const supabase = await createClient();
-  const perPage = 20;
+  const perPage = 100;
   const from = (page - 1) * perPage;
   const to = from + perPage - 1;
 
@@ -185,6 +185,21 @@ export async function deleteJob(id: string) {
 
   if (error) {
     console.error("Error deleting job:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/admin/jobs");
+  revalidatePath("/");
+  revalidatePath("/jobs");
+}
+
+export async function deleteMultipleJobs(ids: string[]) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("jobs").delete().in("id", ids);
+
+  if (error) {
+    console.error("Error deleting multiple jobs:", error);
     return { error: error.message };
   }
 
