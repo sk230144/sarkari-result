@@ -1,33 +1,28 @@
 import { createClient } from "@supabase/supabase-js";
 import {
-  scrapeSSC,
-  scrapeUPSC,
-  scrapeIBPS,
-  scrapeRailway,
+  scrapeFreeJobAlert,
+  scrapeEmploymentNews,
+  scrapeNaukri,
   type ScrapedJob,
 } from "./scrapers/ssc-scraper";
 
-// Use service role key for server-side inserts (bypasses RLS)
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.SUPABASE_SERVICE_ROLE_KEY!
 );
 
 function cleanTitle(title: string): string {
-  return title
-    .replace(/\s+/g, " ")
-    .replace(/[^\w\s\-\(\)\.,\/&:]/g, "")
-    .trim()
-    .substring(0, 250);
+  return title.replace(/\s+/g, " ").trim().substring(0, 250);
 }
 
 function isValidJob(job: ScrapedJob): boolean {
-  if (!job.title || job.title.length < 5) return false;
-  // Filter out navigation links, headers, empty rows
-  const skip = ["home", "about us", "contact", "sitemap", "login", "register", "click here", "read more", "view more", "download"];
+  if (!job.title || job.title.length < 10) return false;
+  const skip = [
+    "hello world", "dummy", "test post", "sample", "wordpress",
+    "click here", "read more", "view more",
+  ];
   const lower = job.title.toLowerCase();
-  if (skip.some((s) => lower === s)) return false;
-  if (job.title.length > 250) return false;
+  if (skip.some((s) => lower.includes(s))) return false;
   return true;
 }
 
@@ -35,19 +30,18 @@ async function isDuplicate(title: string): Promise<boolean> {
   const { data } = await supabase
     .from("jobs")
     .select("id")
-    .ilike("title", `%${title.substring(0, 50)}%`)
+    .ilike("title", `%${title.substring(0, 60)}%`)
     .limit(1);
   return !!(data && data.length > 0);
 }
 
 async function insertJob(job: ScrapedJob): Promise<boolean> {
   const title = cleanTitle(job.title);
-
   if (!isValidJob({ ...job, title })) return false;
 
   const dup = await isDuplicate(title);
   if (dup) {
-    console.log(`[SKIP] Duplicate: ${title.substring(0, 60)}`);
+    console.log(`[SKIP] Duplicate: ${title.substring(0, 70)}`);
     return false;
   }
 
@@ -72,11 +66,11 @@ async function insertJob(job: ScrapedJob): Promise<boolean> {
   });
 
   if (error) {
-    console.error(`[ERROR] Insert failed for: ${title.substring(0, 60)}`, error.message);
+    console.error(`[ERROR] ${title.substring(0, 70)}:`, error.message);
     return false;
   }
 
-  console.log(`[OK] Inserted: ${title.substring(0, 60)}`);
+  console.log(`[OK] Inserted: ${title.substring(0, 70)}`);
   return true;
 }
 
@@ -86,7 +80,7 @@ export async function runScraper(): Promise<{
   skipped: number;
   sources: Record<string, number>;
 }> {
-  console.log("[Scraper] Starting job scraping...");
+  console.log("[Scraper] Starting...");
 
   const results = {
     total: 0,
@@ -95,25 +89,21 @@ export async function runScraper(): Promise<{
     sources: {} as Record<string, number>,
   };
 
-  // Run all scrapers in parallel
-  const [sscJobs, upscJobs, ibpsJobs, railwayJobs] = await Promise.allSettled([
-    scrapeSSC(),
-    scrapeUPSC(),
-    scrapeIBPS(),
-    scrapeRailway(),
+  const [fjaResult, enResult, naukri] = await Promise.allSettled([
+    scrapeFreeJobAlert(),
+    scrapeEmploymentNews(),
+    scrapeNaukri(),
   ]);
 
   const allJobs: ScrapedJob[] = [
-    ...(sscJobs.status === "fulfilled" ? sscJobs.value : []),
-    ...(upscJobs.status === "fulfilled" ? upscJobs.value : []),
-    ...(ibpsJobs.status === "fulfilled" ? ibpsJobs.value : []),
-    ...(railwayJobs.status === "fulfilled" ? railwayJobs.value : []),
+    ...(fjaResult.status === "fulfilled" ? fjaResult.value : []),
+    ...(enResult.status === "fulfilled" ? enResult.value : []),
+    ...(naukri.status === "fulfilled" ? naukri.value : []),
   ];
 
-  console.log(`[Scraper] Total scraped: ${allJobs.length}`);
+  console.log(`[Scraper] Fetched ${allJobs.length} jobs total`);
   results.total = allJobs.length;
 
-  // Insert jobs one by one (avoid rate limits)
   for (const job of allJobs) {
     const inserted = await insertJob(job);
     if (inserted) {
@@ -122,11 +112,9 @@ export async function runScraper(): Promise<{
     } else {
       results.skipped++;
     }
-
-    // Small delay to avoid overwhelming Supabase
-    await new Promise((r) => setTimeout(r, 100));
+    await new Promise((r) => setTimeout(r, 80));
   }
 
-  console.log(`[Scraper] Done. Inserted: ${results.inserted}, Skipped: ${results.skipped}`);
+  console.log(`[Scraper] Done — inserted: ${results.inserted}, skipped: ${results.skipped}`);
   return results;
 }
