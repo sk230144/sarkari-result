@@ -3,6 +3,7 @@ import { getDashboardStats } from "@/lib/actions/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Bell, Briefcase, BookOpen, Crown, Eye, Users, ArrowRight } from "lucide-react";
 import { SignupChart } from "@/components/admin/signup-chart";
+import { RunScraperBtn } from "@/components/admin/run-scraper-btn";
 
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
@@ -77,8 +78,8 @@ export default async function AdminDashboardPage() {
         })}
       </div>
 
-      {/* Quick Links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+      {/* Quick Links + Scraper */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
         {[
           {
             href: "/admin/jobs",
@@ -105,7 +106,7 @@ export default async function AdminDashboardPage() {
           const Icon = item.icon;
           return (
             <Link key={item.href} href={item.href}>
-              <Card className="card-3d hover:border-blue-200 transition-colors group cursor-pointer">
+              <Card className="card-3d hover:border-blue-200 transition-colors group cursor-pointer h-full">
                 <CardContent className="p-4 flex items-center gap-3">
                   <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${item.color}`}>
                     <Icon className="h-5 w-5" />
@@ -122,6 +123,19 @@ export default async function AdminDashboardPage() {
             </Link>
           );
         })}
+
+        {/* Auto Scraper Card */}
+        <Card className="card-3d border-amber-200/60">
+          <CardContent className="p-4">
+            <div className="mb-3">
+              <p className="font-extrabold text-slate-800 text-sm">Auto Scraper</p>
+              <p className="text-xs text-slate-400 font-medium">
+                Fetch jobs from SSC, UPSC, IBPS, Railway official sites
+              </p>
+            </div>
+            <RunScraperBtn />
+          </CardContent>
+        </Card>
       </div>
 
       {/* Signup Chart */}
