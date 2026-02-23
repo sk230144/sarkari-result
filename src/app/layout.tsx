@@ -63,6 +63,13 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/favicon.ico", sizes: "any" },
+    ],
+    apple: "/icon.svg",
+  },
   openGraph: {
     type: "website",
     locale: "hi_IN",
@@ -106,7 +113,8 @@ export default function RootLayout({
   return (
     <html lang="hi" dir="ltr" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
+        <link rel="alternate icon" href="/favicon.ico" sizes="any" />
       </head>
       <body className={`${inter.variable} antialiased font-sans`} suppressHydrationWarning>
         {children}
