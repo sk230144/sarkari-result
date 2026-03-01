@@ -6,6 +6,7 @@ import {
   LogOut,
   Users,
   BookOpen,
+  FileText,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { logoutAdmin } from "@/lib/actions/admin";
@@ -65,6 +66,16 @@ export default function AdminDashboardLayout({
                 >
                   <BookOpen className="h-3.5 w-3.5 md:mr-1.5" />
                   <span className="hidden sm:inline">Blog</span>
+                </Button>
+              </Link>
+              <Link href="/admin/exam-calendars">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-600 hover:text-blue-700 hover:bg-blue-50 font-semibold whitespace-nowrap text-xs md:text-sm px-2 md:px-3"
+                >
+                  <FileText className="h-3.5 w-3.5 md:mr-1.5" />
+                  <span className="hidden sm:inline">Calendars</span>
                 </Button>
               </Link>
               <Link href="/" target="_blank">

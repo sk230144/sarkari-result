@@ -191,6 +191,7 @@ export function ToolsGrid({ isPremium }: { isPremium: boolean }) {
           })}
         </div>
       </section>
+
     </div>
   );
 }

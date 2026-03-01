@@ -228,8 +228,9 @@ export default async function HomePage() {
   ]);
 
   return (
+    <>
+    <HomeJsonLd />
     <div className="min-h-screen page-bg">
-      <HomeJsonLd />
       {/* Floating background orbs for entire page */}
       <div className="page-bg-orb w-[500px] h-[500px] bg-blue-200/[0.07] top-[20%] -left-[10%] animate-float-slow" />
       <div className="page-bg-orb w-[400px] h-[400px] bg-indigo-200/[0.06] top-[50%] -right-[8%] animate-float-delayed" />
@@ -284,11 +285,11 @@ export default async function HomePage() {
               scholarships — all in one place.
             </p>
 
-            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="mt-6 flex flex-col sm:flex-row gap-3 justify-center flex-wrap">
               <Link href="/jobs">
                 <Button
                   size="lg"
-                  className="bg-white text-slate-900 hover:bg-blue-50 hover:text-blue-800 font-black shadow-lg shadow-black/20 px-7 h-11 text-sm shine"
+                  className="w-full sm:w-auto bg-white text-slate-900 hover:bg-blue-50 hover:text-blue-800 font-black shadow-lg shadow-black/20 px-7 h-11 text-sm shine"
                 >
                   Browse All Jobs
                   <ArrowRight className="ml-2 h-4 w-4" />
@@ -298,10 +299,20 @@ export default async function HomePage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="bg-white/[0.08] backdrop-blur-md border-white/20 text-white hover:bg-white/[0.15] font-black px-7 h-11 text-sm"
+                  className="w-full sm:w-auto bg-white/[0.08] backdrop-blur-md border-white/20 text-white hover:bg-white/[0.15] font-black px-7 h-11 text-sm"
                 >
                   <Star className="mr-2 h-4 w-4 text-amber-400" />
                   Featured Jobs
+                </Button>
+              </Link>
+              <Link href="/exam-calendars">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto bg-white/[0.08] backdrop-blur-md border-white/20 text-white hover:bg-white/[0.15] font-black px-7 h-11 text-sm"
+                >
+                  <Calendar className="mr-2 h-4 w-4 text-red-300" />
+                  Exam Calendars
                 </Button>
               </Link>
             </div>
@@ -389,6 +400,13 @@ export default async function HomePage() {
                 <QuickJobRow key={job.id} job={job} index={i} />
               ))}
             </div>
+            <div className="mt-4 text-center">
+              <Link href="/jobs">
+                <Button className="btn-3d gradient-hero text-white font-black shadow-lg shadow-blue-500/25 shine">
+                  Browse All Jobs <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
           </section>
         )}
 
@@ -467,5 +485,6 @@ export default async function HomePage() {
         </section>
       </div>
     </div>
+    </>
   );
 }

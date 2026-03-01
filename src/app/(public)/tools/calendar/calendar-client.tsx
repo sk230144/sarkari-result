@@ -40,6 +40,8 @@ import {
   Plus,
   Trash2,
   Loader2,
+  FileText,
+  ExternalLink,
 } from "lucide-react";
 import {
   addCalendarEvent,
@@ -47,6 +49,7 @@ import {
   type CalendarEvent,
   type EventType,
 } from "@/lib/actions/calendar";
+import type { ExamPdf } from "@/lib/actions/exam-pdfs";
 import { toast } from "sonner";
 
 const TYPE_STYLES: Record<EventType, string> = {
@@ -70,9 +73,10 @@ const TYPE_LABELS: Record<EventType, string> = {
 interface Props {
   user: { name: string };
   initialEvents: CalendarEvent[];
+  pdfs: ExamPdf[];
 }
 
-export function ExamCalendarClient({ user, initialEvents }: Props) {
+export function ExamCalendarClient({ user, initialEvents, pdfs }: Props) {
   const [events, setEvents] = useState(initialEvents);
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -463,6 +467,45 @@ export function ExamCalendarClient({ user, initialEvents }: Props) {
             )}
           </CardContent>
         </Card>
+
+        {/* Exam Calendar PDFs */}
+        {pdfs.length > 0 && (
+          <Card className="card-3d">
+            <CardHeader>
+              <CardTitle className="text-base font-extrabold text-slate-800 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-red-500" />
+                Official Exam Calendars (PDF)
+              </CardTitle>
+              <p className="text-xs text-slate-400 font-medium">
+                Official calendars uploaded by admin — click to view or download
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              {pdfs.map((pdf) => (
+                <a
+                  key={pdf.id}
+                  href={pdf.file_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-3 rounded-lg border border-slate-200/60 bg-white/70 px-4 py-3 hover:border-blue-200 hover:bg-blue-50/30 transition-colors group"
+                >
+                  <div className="h-9 w-9 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
+                    <FileText className="h-4 w-4 text-red-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-slate-700 truncate group-hover:text-blue-700">
+                      {pdf.name}
+                    </p>
+                    <Badge className="text-[10px] bg-blue-50 text-blue-700 border-0 font-bold mt-0.5">
+                      {pdf.exam_body}
+                    </Badge>
+                  </div>
+                  <ExternalLink className="h-4 w-4 text-slate-300 group-hover:text-blue-500 shrink-0" />
+                </a>
+              ))}
+            </CardContent>
+          </Card>
+        )}
 
         {/* All Upcoming Events */}
         {enrichedEvents.length > 0 && (
