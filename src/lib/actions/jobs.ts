@@ -89,7 +89,10 @@ export async function getFeaturedJobs(limit = 6) {
     .limit(limit);
 
   if (error) {
-    console.error("Error fetching featured jobs:", error);
+    const msg = typeof error.message === "string" && error.message.length > 200
+      ? error.message.slice(0, 120) + "..."
+      : error.message;
+    console.error("Error fetching featured jobs:", msg || error.code || error);
     return [];
   }
 

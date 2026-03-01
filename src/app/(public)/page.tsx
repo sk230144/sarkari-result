@@ -442,7 +442,7 @@ export default async function HomePage() {
         {/* SEO Content Section */}
         <section className="mt-10 card-3d bg-white rounded-xl border border-slate-200/60 p-6 sm:p-8">
           <h2 className="text-lg font-extrabold text-slate-800 mb-3">
-            Job Alerts 24 - सरकारी नौकरी अलर्ट 2025
+            Job Alerts 24 - सरकारी नौकरी अलर्ट 2026
           </h2>
           <div className="space-y-3 text-sm text-slate-600 leading-relaxed font-medium">
             <p>
@@ -452,7 +452,7 @@ export default async function HomePage() {
             </p>
             <p>
               <strong>जॉब अलर्ट्स 24</strong> पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। नवीनतम{" "}
-              <strong>सरकारी भर्ती 2025</strong>, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस
+              <strong>सरकारी भर्ती 2026</strong>, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस
               और रिजल्ट। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती
               और राज्य सरकार की सभी नौकरियाँ यहाँ उपलब्ध हैं।
             </p>

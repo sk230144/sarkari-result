@@ -428,7 +428,9 @@
 }
 
 .animate-marquee {
-  animation: marquee 25s linear infinite;
+  display: inline-flex;
+  white-space: nowrap;
+  animation: marquee 30s linear infinite;
 }
 
 /* === CELEBRATION GLOW BORDER === */

@@ -18,16 +18,16 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: `${SITE_NAME} | सरकारी नौकरी 2025 - Latest Govt Jobs, Results, Admit Cards`,
+    default: `${SITE_NAME} | सरकारी नौकरी 2026 - Latest Govt Jobs, Results, Admit Cards`,
     template: `%s | ${SITE_NAME}`,
   },
   description: `${SITE_DESCRIPTION} सरकारी नौकरी, जॉब अलर्ट, एडमिट कार्ड, आंसर की, सिलेबस - सभी अपडेट एक जगह।`,
   keywords: [
     "sarkari result",
-    "sarkari result 2025",
+    "sarkari result 2026",
     "sarkari naukri",
     "government jobs",
-    "govt jobs 2025",
+    "govt jobs 2026",
     "sarkari job",
     "latest govt jobs",
     "admit card",
@@ -112,10 +112,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="hi" dir="ltr" suppressHydrationWarning>
-      <head>
-        <link rel="icon" href="/icon.svg" type="image/svg+xml" />
-        <link rel="alternate icon" href="/favicon.ico" sizes="any" />
-      </head>
       <body className={`${inter.variable} antialiased font-sans`} suppressHydrationWarning>
         {children}
         <Toaster position="top-right" richColors />

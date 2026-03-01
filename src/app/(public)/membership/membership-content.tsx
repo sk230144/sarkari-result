@@ -16,14 +16,17 @@ import {
   Zap,
   CheckCircle2,
   PartyPopper,
+  Timer,
 } from "lucide-react";
 
 const plans = [
   {
     id: "monthly",
     name: "Monthly",
-    price: 99,
-    priceLabel: "₹99",
+    price: 49,
+    originalPrice: 99,
+    priceLabel: "₹49",
+    originalPriceLabel: "₹99",
     period: "/महीना",
     duration: "1 महीना",
     popular: false,
@@ -39,8 +42,10 @@ const plans = [
   {
     id: "half-yearly",
     name: "Half-Yearly",
-    price: 500,
-    priceLabel: "₹500",
+    price: 250,
+    originalPrice: 500,
+    priceLabel: "₹250",
+    originalPriceLabel: "₹500",
     period: "/6 महीने",
     duration: "6 महीने",
     popular: false,
@@ -57,8 +62,10 @@ const plans = [
   {
     id: "yearly",
     name: "Yearly",
-    price: 900,
-    priceLabel: "₹900",
+    price: 450,
+    originalPrice: 900,
+    priceLabel: "₹450",
+    originalPriceLabel: "₹900",
     period: "/साल",
     duration: "12 महीने",
     popular: true,
@@ -77,8 +84,10 @@ const plans = [
   {
     id: "lifetime",
     name: "Lifetime",
-    price: 5000,
-    priceLabel: "₹5,000",
+    price: 2500,
+    originalPrice: 5000,
+    priceLabel: "₹2,500",
+    originalPriceLabel: "₹5,000",
     period: "",
     duration: "हमेशा के लिए",
     popular: false,
@@ -117,7 +126,7 @@ const highlights = [
   },
   {
     icon: Calendar,
-    title: "Exam Calendar",
+    title: "Exam Calendar 2026",
     desc: "परीक्षा तिथि, रिजल्ट, एडमिट कार्ड ट्रैक करें",
   },
   {
@@ -133,8 +142,44 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
   return (
     <div className="min-h-screen page-bg">
       <div className="page-bg-orb w-[420px] h-[420px] bg-violet-200/[0.08] top-[8%] -left-[10%] animate-float-slow" />
-      <div className="page-bg-orb w-[360px] h-[360px] bg-blue-200/[0.07] top-[55%] -right-[8%] animate-float-delayed" />
+      <div className="page-bg-orb w-[360px] h-[360px] bg-pink-200/[0.07] top-[55%] -right-[8%] animate-float-delayed" />
       <div className="page-bg-orb w-[320px] h-[320px] bg-amber-200/[0.06] bottom-[5%] left-[15%] animate-float" />
+
+      {/* Holi Offer Banner */}
+      <div
+        className="relative overflow-hidden py-3 px-4"
+        style={{
+          background: "linear-gradient(90deg, #be185d 0%, #ea580c 30%, #ca8a04 60%, #7c3aed 100%)",
+        }}
+      >
+        {/* Holi color dots */}
+        <div className="absolute inset-0 pointer-events-none opacity-30">
+          {["10%","22%","38%","54%","67%","80%"].map((left, i) => (
+            <div
+              key={i}
+              className="absolute top-1/2 -translate-y-1/2 w-6 h-6 rounded-full blur-md"
+              style={{
+                left,
+                background: ["#fde047","#f472b6","#86efac","#a78bfa","#fb923c","#67e8f9"][i],
+              }}
+            />
+          ))}
+        </div>
+        <div className="relative flex flex-col sm:flex-row items-center justify-center gap-2 text-center">
+          <span className="text-xl">🎨🌈</span>
+          <p className="text-white font-black text-sm sm:text-base drop-shadow">
+            Happy Holi 2026 Special — सभी Plans पर{" "}
+            <span className="bg-yellow-300 text-yellow-900 px-2 py-0.5 rounded-full font-black text-sm">
+              50% OFF
+            </span>
+          </p>
+          <div className="flex items-center gap-1.5 bg-white/20 rounded-full px-3 py-1">
+            <Timer className="h-3.5 w-3.5 text-yellow-200" />
+            <span className="text-white text-xs font-bold">Limited Time Offer</span>
+          </div>
+          <span className="text-xl">🎉✨</span>
+        </div>
+      </div>
 
       {/* Hero */}
       <section className="relative gradient-hero overflow-hidden">
@@ -154,7 +199,7 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
             <div className="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 mb-4">
               <Crown className="h-3.5 w-3.5 text-amber-300" />
               <span className="text-white/90 text-xs font-bold">
-                Premium Membership
+                Premium Membership 2026
               </span>
             </div>
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight">
@@ -163,8 +208,13 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
             </h1>
             <p className="mt-4 text-blue-100/80 text-sm md:text-base max-w-xl mx-auto leading-relaxed font-medium">
               मेंबर बनें और परीक्षा पास करने पर अपनी आवेदन फीस वापस पाएं। साथ
-              ही Document Locker, Exam Calendar और बहुत कुछ!
+              ही Document Locker, Exam Calendar 2026 और बहुत कुछ!
             </p>
+            <div className="mt-5 inline-flex items-center gap-2 bg-white/10 border border-white/20 rounded-full px-4 py-2">
+              <span className="text-lg">🎨</span>
+              <span className="text-white text-sm font-black">Holi Offer — आज सिर्फ 50% में!</span>
+              <span className="text-lg">🎨</span>
+            </div>
           </div>
         </div>
       </section>
@@ -221,11 +271,18 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
       {/* Pricing Cards */}
       <section className="container mx-auto px-4 py-12">
         <div className="text-center mb-8">
+          <div className="inline-flex items-center gap-2 mb-3">
+            <span className="text-2xl">🎨</span>
+            <Badge className="bg-linear-to-r from-pink-500 to-orange-500 text-white font-black text-sm px-4 py-1.5 border-0 shadow-lg">
+              Holi 2026 — 50% OFF सभी Plans पर
+            </Badge>
+            <span className="text-2xl">🎨</span>
+          </div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-slate-800">
             अपना Plan चुनें
           </h2>
           <p className="text-sm text-slate-500 font-medium mt-2">
-            सभी Plans में Application Fee Refund शामिल है
+            सभी Plans में Application Fee Refund शामिल है • 2026 Special Offer
           </p>
         </div>
 
@@ -236,7 +293,6 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
             const thisPlanRank = planRank[plan.id] ?? 0;
             const isHigherPlan = isPremium && !isCurrentPlan && thisPlanRank > currentRank;
             const isLowerPlan = isPremium && !isCurrentPlan && thisPlanRank < currentRank;
-
             const hasBadge = isCurrentPlan || isHigherPlan || (plan.popular && !isPremium);
 
             const card = (
@@ -247,6 +303,16 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
                     : `card-3d ${plan.accent}`
                 } ${isLowerPlan ? "opacity-60" : ""}`}
               >
+                {/* Holi color top strip */}
+                {!isCurrentPlan && (
+                  <div
+                    className="absolute top-0 left-0 right-0 h-1 rounded-t-xl"
+                    style={{
+                      background: "linear-gradient(90deg, #e11d48, #f97316, #eab308, #22c55e, #a855f7)",
+                    }}
+                  />
+                )}
+
                 {/* Celebration sparkles */}
                 {isCurrentPlan && (
                   <>
@@ -259,9 +325,9 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
                   </>
                 )}
 
-                {/* Top badge — inside the card */}
+                {/* Top badge */}
                 {hasBadge && (
-                  <div className="flex justify-center -mt-2">
+                  <div className="flex justify-center -mt-2 pt-2">
                     {isCurrentPlan ? (
                       <Badge className="bg-emerald-600 text-white font-bold text-xs px-3 py-1 shadow-lg shadow-emerald-500/30 animate-pulse-soft">
                         <PartyPopper className="h-3 w-3 mr-1" />
@@ -281,26 +347,41 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
                   </div>
                 )}
 
-                <CardHeader className="text-center pb-2">
+                <CardHeader className="text-center pb-2 pt-4">
                   <CardTitle className={`text-sm font-extrabold uppercase tracking-wider ${
                     isCurrentPlan ? "text-emerald-700" : "text-slate-600"
                   }`}>
                     {plan.name}
                   </CardTitle>
+
+                  {/* Price with crossed out original */}
                   <div className="mt-3">
-                    <span className={`text-3xl font-extrabold ${
-                      isCurrentPlan ? "text-emerald-800" : "text-slate-800"
-                    }`}>
-                      {plan.priceLabel}
-                    </span>
-                    <span className="text-sm text-slate-500 font-semibold">
-                      {plan.period}
-                    </span>
+                    {!isCurrentPlan && (
+                      <div className="flex items-center justify-center gap-2 mb-1">
+                        <span className="text-base text-slate-400 line-through font-bold">
+                          {plan.originalPriceLabel}
+                        </span>
+                        <Badge className="bg-red-100 text-red-600 border-red-200 text-[10px] font-black px-1.5 py-0.5">
+                          50% OFF
+                        </Badge>
+                      </div>
+                    )}
+                    <div className="flex items-end justify-center gap-1">
+                      <span className={`text-3xl font-extrabold ${
+                        isCurrentPlan ? "text-emerald-800" : "text-slate-800"
+                      }`}>
+                        {isCurrentPlan ? plan.originalPriceLabel : plan.priceLabel}
+                      </span>
+                      <span className="text-sm text-slate-500 font-semibold pb-1">
+                        {plan.period}
+                      </span>
+                    </div>
                   </div>
                   <p className="text-xs text-slate-400 font-medium">
                     {plan.duration}
                   </p>
                 </CardHeader>
+
                 <CardContent className="space-y-4">
                   <ul className="space-y-2">
                     {plan.features.map((feature) => (
@@ -315,6 +396,7 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
                       </li>
                     ))}
                   </ul>
+
                   {isCurrentPlan ? (
                     <Button className="w-full bg-emerald-600 text-white font-black border-0 hover:bg-emerald-600 cursor-default shadow-lg shadow-emerald-500/30" disabled>
                       <CheckCircle2 className="h-4 w-4 mr-2" />
@@ -336,7 +418,7 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
                     <Link href={`/membership/payment?plan=${plan.id}`}>
                       <Button className={`w-full ${plan.btnClass}`}>
                         <Zap className="h-4 w-4 mr-2" />
-                        Plan चुनें
+                        Holi Offer में लें 🎨
                       </Button>
                     </Link>
                   )}
@@ -344,7 +426,6 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
               </Card>
             );
 
-            // Wrap celebration card with glowing border
             if (isCurrentPlan) {
               return (
                 <div key={plan.id} className="relative scale-[1.03] z-10">
@@ -357,6 +438,11 @@ export function MembershipContent({ premiumPlan }: { premiumPlan: string | null 
             return <div key={plan.id}>{card}</div>;
           })}
         </div>
+
+        {/* Holi offer note */}
+        <p className="text-center text-xs text-slate-400 font-medium mt-6">
+          🎨 Holi 2026 Special Offer — Limited time only. Original prices will be restored after offer ends.
+        </p>
       </section>
 
       {/* Trust Section */}
