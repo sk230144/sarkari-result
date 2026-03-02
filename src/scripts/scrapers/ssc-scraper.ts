@@ -14,6 +14,8 @@ export interface ScrapedJob {
   source: string;
 }
 
+
+
 export function detectCategory(title: string): JobCategory {
   const t = title.toLowerCase();
   if (t.includes("result") || t.includes("scorecard")) return "result";
