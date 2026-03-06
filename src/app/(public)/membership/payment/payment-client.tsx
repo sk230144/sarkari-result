@@ -1,68 +1,28 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Crown,
   ArrowLeft,
-  QrCode,
   Shield,
   Check,
-  Copy,
-  MessageCircle,
-  Send,
   Zap,
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
 
-const PLANS: Record<
-  string,
-  {
-    name: string;
-    price: number;
-    priceLabel: string;
-    duration: string;
-    qrImage: string;
-  }
-> = {
-  monthly: {
-    name: "Monthly",
-    price: 49,
-    priceLabel: "₹49",
-    duration: "1 महीना",
-    qrImage: "/qr/rs99.jpeg",
-  },
-  "half-yearly": {
-    name: "Half-Yearly",
-    price: 250,
-    priceLabel: "₹250",
-    duration: "6 महीने",
-    qrImage: "/qr/rs500.jpeg",
-  },
-  yearly: {
-    name: "Yearly",
-    price: 450,
-    priceLabel: "₹450",
-    duration: "12 महीने",
-    qrImage: "/qr/rs900.jpeg",
-  },
-  lifetime: {
-    name: "Lifetime",
-    price: 2500,
-    priceLabel: "₹2,500",
-    duration: "हमेशा के लिए",
-    qrImage: "/qr/5000rs.jpeg",
-  },
+const PLANS: Record<string, { name: string; priceLabel: string; duration: string }> = {
+  monthly: { name: "Monthly", priceLabel: "₹49", duration: "1 महीना" },
+  "half-yearly": { name: "Half-Yearly", priceLabel: "₹250", duration: "6 महीने" },
+  yearly: { name: "Yearly", priceLabel: "₹450", duration: "12 महीने" },
+  lifetime: { name: "Lifetime", priceLabel: "₹2,500", duration: "हमेशा के लिए" },
 };
 
-const UPI_ID = "risabht043@okaxis";
 const WHATSAPP_NUMBER = "916392891566";
 
 interface Props {
@@ -77,13 +37,12 @@ export function PaymentClient({ user, selectedPlan }: Props) {
   const plan = PLANS[planId] || PLANS.yearly;
   const [loading, setLoading] = useState(false);
 
-  const whatsappMessage = `Hello Job Alerts 24 Team,\n\nI want to activate my Premium Membership.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}\n\nI have completed the payment. Please activate my account.`;
+  const whatsappMessage = `Hello Job Alerts 24 Team,\n\nPayment issue — please help activate my Premium.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
   async function handleCashfreePayment() {
     setLoading(true);
     try {
-      // 1. Create order
       const res = await fetch("/api/cashfree/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -92,44 +51,34 @@ export function PaymentClient({ user, selectedPlan }: Props) {
       const { orderId, paymentSessionId, error } = await res.json();
       if (error || !paymentSessionId) throw new Error(error || "Order creation failed");
 
-      // 2. Load Cashfree JS SDK
       await loadCashfreeScript();
+      const cashfree = initCashfree();
 
-      // 3. Open Cashfree checkout
-      const cashfree = await initCashfree();
-      const checkoutOptions = {
-        paymentSessionId,
-        redirectTarget: "_modal",
-      };
+      cashfree.checkout({ paymentSessionId, redirectTarget: "_modal" }).then(
+        async (result: { error?: { message: string }; redirect?: boolean }) => {
+          if (result.error) {
+            toast.error(result.error.message || "Payment failed. Please try again.");
+            setLoading(false);
+            return;
+          }
+          if (result.redirect) return;
 
-      cashfree.checkout(checkoutOptions).then(async (result: { error?: { message: string }; redirect?: boolean; paymentDetails?: unknown }) => {
-        if (result.error) {
-          toast.error(result.error.message || "Payment failed. Please try again.");
-          setLoading(false);
-          return;
+          const verifyRes = await fetch("/api/cashfree/verify", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ orderId, plan: planId }),
+          });
+          const verifyResult = await verifyRes.json();
+
+          if (verifyResult.success) {
+            toast.success("Payment successful! Premium activated 🎉");
+            router.push("/tools");
+          } else {
+            toast.error("Payment done but activation failed. Contact support.");
+            setLoading(false);
+          }
         }
-
-        if (result.redirect) {
-          // Payment went through redirect flow — verify on return
-          return;
-        }
-
-        // 4. Verify payment
-        const verifyRes = await fetch("/api/cashfree/verify", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ orderId, plan: planId }),
-        });
-        const verifyResult = await verifyRes.json();
-
-        if (verifyResult.success) {
-          toast.success("Payment successful! Premium activated 🎉");
-          router.push("/tools");
-        } else {
-          toast.error("Payment done but activation failed. Contact support on WhatsApp.");
-          setLoading(false);
-        }
-      });
+      );
     } catch (err) {
       console.error(err);
       toast.error("Payment failed. Please try again.");
@@ -148,13 +97,11 @@ export function PaymentClient({ user, selectedPlan }: Props) {
           <div
             className="absolute inset-0"
             style={{
-              backgroundImage:
-                "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
+              backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)",
               backgroundSize: "32px 32px",
             }}
           />
         </div>
-
         <div className="relative container mx-auto px-4 py-8 md:py-10">
           <Link
             href="/membership"
@@ -180,7 +127,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
       </section>
 
       <section className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
+        <div className="max-w-md mx-auto space-y-4">
           {/* Plan Summary */}
           <Card className="card-3d">
             <CardHeader>
@@ -191,39 +138,20 @@ export function PaymentClient({ user, selectedPlan }: Props) {
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between p-4 rounded-xl bg-violet-50 border border-violet-200/60">
                 <div>
-                  <p className="text-sm font-extrabold text-violet-800">
-                    {plan.name} Plan
-                  </p>
-                  <p className="text-xs text-violet-600 font-medium">
-                    {plan.duration}
-                  </p>
+                  <p className="text-sm font-extrabold text-violet-800">{plan.name} Plan</p>
+                  <p className="text-xs text-violet-600 font-medium">{plan.duration}</p>
                 </div>
-                <span className="text-2xl font-extrabold text-violet-800">
-                  {plan.priceLabel}
-                </span>
+                <span className="text-2xl font-extrabold text-violet-800">{plan.priceLabel}</span>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-600 uppercase tracking-wider">
-                  शामिल सुविधाएं
-                </h4>
-                <ul className="space-y-1.5">
-                  {[
-                    "Application Fee Refund",
-                    "Document Locker Access",
-                    "Exam Calendar",
-                    "Priority Support",
-                  ].map((f) => (
-                    <li
-                      key={f}
-                      className="flex items-center gap-2 text-xs text-slate-600 font-medium"
-                    >
-                      <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <ul className="space-y-1.5">
+                {["Application Fee Refund", "Document Locker Access", "Exam Calendar", "Priority Support"].map((f) => (
+                  <li key={f} className="flex items-center gap-2 text-xs text-slate-600 font-medium">
+                    <Check className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
+                    {f}
+                  </li>
+                ))}
+              </ul>
 
               <Link href="/membership">
                 <Button variant="outline" className="w-full font-bold text-sm">
@@ -233,142 +161,33 @@ export function PaymentClient({ user, selectedPlan }: Props) {
             </CardContent>
           </Card>
 
-          {/* Payment Options */}
-          <Card className="card-3d">
-            <CardHeader>
-              <CardTitle className="text-base font-extrabold text-slate-800 flex items-center gap-2">
-                <Zap className="h-4 w-4 text-violet-600" />
-                भुगतान करें
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {/* Cashfree Pay Button */}
-              <Button
-                onClick={handleCashfreePayment}
-                disabled={loading}
-                className="w-full h-12 gradient-purple text-white font-black text-sm border-0 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 shine"
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                ) : (
-                  <Zap className="h-4 w-4 mr-2" />
-                )}
-                {loading
-                  ? "Loading..."
-                  : `Pay ${plan.priceLabel} — UPI / Card / Net Banking`}
-              </Button>
+          {/* Pay Button */}
+          <Button
+            onClick={handleCashfreePayment}
+            disabled={loading}
+            className="w-full h-14 gradient-purple text-white font-black text-base border-0 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 shine"
+          >
+            {loading ? (
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+            ) : (
+              <Zap className="h-5 w-5 mr-2" />
+            )}
+            {loading ? "Loading..." : `Pay ${plan.priceLabel} — UPI / Card / Net Banking`}
+          </Button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-px bg-slate-200" />
-                <span className="text-xs text-slate-400 font-semibold">या</span>
-                <div className="flex-1 h-px bg-slate-200" />
-              </div>
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
+            <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
+            <p className="text-xs text-emerald-700 font-semibold">
+              Secure payment by Cashfree · 7 दिन की money-back guarantee
+            </p>
+          </div>
 
-              {/* QR Code fallback */}
-              <div>
-                <p className="text-xs font-bold text-slate-500 flex items-center gap-1.5 mb-3">
-                  <QrCode className="h-3.5 w-3.5" />
-                  QR Code से भुगतान करें
-                </p>
-                <div className="flex justify-center">
-                  <div className="relative p-3 bg-white rounded-2xl border-2 border-slate-200 shadow-sm">
-                    <Image
-                      src={plan.qrImage}
-                      alt={`${plan.name} Plan QR Code - ${plan.priceLabel}`}
-                      width={160}
-                      height={160}
-                      className="rounded-lg"
-                      priority
-                    />
-                  </div>
-                </div>
-              </div>
-
-              {/* UPI ID */}
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200">
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] text-slate-400 font-semibold uppercase tracking-wider">
-                    UPI ID
-                  </p>
-                  <p className="text-sm font-bold text-slate-700 truncate">{UPI_ID}</p>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="shrink-0 text-slate-500 hover:text-blue-600"
-                  onClick={() => {
-                    navigator.clipboard.writeText(UPI_ID);
-                    toast.success("UPI ID copied!");
-                  }}
-                >
-                  <Copy className="h-4 w-4" />
-                </Button>
-              </div>
-
-              <div className="flex items-center gap-2 p-3 rounded-lg bg-emerald-50 border border-emerald-200">
-                <Shield className="h-4 w-4 text-emerald-600 shrink-0" />
-                <p className="text-xs text-emerald-700 font-semibold">
-                  Secure payment · 7 दिन की money-back guarantee
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* WhatsApp Activation — for QR/manual payments */}
-        <div className="max-w-3xl mx-auto mt-6">
-          <Card className="card-3d border-emerald-200/60">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="h-12 w-12 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0">
-                  <MessageCircle className="h-6 w-6 text-emerald-600" />
-                </div>
-                <div className="flex-1 space-y-3">
-                  <div>
-                    <h3 className="text-base font-extrabold text-slate-800">
-                      QR से Payment के बाद WhatsApp पर भेजें
-                    </h3>
-                    <p className="text-xs text-slate-500 font-medium mt-1">
-                      अगर आपने QR code से payment किया है तो नीचे दिए बटन पर
-                      क्लिक करें। Screenshot भेजें — Premium तुरंत activate होगा।
-                      Online payment करने पर automatic activate होगा।
-                    </p>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-3 rounded-lg bg-slate-50 border border-slate-200">
-                    <div className="flex-1 min-w-0 space-y-1">
-                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                        <span className="font-bold text-slate-700">Plan:</span>
-                        {plan.name} ({plan.priceLabel})
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                        <span className="font-bold text-slate-700">Name:</span>
-                        {user.name}
-                      </div>
-                      <div className="flex items-center gap-2 text-xs text-slate-500 font-medium">
-                        <span className="font-bold text-slate-700">Email:</span>
-                        {user.email}
-                      </div>
-                    </div>
-                  </div>
-
-                  <a href={whatsappUrl} target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full h-12 bg-[#25D366] hover:bg-[#1ebe57] text-white font-black text-sm border-0 shadow-md shadow-emerald-500/20">
-                      <Send className="h-4 w-4 mr-2" />
-                      WhatsApp पर Payment Confirm करें
-                    </Button>
-                  </a>
-
-                  <Badge
-                    variant="secondary"
-                    className="w-full justify-center py-1.5 text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
-                  >
-                    Online payment पर automatic activate · QR payment पर WhatsApp confirm करें
-                  </Badge>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          <p className="text-center text-xs text-slate-400 font-medium">
+            Payment में problem?{" "}
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="text-emerald-600 font-bold underline">
+              WhatsApp पर contact करें
+            </a>
+          </p>
         </div>
       </section>
     </div>
@@ -389,8 +208,7 @@ function loadCashfreeScript(): Promise<void> {
 
 function initCashfree() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const cashfree = (window as any).Cashfree({
+  return (window as any).Cashfree({
     mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === "production" ? "production" : "sandbox",
   });
-  return cashfree;
 }
