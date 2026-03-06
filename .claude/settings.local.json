@@ -16,7 +16,13 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(git push:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(node -e \"const cf = require\\(''cashfree-pg''\\); console.log\\(Object.keys\\(cf\\)\\)\")",
+      "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); console.log\\(Object.keys\\(Cashfree\\)\\)\")",
+      "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(\\); console.log\\(Object.getOwnPropertyNames\\(Object.getPrototypeOf\\(c\\)\\).slice\\(0,20\\)\\)\")",
+      "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(\\); console.log\\(Object.getOwnPropertyNames\\(Object.getPrototypeOf\\(c\\)\\)\\)\")",
+      "Bash(node -e \"const {Cashfree, CFEnvironment} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(CFEnvironment.PRODUCTION, ''test'', ''test''\\); console.log\\(''instance ok''\\)\")"
     ]
   }
 }

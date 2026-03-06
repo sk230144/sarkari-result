@@ -80,66 +80,56 @@ export function PaymentClient({ user, selectedPlan }: Props) {
   const whatsappMessage = `Hello Job Alerts 24 Team,\n\nI want to activate my Premium Membership.\n\n*Plan:* ${plan.name} (${plan.priceLabel})\n*Name:* ${user.name}\n*Email:* ${user.email}\n\nI have completed the payment. Please activate my account.`;
   const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(whatsappMessage)}`;
 
-  async function handleRazorpayPayment() {
+  async function handleCashfreePayment() {
     setLoading(true);
     try {
       // 1. Create order
-      const res = await fetch("/api/razorpay/create-order", {
+      const res = await fetch("/api/cashfree/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ plan: planId }),
       });
-      const { orderId, amount, error } = await res.json();
-      if (error || !orderId) throw new Error(error || "Order creation failed");
+      const { orderId, paymentSessionId, error } = await res.json();
+      if (error || !paymentSessionId) throw new Error(error || "Order creation failed");
 
-      // 2. Load Razorpay script if not already loaded
-      await loadRazorpayScript();
+      // 2. Load Cashfree JS SDK
+      await loadCashfreeScript();
 
-      // 3. Open checkout
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
-        amount,
-        currency: "INR",
-        name: "Job Alerts 24",
-        description: `${plan.name} Premium Membership`,
-        order_id: orderId,
-        prefill: {
-          name: user.name,
-          email: user.email,
-        },
-        theme: { color: "#7c3aed" },
-        handler: async (response: {
-          razorpay_order_id: string;
-          razorpay_payment_id: string;
-          razorpay_signature: string;
-        }) => {
-          // 4. Verify payment and activate premium
-          const verifyRes = await fetch("/api/razorpay/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              plan: planId,
-            }),
-          });
-          const result = await verifyRes.json();
-          if (result.success) {
-            toast.success("Payment successful! Premium activated 🎉");
-            router.push("/tools");
-          } else {
-            toast.error("Payment verified but activation failed. Contact support.");
-          }
-        },
-        modal: {
-          ondismiss: () => setLoading(false),
-        },
+      // 3. Open Cashfree checkout
+      const cashfree = await initCashfree();
+      const checkoutOptions = {
+        paymentSessionId,
+        redirectTarget: "_modal",
       };
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
+      cashfree.checkout(checkoutOptions).then(async (result: { error?: { message: string }; redirect?: boolean; paymentDetails?: unknown }) => {
+        if (result.error) {
+          toast.error(result.error.message || "Payment failed. Please try again.");
+          setLoading(false);
+          return;
+        }
+
+        if (result.redirect) {
+          // Payment went through redirect flow — verify on return
+          return;
+        }
+
+        // 4. Verify payment
+        const verifyRes = await fetch("/api/cashfree/verify", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, plan: planId }),
+        });
+        const verifyResult = await verifyRes.json();
+
+        if (verifyResult.success) {
+          toast.success("Payment successful! Premium activated 🎉");
+          router.push("/tools");
+        } else {
+          toast.error("Payment done but activation failed. Contact support on WhatsApp.");
+          setLoading(false);
+        }
+      });
     } catch (err) {
       console.error(err);
       toast.error("Payment failed. Please try again.");
@@ -252,9 +242,9 @@ export function PaymentClient({ user, selectedPlan }: Props) {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {/* Razorpay Button */}
+              {/* Cashfree Pay Button */}
               <Button
-                onClick={handleRazorpayPayment}
+                onClick={handleCashfreePayment}
                 disabled={loading}
                 className="w-full h-12 gradient-purple text-white font-black text-sm border-0 shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40 shine"
               >
@@ -263,7 +253,9 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                 ) : (
                   <Zap className="h-4 w-4 mr-2" />
                 )}
-                {loading ? "Loading..." : `Pay ${plan.priceLabel} — UPI / Card / Net Banking`}
+                {loading
+                  ? "Loading..."
+                  : `Pay ${plan.priceLabel} — UPI / Card / Net Banking`}
               </Button>
 
               <div className="flex items-center gap-3">
@@ -323,7 +315,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
           </Card>
         </div>
 
-        {/* WhatsApp Activation Section — only for QR/manual payments */}
+        {/* WhatsApp Activation — for QR/manual payments */}
         <div className="max-w-3xl mx-auto mt-6">
           <Card className="card-3d border-emerald-200/60">
             <CardContent className="p-6">
@@ -339,7 +331,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                     <p className="text-xs text-slate-500 font-medium mt-1">
                       अगर आपने QR code से payment किया है तो नीचे दिए बटन पर
                       क्लिक करें। Screenshot भेजें — Premium तुरंत activate होगा।
-                      Razorpay से payment करने पर automatic activate होगा।
+                      Online payment करने पर automatic activate होगा।
                     </p>
                   </div>
 
@@ -371,7 +363,7 @@ export function PaymentClient({ user, selectedPlan }: Props) {
                     variant="secondary"
                     className="w-full justify-center py-1.5 text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200"
                   >
-                    Razorpay से payment पर automatic activate · QR payment पर WhatsApp confirm करें
+                    Online payment पर automatic activate · QR payment पर WhatsApp confirm करें
                   </Badge>
                 </div>
               </div>
@@ -383,13 +375,22 @@ export function PaymentClient({ user, selectedPlan }: Props) {
   );
 }
 
-function loadRazorpayScript(): Promise<void> {
+function loadCashfreeScript(): Promise<void> {
   return new Promise((resolve, reject) => {
-    if ((window as any).Razorpay) return resolve(); // eslint-disable-line @typescript-eslint/no-explicit-any
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    if ((window as any).Cashfree) return resolve();
     const script = document.createElement("script");
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.src = "https://sdk.cashfree.com/js/v3/cashfree.js";
     script.onload = () => resolve();
-    script.onerror = () => reject(new Error("Failed to load Razorpay script"));
+    script.onerror = () => reject(new Error("Failed to load Cashfree script"));
     document.body.appendChild(script);
   });
+}
+
+function initCashfree() {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cashfree = (window as any).Cashfree({
+    mode: process.env.NEXT_PUBLIC_CASHFREE_ENV === "production" ? "production" : "sandbox",
+  });
+  return cashfree;
 }

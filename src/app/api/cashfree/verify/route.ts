@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import crypto from "crypto";
+import { Cashfree, CFEnvironment } from "cashfree-pg";
 import { getUser } from "@/lib/actions/auth";
 import { createServiceClient } from "@/lib/supabase/service";
 
@@ -7,8 +7,16 @@ const PLAN_EXPIRY_DAYS: Record<string, number | null> = {
   monthly: 30,
   "half-yearly": 180,
   yearly: 365,
-  lifetime: null, // never expires
+  lifetime: null,
 };
+
+const cashfree = new Cashfree(
+  process.env.NEXT_PUBLIC_CASHFREE_ENV === "production"
+    ? CFEnvironment.PRODUCTION
+    : CFEnvironment.SANDBOX,
+  process.env.CASHFREE_APP_ID!,
+  process.env.CASHFREE_KEY_SECRET!
+);
 
 export async function POST(req: NextRequest) {
   try {
@@ -17,18 +25,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature, plan } =
-      await req.json();
+    const { orderId, plan } = await req.json();
 
-    // Verify signature
-    const body = razorpay_order_id + "|" + razorpay_payment_id;
-    const expectedSignature = crypto
-      .createHmac("sha256", process.env.RAZORPAY_KEY_SECRET!)
-      .update(body)
-      .digest("hex");
+    // Fetch order status from Cashfree
+    const response = await cashfree.PGFetchOrder(orderId);
+    const order = response.data;
 
-    if (expectedSignature !== razorpay_signature) {
-      return NextResponse.json({ error: "Invalid payment signature" }, { status: 400 });
+    if (order.order_status !== "PAID") {
+      return NextResponse.json(
+        { error: `Payment not completed. Status: ${order.order_status}` },
+        { status: 400 }
+      );
     }
 
     // Calculate expiry
@@ -37,7 +44,7 @@ export async function POST(req: NextRequest) {
       ? new Date(Date.now() + expiryDays * 24 * 60 * 60 * 1000).toISOString()
       : null;
 
-    // Activate premium using service role (bypasses RLS)
+    // Activate premium
     const supabase = createServiceClient();
     const { error } = await supabase
       .from("profiles")
@@ -45,8 +52,8 @@ export async function POST(req: NextRequest) {
         is_premium: true,
         premium_plan: plan,
         premium_expires_at: premiumExpiresAt,
-        premium_order_id: razorpay_order_id,
-        premium_payment_id: razorpay_payment_id,
+        premium_order_id: orderId,
+        premium_payment_id: order.cf_order_id?.toString() || orderId,
       })
       .eq("id", user.id);
 
@@ -56,8 +63,9 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true, plan, premiumExpiresAt });
-  } catch (err) {
-    console.error("Razorpay verify error:", err);
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : String(err);
+    console.error("Cashfree verify error:", msg);
     return NextResponse.json({ error: "Verification failed" }, { status: 500 });
   }
 }
