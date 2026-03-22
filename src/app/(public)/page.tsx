@@ -315,6 +315,16 @@ export default async function HomePage() {
                   Exam Calendars
                 </Button>
               </Link>
+              <Link href="/corporate-jobs">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full sm:w-auto bg-white/[0.08] backdrop-blur-md border-white/20 text-white hover:bg-white/[0.15] font-black px-7 h-11 text-sm"
+                >
+                  <Building2 className="mr-2 h-4 w-4 text-blue-300" />
+                  Corporate Jobs
+                </Button>
+              </Link>
             </div>
 
             {/* Stat pills */}

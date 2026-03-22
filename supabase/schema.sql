@@ -115,6 +115,61 @@ CREATE TRIGGER update_jobs_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================
+-- HIRING PROFILES TABLE (Who's Hiring)
+-- ============================================
+CREATE TABLE IF NOT EXISTS hiring_profiles (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  profile_name TEXT NOT NULL,
+  role_hiring TEXT NOT NULL,
+  work_mode TEXT NOT NULL DEFAULT 'onsite',
+  profile_link TEXT NOT NULL,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_hiring_profiles_active ON hiring_profiles (is_active, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_hiring_profiles_role ON hiring_profiles (role_hiring);
+
+-- Enable RLS on hiring_profiles table
+ALTER TABLE hiring_profiles ENABLE ROW LEVEL SECURITY;
+
+-- Public can view active hiring profiles
+CREATE POLICY "Public can view active hiring profiles"
+  ON hiring_profiles
+  FOR SELECT
+  USING (is_active = TRUE);
+
+-- Admins can view all hiring profiles
+CREATE POLICY "Admins can view all hiring profiles"
+  ON hiring_profiles
+  FOR SELECT
+  USING (auth.uid() IN (SELECT user_id FROM admins));
+
+-- Admins can insert hiring profiles
+CREATE POLICY "Admins can insert hiring profiles"
+  ON hiring_profiles
+  FOR INSERT
+  WITH CHECK (auth.uid() IN (SELECT user_id FROM admins));
+
+-- Admins can update hiring profiles
+CREATE POLICY "Admins can update hiring profiles"
+  ON hiring_profiles
+  FOR UPDATE
+  USING (auth.uid() IN (SELECT user_id FROM admins));
+
+-- Admins can delete hiring profiles
+CREATE POLICY "Admins can delete hiring profiles"
+  ON hiring_profiles
+  FOR DELETE
+  USING (auth.uid() IN (SELECT user_id FROM admins));
+
+CREATE TRIGGER update_hiring_profiles_updated_at
+  BEFORE UPDATE ON hiring_profiles
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================
 -- SEED: Add yourself as admin (replace with your user_id after signing up)
 -- ============================================
 -- INSERT INTO admins (user_id) VALUES ('your-auth-user-uuid-here');

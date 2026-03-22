@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
+import { applyReferralCode } from "./referrals";
 
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
@@ -9,6 +10,7 @@ export async function signUp(formData: FormData) {
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
   const fullName = formData.get("fullName") as string;
+  const refCode = (formData.get("refCode") as string | null)?.trim() || "";
 
   if (!email || !password || !fullName) {
     return { error: "All fields are required" };
@@ -18,7 +20,7 @@ export async function signUp(formData: FormData) {
     return { error: "Password must be at least 6 characters" };
   }
 
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
@@ -28,6 +30,11 @@ export async function signUp(formData: FormData) {
 
   if (error) {
     return { error: error.message };
+  }
+
+  // Apply referral code if provided (non-blocking)
+  if (refCode && data.user) {
+    await applyReferralCode(data.user.id, refCode);
   }
 
   redirect("/tools/document-locker");

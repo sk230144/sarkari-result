@@ -10,7 +10,7 @@ import { CATEGORIES } from "@/lib/constants";
 import { AdminJobActions } from "@/components/admin/job-actions";
 import { deleteMultipleJobs } from "@/lib/actions/admin";
 import { toast } from "sonner";
-import { Trash2, CheckSquare, Square, Minus } from "lucide-react";
+import { Trash2, CheckSquare, Square, Minus, AlertCircle } from "lucide-react";
 import type { Job } from "@/types";
 
 const categoryBadgeColors: Record<string, string> = {
@@ -22,11 +22,22 @@ const categoryBadgeColors: Record<string, string> = {
   scholarship: "bg-teal-50 text-teal-700",
 };
 
+const today = new Date();
+today.setHours(0, 0, 0, 0);
+
+function isExpired(lastDate: string | null | undefined) {
+  if (!lastDate) return false;
+  const d = new Date(lastDate);
+  d.setHours(0, 0, 0, 0);
+  return d < today;
+}
+
 export function AdminJobsClient({ jobs }: { jobs: Job[] }) {
   const router = useRouter();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [deleting, setDeleting] = useState(false);
 
+  const expiredIds = jobs.filter((j) => isExpired(j.last_date)).map((j) => j.id);
   const allSelected = selected.size === jobs.length;
   const someSelected = selected.size > 0 && !allSelected;
 
@@ -36,6 +47,10 @@ export function AdminJobsClient({ jobs }: { jobs: Job[] }) {
     } else {
       setSelected(new Set(jobs.map((j) => j.id)));
     }
+  }
+
+  function selectAllExpired() {
+    setSelected(new Set(expiredIds));
   }
 
   function toggleOne(id: string) {
@@ -99,9 +114,20 @@ export function AdminJobsClient({ jobs }: { jobs: Job[] }) {
             </Button>
           </>
         ) : (
-          <span className="text-xs text-slate-400 font-medium">
-            Select jobs to delete in bulk
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-slate-400 font-medium">
+              Select jobs to delete in bulk
+            </span>
+            {expiredIds.length > 0 && (
+              <button
+                onClick={selectAllExpired}
+                className="inline-flex items-center gap-1.5 text-xs font-black text-red-600 bg-red-50 border border-red-200 px-2.5 py-1 rounded-lg hover:bg-red-100 transition-colors"
+              >
+                <AlertCircle className="h-3.5 w-3.5" />
+                Select {expiredIds.length} Expired
+              </button>
+            )}
+          </div>
         )}
       </div>
 
@@ -111,13 +137,16 @@ export function AdminJobsClient({ jobs }: { jobs: Job[] }) {
           CATEGORIES.find((c) => c.value === job.category)?.label ||
           job.category;
         const isSelected = selected.has(job.id);
+        const expired = isExpired(job.last_date);
 
         return (
           <div
             key={job.id}
             className={`card-3d bg-white rounded-xl border transition-colors ${
               isSelected
-                ? "border-blue-300 bg-blue-50/30"
+                ? "border-red-300 bg-red-50/20"
+                : expired
+                ? "border-red-200/60 bg-red-50/10"
                 : "border-slate-200/60"
             }`}
           >
@@ -161,6 +190,12 @@ export function AdminJobsClient({ jobs }: { jobs: Job[] }) {
                   {job.is_featured && (
                     <Badge className="text-[11px] bg-amber-50 text-amber-700 border-0 font-bold">
                       Featured
+                    </Badge>
+                  )}
+                  {expired && (
+                    <Badge className="text-[11px] bg-red-100 text-red-600 border-0 font-black gap-1">
+                      <AlertCircle className="h-2.5 w-2.5" />
+                      Expired
                     </Badge>
                   )}
                 </div>

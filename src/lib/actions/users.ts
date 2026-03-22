@@ -16,24 +16,36 @@ export interface UserProfile {
   whatsapp_number: string | null;
   wants_notifications: boolean;
   created_at: string;
+  referral_code: string | null;
+  referral_count: number;
+  referral_days_earned: number;
 }
 
-export async function getAdminUsers(page = 1, search = "") {
+export async function getAdminUsers(page = 1, search = "", filter = "") {
   const supabase = await createClient();
   const perPage = 20;
   const from = (page - 1) * perPage;
   const to = from + perPage - 1;
 
+  // Sort by referral_count desc when filtering milestone users, else by created_at
+  const orderCol = filter === "milestone" ? "referral_count" : "created_at";
+  const orderAsc = false;
+
   let query = supabase
     .from("profiles")
     .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
+    .order(orderCol, { ascending: orderAsc })
     .range(from, to);
 
   if (search) {
     query = query.or(
       `full_name.ilike.%${search}%,email.ilike.%${search}%`
     );
+  }
+
+  // Filter: only users who hit first milestone (10+ referrals)
+  if (filter === "milestone") {
+    query = query.gte("referral_count", 10);
   }
 
   const { data, error, count } = await query;

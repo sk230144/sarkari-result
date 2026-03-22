@@ -15,6 +15,7 @@ export function SignupForm() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get("redirect") || "";
+  const refCode = searchParams.get("ref") || "";
 
   function validate(formData: FormData) {
     const errs: Record<string, string> = {};
@@ -81,8 +82,18 @@ export function SignupForm() {
           </p>
         </div>
 
+        {refCode && (
+          <div className="mb-4 flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-2.5">
+            <span className="text-emerald-600 text-base">🎁</span>
+            <p className="text-xs font-bold text-emerald-700">
+              Referral code applied: <span className="font-black">{refCode}</span>
+            </p>
+          </div>
+        )}
+
         <div className="card-elevated glow-blue bg-white rounded-2xl border border-slate-200/60 p-7">
           <form action={handleSubmit} className="space-y-5">
+            <input type="hidden" name="refCode" value={refCode} />
             <div className="space-y-2">
               <Label htmlFor="fullName" className="text-sm font-semibold text-slate-700">
                 Full Name
@@ -160,6 +171,12 @@ export function SignupForm() {
             Sign In
           </Link>
         </p>
+        {!refCode && (
+          <p className="text-center text-xs text-slate-400 mt-2 font-medium">
+            Have a referral code?{" "}
+            <span className="text-violet-600 font-bold">Add it in the URL: ?ref=YOURCODE</span>
+          </p>
+        )}
       </div>
     </div>
   );

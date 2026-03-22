@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Briefcase, ArrowUpRight } from "lucide-react";
 import { CATEGORIES, SITE_NAME } from "@/lib/constants";
+import { FooterTagline, FooterSeoSection } from "./site-tagline";
 
 export function Footer() {
   return (
@@ -17,10 +18,7 @@ export function Footer() {
               </div>
               <span className="font-extrabold text-lg text-white">{SITE_NAME}</span>
             </div>
-            <p className="text-sm text-slate-400 leading-relaxed font-medium">
-              Your trusted portal for government job updates, results, admit
-              cards, and scholarships across India.
-            </p>
+            <FooterTagline />
             <div className="mt-4 inline-flex items-center gap-1.5 glass-dark rounded-full px-3 py-1.5 text-xs text-slate-300">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse-soft" />
               Updated Daily
@@ -117,42 +115,7 @@ export function Footer() {
         </div>
 
         {/* SEO Content Section */}
-        <div className="mt-10 pt-6 border-t border-slate-800/60">
-          <h4 className="font-bold text-white mb-3 text-sm">
-            Job Alerts 24 - सरकारी नौकरी अलर्ट 2025
-          </h4>
-          <p className="text-xs text-slate-500 leading-relaxed mb-3">
-            {SITE_NAME} is India&apos;s trusted government job portal providing latest sarkari naukri updates, sarkari result, admit cards, answer keys, syllabus and scholarship information. We cover all central and state government jobs including SSC, UPSC, Railway, Bank, Defence, Police, Teaching and more.
-          </p>
-          <p className="text-xs text-slate-500 leading-relaxed mb-3">
-            जॉब अलर्ट्स 24 पर आपको मिलेगी सरकारी नौकरी की ताज़ा जानकारी। यहाँ आप नवीनतम सरकारी भर्ती 2025, ऑनलाइन फॉर्म, एडमिट कार्ड, आंसर की, सिलेबस और रिजल्ट की जानकारी पा सकते हैं। SSC, UPSC, रेलवे, बैंक, रक्षा विभाग, पुलिस भर्ती, शिक्षक भर्ती और राज्य सरकार की सभी नौकरियाँ एक जगह।
-          </p>
-          <div className="flex flex-wrap gap-2 mt-3">
-            {[
-              "Job Alerts 24",
-              "Sarkari Result",
-              "Sarkari Naukri",
-              "Govt Jobs 2025",
-              "सरकारी नौकरी",
-              "Online Form",
-              "Admit Card",
-              "Answer Key",
-              "Railway Jobs",
-              "SSC Recruitment",
-              "UPSC Jobs",
-              "Bank Jobs",
-              "Free Job Alert",
-              "Rojgar Samachar",
-            ].map((tag) => (
-              <span
-                key={tag}
-                className="text-[10px] px-2 py-0.5 rounded bg-slate-800 text-slate-500 font-medium"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </div>
+        <FooterSeoSection />
 
         <div className="mt-6 pt-4 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-slate-500">

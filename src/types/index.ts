@@ -37,3 +37,14 @@ export interface JobFilters {
   sort?: "newest" | "last_date" | "featured";
   page?: number;
 }
+
+export interface HiringProfile {
+  id: string;
+  profile_name: string;
+  role_hiring: string;
+  work_mode: string;
+  profile_link: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string | null;
+}

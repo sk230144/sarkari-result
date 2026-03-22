@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ArrowUpRight, Briefcase, Crown, LogIn, LogOut, Menu, MoreVertical, Search, Settings, User } from "lucide-react";
+import { ArrowUpRight, Briefcase, Crown, Gift, LogIn, LogOut, Menu, MoreVertical, Search, Settings, User } from "lucide-react";
+import { HeaderTagline, MobileSheetTagline } from "./site-tagline";
+import { JobModeToggle } from "./job-mode-toggle";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -80,14 +82,17 @@ export async function Header() {
             <span className="font-extrabold text-base md:text-lg tracking-tight text-gradient">
               Job Alerts 24
             </span>
-            <span className="hidden md:block text-[10px] text-slate-400 -mt-0.5 tracking-widest uppercase font-semibold">
-              Govt Jobs Portal
-            </span>
+            <HeaderTagline />
           </div>
         </Link>
 
+        {/* Mode toggle */}
+        <div className="ml-3 md:ml-4">
+          <JobModeToggle />
+        </div>
+
         {/* Tablet nav (md to lg) */}
-        <nav className="ml-4 hidden md:flex lg:hidden items-center gap-0.5">
+        <nav className="ml-3 hidden md:flex lg:hidden items-center gap-0.5">
           <Link href="/jobs">
             <Button variant="ghost" size="sm" className="text-slate-700 hover:text-blue-700 hover:bg-blue-50/80 font-bold text-sm rounded-lg">
               Jobs
@@ -201,6 +206,12 @@ export async function Header() {
                     {user.email}
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link href="/membership#referral" className="flex items-center gap-2 font-semibold text-sm text-violet-600">
+                      <Gift className="h-3.5 w-3.5" />
+                      Refer & Earn
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <form action={signOut} className="w-full">
                       <button type="submit" className="flex items-center gap-2 w-full text-red-600 font-semibold text-sm">
                         <LogOut className="h-3.5 w-3.5" />
@@ -270,9 +281,7 @@ export async function Header() {
                     </div>
                     Job Alerts 24
                   </SheetTitle>
-                  <p className="text-blue-200 text-xs mt-1.5 relative font-semibold tracking-wide">
-                    Government Jobs Portal
-                  </p>
+                  <MobileSheetTagline />
                   {user && (
                     <div className="mt-3 flex items-center gap-2 relative">
                       <div className="h-7 w-7 rounded-full bg-white/20 flex items-center justify-center">
@@ -332,6 +341,18 @@ export async function Header() {
                     </Link>
                   )}
                   <div className="my-3 border-t border-slate-100" />
+                  {user && (
+                    <Link href="/membership#referral">
+                      <Button
+                        variant="ghost"
+                        className="w-full justify-start text-violet-600 hover:text-violet-700 hover:bg-violet-50 font-bold rounded-lg"
+                        size="sm"
+                      >
+                        <Gift className="h-4 w-4 mr-2" />
+                        Refer & Earn Free Premium
+                      </Button>
+                    </Link>
+                  )}
                   {user ? (
                     <form action={signOut}>
                       <Button

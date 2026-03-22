@@ -22,7 +22,13 @@
       "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); console.log\\(Object.keys\\(Cashfree\\)\\)\")",
       "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(\\); console.log\\(Object.getOwnPropertyNames\\(Object.getPrototypeOf\\(c\\)\\).slice\\(0,20\\)\\)\")",
       "Bash(node -e \"const {Cashfree} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(\\); console.log\\(Object.getOwnPropertyNames\\(Object.getPrototypeOf\\(c\\)\\)\\)\")",
-      "Bash(node -e \"const {Cashfree, CFEnvironment} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(CFEnvironment.PRODUCTION, ''test'', ''test''\\); console.log\\(''instance ok''\\)\")"
+      "Bash(node -e \"const {Cashfree, CFEnvironment} = require\\(''cashfree-pg''\\); const c = new Cashfree\\(CFEnvironment.PRODUCTION, ''test'', ''test''\\); console.log\\(''instance ok''\\)\")",
+      "Bash(xargs grep:*)",
+      "Bash(ls -la \"/c/Users/PC-8/Desktop/sarkari-result/src/app/\\(public\\)/corporate-jobs/\")",
+      "Bash(ls -la \"/c/Users/PC-8/Desktop/sarkari-result/src/app/admin/\\(dashboard\\)/\")",
+      "Bash(grep -i \"referral\\\\|refer\" \"/c/Users/PC-8/Desktop/sarkari-result/supabase/profiles.sql\" \"/c/Users/PC-8/Desktop/sarkari-result/supabase/\"*.sql)",
+      "Bash(npm list:*)",
+      "Bash(node -e \"require\\(''dotenv''\\).config\\({path:''.env.local''}\\); console.log\\(''OLLAMA_URL:'', process.env.OLLAMA_URL ? ''SET'' : ''NOT SET''\\)\")"
     ]
   }
 }
