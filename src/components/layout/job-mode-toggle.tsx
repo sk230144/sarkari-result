@@ -39,29 +39,89 @@ export function JobModeToggle() {
   }
 
   return (
-    <div className="flex items-center bg-slate-100 rounded-full p-0.5 shrink-0 border border-slate-200">
-      <button
-        onClick={() => switchTo("govt")}
-        className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs font-black transition-all duration-200 ${
-          !isCorporate
-            ? "bg-white text-blue-700 shadow-sm shadow-slate-200"
-            : "text-slate-400 hover:text-slate-600"
-        }`}
-      >
-        <Landmark className="h-3.5 w-3.5 shrink-0" />
-        <span className="hidden sm:inline">Govt</span>
-      </button>
-      <button
-        onClick={() => switchTo("corporate")}
-        className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-full text-xs font-black transition-all duration-200 ${
-          isCorporate
-            ? "bg-white text-violet-700 shadow-sm shadow-slate-200"
-            : "text-slate-400 hover:text-slate-600"
-        }`}
-      >
-        <Building2 className="h-3.5 w-3.5 shrink-0" />
-        <span className="hidden sm:inline">Corporate</span>
-      </button>
-    </div>
+    <>
+      <style>{`
+        @keyframes border-spin {
+          0%   { background-position: 0% 50%; }
+          50%  { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .toggle-wrapper {
+          position: relative;
+          display: flex;
+          align-items: center;
+          background: #f1f5f9;
+          border-radius: 9999px;
+          padding: 2px;
+          flex-shrink: 0;
+        }
+        .toggle-wrapper::before {
+          content: '';
+          position: absolute;
+          inset: -1.5px;
+          border-radius: 9999px;
+          background: linear-gradient(90deg, #f97316, #eab308, #10b981, #06b6d4, #f97316);
+          background-size: 300% 300%;
+          animation: border-spin 3s linear infinite;
+          z-index: 0;
+        }
+        .toggle-wrapper::after {
+          content: '';
+          position: absolute;
+          inset: 1px;
+          border-radius: 9999px;
+          background: #f1f5f9;
+          z-index: 1;
+        }
+        .toggle-btn {
+          position: relative;
+          z-index: 2;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          padding: 6px 10px;
+          border-radius: 9999px;
+          font-size: 12px;
+          font-weight: 900;
+          transition: all 0.25s ease;
+          color: #94a3b8;
+          background: transparent;
+          border: none;
+          cursor: pointer;
+        }
+        .toggle-btn:hover {
+          color: #64748b;
+        }
+        .toggle-btn-govt-active {
+          background: white;
+          color: #2563eb !important;
+          box-shadow: 0 1px 4px rgba(59,130,246,0.15);
+        }
+        .toggle-btn-corp-active {
+          background: white;
+          color: #7c3aed !important;
+          box-shadow: 0 1px 4px rgba(139,92,246,0.15);
+        }
+        @media (min-width: 640px) {
+          .toggle-btn { padding: 6px 14px; }
+        }
+      `}</style>
+      <div className="toggle-wrapper">
+        <button
+          onClick={() => switchTo("govt")}
+          className={`toggle-btn ${!isCorporate ? "toggle-btn-govt-active" : ""}`}
+        >
+          <Landmark style={{ width: 14, height: 14, flexShrink: 0 }} />
+          <span className="hidden sm:inline">Govt</span>
+        </button>
+        <button
+          onClick={() => switchTo("corporate")}
+          className={`toggle-btn ${isCorporate ? "toggle-btn-corp-active" : ""}`}
+        >
+          <Building2 style={{ width: 14, height: 14, flexShrink: 0 }} />
+          <span className="hidden sm:inline">Corporate</span>
+        </button>
+      </div>
+    </>
   );
 }
