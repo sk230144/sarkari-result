@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -18,8 +18,12 @@ import {
   MapPin,
   Wifi,
   Filter,
+  X,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
 } from "lucide-react";
-import type { HiringProfile } from "@/types";
+import type { HiringProfile, HiringPost } from "@/types";
 
 type Platform = {
   name: string;
@@ -407,15 +411,139 @@ function HiringProfileCard({
   );
 }
 
+/* ─── Image Lightbox ─── */
+function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  const [scale, setScale] = useState(1);
+
+  const zoomIn = useCallback(() => setScale((s) => Math.min(s + 0.4, 4)), []);
+  const zoomOut = useCallback(() => setScale((s) => Math.max(s - 0.4, 0.4)), []);
+  const reset = useCallback(() => setScale(1), []);
+
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) {
+      if (e.key === "Escape") onClose();
+      if (e.key === "+" || e.key === "=") zoomIn();
+      if (e.key === "-") zoomOut();
+      if (e.key === "0") reset();
+    }
+    document.addEventListener("keydown", onKey);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKey);
+      document.body.style.overflow = "";
+    };
+  }, [onClose, zoomIn, zoomOut, reset]);
+
+  return (
+    <div
+      className="fixed inset-0 z-[9999] bg-black/90 flex flex-col"
+      onClick={onClose}
+    >
+      {/* Top bar */}
+      <div
+        className="flex items-center justify-between px-4 py-3 shrink-0"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <p className="text-white/70 text-sm font-semibold truncate max-w-xs">{alt}</p>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={zoomOut}
+            className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            title="Zoom out (−)"
+          >
+            <ZoomOut className="h-4 w-4 text-white" />
+          </button>
+          <span className="text-white/60 text-xs font-bold w-10 text-center">
+            {Math.round(scale * 100)}%
+          </span>
+          <button
+            onClick={zoomIn}
+            className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            title="Zoom in (+)"
+          >
+            <ZoomIn className="h-4 w-4 text-white" />
+          </button>
+          <button
+            onClick={reset}
+            className="h-8 w-8 rounded-lg bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+            title="Reset (0)"
+          >
+            <Maximize2 className="h-3.5 w-3.5 text-white" />
+          </button>
+          <button
+            onClick={onClose}
+            className="h-8 w-8 rounded-lg bg-white/10 hover:bg-red-500/80 flex items-center justify-center transition-colors ml-1"
+            title="Close (Esc)"
+          >
+            <X className="h-4 w-4 text-white" />
+          </button>
+        </div>
+      </div>
+
+      {/* Image area — scrollable when zoomed */}
+      <div
+        className="flex-1 overflow-auto flex items-center justify-center p-4"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={src}
+          alt={alt}
+          style={{
+            transform: `scale(${scale})`,
+            transformOrigin: "center center",
+            transition: "transform 0.2s ease",
+            maxWidth: "100%",
+            cursor: scale > 1 ? "move" : "zoom-in",
+          }}
+          onClick={() => scale < 4 ? zoomIn() : reset()}
+          draggable={false}
+        />
+      </div>
+
+      {/* Bottom hint */}
+      <div className="text-center py-2 shrink-0">
+        <p className="text-white/30 text-xs">Click image to zoom · Esc to close · +/− to zoom</p>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Email highlighter ─── */
+const EMAIL_REGEX = /([a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g;
+
+function renderWithEmails(text: string): React.ReactNode {
+  const parts = text.split(EMAIL_REGEX);
+  return parts.map((part, i) =>
+    EMAIL_REGEX.test(part) ? (
+      <a
+        key={i}
+        href={`mailto:${part}`}
+        className="inline-flex items-center gap-1 font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 rounded px-1.5 py-0.5 hover:bg-emerald-100 transition-colors"
+        onClick={(e) => e.stopPropagation()}
+      >
+        ✉ {part}
+      </a>
+    ) : (
+      part
+    )
+  );
+}
+
 /* ─── Main Component ─── */
 export function CorporateJobsClient({
   hiringProfiles,
+  hiringPosts,
   hasFullAccess,
+  activeTab,
 }: {
   hiringProfiles: HiringProfile[];
+  hiringPosts: HiringPost[];
   hasFullAccess: boolean;
+  activeTab: "search" | "hiring";
 }) {
-  const [activeTab, setActiveTab] = useState<"search" | "hiring">("search");
+  const [hiringSubTab, setHiringSubTab] = useState<"posts" | "profiles">("posts");
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
   const [role, setRole] = useState("");
   const [days, setDays] = useState("3");
   const [showMore, setShowMore] = useState(false);
@@ -423,6 +551,7 @@ export function CorporateJobsClient({
   // Hiring filters
   const [hiringRoleFilter, setHiringRoleFilter] = useState("All Roles");
   const [hiringWorkModeFilter, setHiringWorkModeFilter] = useState("all");
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
 
   const query = role.trim() || "Software Engineer";
 
@@ -440,8 +569,36 @@ export function CorporateJobsClient({
     });
   }, [hiringProfiles, hiringRoleFilter, hiringWorkModeFilter]);
 
+  // All unique tags across posts for filter chips
+  const allPostTags = useMemo(() => {
+    const set = new Set<string>();
+    hiringPosts.forEach((p) => p.tags.forEach((t) => set.add(t)));
+    return Array.from(set).sort();
+  }, [hiringPosts]);
+
+  const filteredPosts = useMemo(() => {
+    if (selectedTags.length === 0) return hiringPosts;
+    return hiringPosts.filter((p) =>
+      selectedTags.some((tag) => p.tags.includes(tag))
+    );
+  }, [hiringPosts, selectedTags]);
+
+  function toggleTag(tag: string) {
+    setSelectedTags((prev) =>
+      prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+    );
+  }
+
   return (
     <div className="min-h-screen page-bg">
+      {/* Lightbox */}
+      {lightboxImage && (
+        <ImageLightbox
+          src={lightboxImage.src}
+          alt={lightboxImage.alt}
+          onClose={() => setLightboxImage(null)}
+        />
+      )}
       <div className="page-bg-orb w-[400px] h-[400px] bg-blue-200/[0.08] top-[5%] -left-[10%] animate-float-slow" />
       <div className="page-bg-orb w-[350px] h-[350px] bg-violet-200/[0.07] top-[50%] -right-[8%] animate-float-delayed" />
 
@@ -464,8 +621,8 @@ export function CorporateJobsClient({
 
           {/* Tabs */}
           <div className="mt-5 inline-flex items-center bg-white/10 backdrop-blur-sm rounded-xl p-1 border border-white/10">
-            <button
-              onClick={() => setActiveTab("search")}
+            <Link
+              href="/corporate-jobs"
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
                 activeTab === "search"
                   ? "bg-white text-slate-800 shadow-md"
@@ -474,9 +631,9 @@ export function CorporateJobsClient({
             >
               <Search className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
               Job Search
-            </button>
-            <button
-              onClick={() => setActiveTab("hiring")}
+            </Link>
+            <Link
+              href="/corporate-jobs/hiring"
               className={`px-5 py-2 rounded-lg text-sm font-bold transition-all ${
                 activeTab === "hiring"
                   ? "bg-white text-slate-800 shadow-md"
@@ -485,12 +642,12 @@ export function CorporateJobsClient({
             >
               <Users className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
               Who&apos;s Hiring
-              {hiringProfiles.length > 0 && (
+              {(hiringProfiles.length + hiringPosts.length) > 0 && (
                 <span className="ml-1.5 bg-amber-400 text-amber-900 text-[10px] font-black px-1.5 py-0.5 rounded-full">
-                  {hiringProfiles.length}
+                  {hiringProfiles.length + hiringPosts.length}
                 </span>
               )}
-            </button>
+            </Link>
           </div>
         </div>
       </section>
@@ -636,116 +793,305 @@ export function CorporateJobsClient({
       {/* ─── Tab: Who's Hiring ─── */}
       {activeTab === "hiring" && (
         <section className="container mx-auto px-4 py-8">
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-4xl mx-auto space-y-5">
 
-            {/* Filters */}
-            <div className="bg-white rounded-2xl border border-slate-200/60 p-4 card-elevated">
-              <div className="flex items-center gap-2 mb-3">
-                <Filter className="h-4 w-4 text-violet-500" />
-                <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Filters</span>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-3">
-                {/* Role filter */}
-                <div className="flex-1">
-                  <label className="text-[11px] font-bold text-slate-500 mb-1 block">Role</label>
-                  <select
-                    value={hiringRoleFilter}
-                    onChange={(e) => setHiringRoleFilter(e.target.value)}
-                    className="w-full h-9 text-sm font-medium border border-slate-200 rounded-lg px-3 bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors"
-                  >
-                    {HIRING_ROLE_FILTERS.map((r) => (
-                      <option key={r} value={r}>{r}</option>
-                    ))}
-                  </select>
-                </div>
-                {/* Work mode filter */}
-                <div className="flex-1 sm:max-w-[180px]">
-                  <label className="text-[11px] font-bold text-slate-500 mb-1 block">Work Mode</label>
-                  <select
-                    value={hiringWorkModeFilter}
-                    onChange={(e) => setHiringWorkModeFilter(e.target.value)}
-                    className="w-full h-9 text-sm font-medium border border-slate-200 rounded-lg px-3 bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors"
-                  >
-                    {WORK_MODE_FILTERS.map((opt) => (
-                      <option key={opt.value} value={opt.value}>{opt.label}</option>
-                    ))}
-                  </select>
-                </div>
-              </div>
+            {/* Sub-tabs: Posts | Profiles */}
+            <div className="flex gap-1 bg-slate-100 rounded-xl p-1 w-fit">
+              <button
+                onClick={() => setHiringSubTab("posts")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                  hiringSubTab === "posts"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <Briefcase className="h-3.5 w-3.5" />
+                Hiring Posts
+                {hiringPosts.length > 0 && (
+                  <span className="bg-emerald-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                    {hiringPosts.length}
+                  </span>
+                )}
+              </button>
+              <button
+                onClick={() => setHiringSubTab("profiles")}
+                className={`flex items-center gap-1.5 px-4 py-2 rounded-lg text-sm font-bold transition-all ${
+                  hiringSubTab === "profiles"
+                    ? "bg-white text-slate-800 shadow-sm"
+                    : "text-slate-500 hover:text-slate-700"
+                }`}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Hiring Profiles
+                {hiringProfiles.length > 0 && (
+                  <span className="bg-violet-500 text-white text-[10px] font-black px-1.5 py-0.5 rounded-full">
+                    100+
+                  </span>
+                )}
+              </button>
             </div>
 
-            {/* Results count + coming soon banner */}
-            <div className="flex items-center justify-between gap-3 flex-wrap">
-              <p className="text-xs font-bold text-slate-400">
-                {filteredProfiles.length} {filteredProfiles.length === 1 ? "person" : "people"} hiring
-                {hiringRoleFilter !== "All Roles" && ` for ${hiringRoleFilter}`}
-                {hiringWorkModeFilter !== "all" && ` · ${hiringWorkModeFilter}`}
-              </p>
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
-                <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-                New profiles adding daily
-              </span>
-            </div>
+            {/* ── SUB-TAB: Hiring Posts ── */}
+            {hiringSubTab === "posts" && (
+              <div className="space-y-4">
+                {/* Tag filter chips */}
+                {allPostTags.length > 0 && (
+                  <div className="bg-white rounded-2xl border border-slate-200/60 p-4 card-elevated">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Filter className="h-4 w-4 text-emerald-500" />
+                      <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Filter by Tag</span>
+                      {selectedTags.length > 0 && (
+                        <button onClick={() => setSelectedTags([])} className="ml-auto text-xs font-bold text-slate-400 hover:text-slate-600">
+                          Clear all
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {allPostTags.map((tag) => (
+                        <button
+                          key={tag}
+                          onClick={() => toggleTag(tag)}
+                          className={`text-xs font-bold px-2.5 py-1 rounded-full border transition-all ${
+                            selectedTags.includes(tag)
+                              ? "bg-emerald-600 text-white border-emerald-600"
+                              : "bg-white text-slate-600 border-slate-200 hover:border-emerald-400 hover:text-emerald-700"
+                          }`}
+                        >
+                          {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
 
-            {/* Profiles List */}
-            {filteredProfiles.length === 0 ? (
-              <div className="text-center py-16">
-                <Users className="h-10 w-10 mx-auto text-slate-300 mb-3" />
-                <p className="font-bold text-slate-500">No profiles found</p>
-                <p className="text-sm text-slate-400 mt-1">Try changing your filters</p>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-                {/* Free visible profiles */}
-                {filteredProfiles.slice(0, FREE_VISIBLE_COUNT).map((profile) => (
-                  <HiringProfileCard key={profile.id} profile={profile} isBlurred={false} />
-                ))}
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <p className="text-xs font-bold text-slate-400">
+                    {filteredPosts.length} {filteredPosts.length === 1 ? "post" : "posts"}
+                    {selectedTags.length > 0 && ` · filtered`}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-1 rounded-full">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    New posts added regularly
+                  </span>
+                </div>
 
-                {/* Locked profiles (blurred for non-premium) */}
-                {filteredProfiles.length > FREE_VISIBLE_COUNT && (
-                  <>
-                    {hasFullAccess ? (
-                      // Premium / Admin — show all
-                      filteredProfiles.slice(FREE_VISIBLE_COUNT).map((profile) => (
-                        <HiringProfileCard key={profile.id} profile={profile} isBlurred={false} />
-                      ))
-                    ) : (
-                      // Free user — show blurred + CTA
-                      <div className="relative col-span-2 sm:col-span-3 lg:col-span-4">
-                        {/* Blurred cards */}
-                        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" aria-hidden="true">
-                          {filteredProfiles.slice(FREE_VISIBLE_COUNT, FREE_VISIBLE_COUNT + 4).map((profile) => (
-                            <HiringProfileCard key={profile.id} profile={profile} isBlurred={true} />
-                          ))}
-                        </div>
-
-                        {/* Overlay CTA */}
-                        <div className="absolute inset-0 flex items-center justify-center z-10">
-                          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-violet-200 p-6 text-center shadow-xl shadow-violet-500/10 max-w-sm mx-4">
-                            <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/30">
-                              <Crown className="h-6 w-6 text-white" />
+                {filteredPosts.length === 0 ? (
+                  <div className="text-center py-16">
+                    <Briefcase className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+                    <p className="font-bold text-slate-500">No posts found</p>
+                    <p className="text-sm text-slate-400 mt-1">Try removing some filters</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {filteredPosts.map((post, idx) => {
+                      const isLocked = !hasFullAccess && idx >= 3;
+                      return (
+                        <div
+                          key={post.id}
+                          className={`relative bg-white rounded-2xl border border-slate-200/60 overflow-hidden card-elevated transition-all hover:border-emerald-200 hover:shadow-md`}
+                        >
+                          {/* Lock overlay for non-premium */}
+                          {isLocked && (
+                            <div className="absolute inset-0 backdrop-blur-sm bg-white/80 rounded-2xl z-10 flex items-center justify-center">
+                              <div className="text-center px-4">
+                                <div className="h-10 w-10 rounded-xl bg-linear-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-2">
+                                  <Lock className="h-5 w-5 text-white" />
+                                </div>
+                                <p className="text-sm font-extrabold text-slate-800">Premium Only</p>
+                                <Link href="/membership">
+                                  <Button size="sm" className="mt-2 gradient-purple text-white font-black border-0 text-xs">
+                                    Unlock All Posts
+                                  </Button>
+                                </Link>
+                              </div>
                             </div>
-                            <h3 className="text-lg font-extrabold text-slate-800">
-                              Premium Access Required
-                            </h3>
-                            <p className="text-sm text-slate-500 mt-1.5 mb-4">
-                              Unlock 100+ hiring profiles
-                              with a premium membership
-                            </p>
-                            <Link href="/membership">
-                              <Button className="w-full gradient-purple text-white font-black border-0 shadow-lg shadow-violet-500/25 shine">
-                                <Lock className="h-4 w-4 mr-2" />
-                                Show Full List — Get Premium
-                              </Button>
-                            </Link>
+                          )}
+
+                          {/* Image — full width, click to open lightbox */}
+                          {post.image_url && (
+                            <div className="relative group cursor-zoom-in" onClick={() => !isLocked && setLightboxImage({ src: post.image_url!, alt: post.title })}>
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={post.image_url}
+                                alt={post.title}
+                                className="w-full object-contain max-h-96 bg-slate-50"
+                              />
+                              {!isLocked && (
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                  <div className="opacity-0 group-hover:opacity-100 transition-opacity bg-black/60 rounded-full p-2">
+                                    <ZoomIn className="h-5 w-5 text-white" />
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          )}
+
+                          {/* Card body */}
+                          <div className="p-4 space-y-2.5">
+                            {/* Header row */}
+                            <div className="flex items-start justify-between gap-2 flex-wrap">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-extrabold text-slate-800">{post.title}</p>
+                                {post.company_name && (
+                                  <p className="text-xs font-semibold text-slate-500 mt-0.5">{post.company_name}</p>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                {!isLocked && (
+                                  <Link
+                                    href={`/hiring-posts/${post.id}`}
+                                    className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hover:bg-emerald-100 transition-colors"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    <ExternalLink className="h-2.5 w-2.5" />
+                                    Share
+                                  </Link>
+                                )}
+                              </div>
+                            </div>
+                            <span className={`text-xs font-bold px-2 py-0.5 rounded-full w-fit ${
+                              post.work_mode === "remote" ? "text-emerald-700 bg-emerald-50 border border-emerald-200"
+                              : post.work_mode === "hybrid" ? "text-amber-700 bg-amber-50 border border-amber-200"
+                              : "text-slate-600 bg-slate-100 border border-slate-200"
+                            }`}>
+                              {post.work_mode.charAt(0).toUpperCase() + post.work_mode.slice(1)}
+                            </span>
+
+                            {/* Full description with email detection */}
+                            {post.description && (
+                              <p className="text-xs text-slate-600 leading-relaxed whitespace-pre-wrap">
+                                {renderWithEmails(post.description)}
+                              </p>
+                            )}
+
+                            {/* Tags */}
+                            {post.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 pt-0.5">
+                                {post.tags.map((tag) => (
+                                  <span key={tag} className="text-[10px] font-bold bg-violet-50 text-violet-600 px-2 py-0.5 rounded-full border border-violet-100">
+                                    {tag}
+                                  </span>
+                                ))}
+                              </div>
+                            )}
                           </div>
                         </div>
+                      );
+                    })}
+
+                    {/* Bottom CTA for non-premium users */}
+                    {!hasFullAccess && filteredPosts.length > 3 && (
+                      <div className="text-center py-4">
+                        <Link href="/membership">
+                          <Button className="gradient-purple text-white font-black border-0 shadow-lg shadow-violet-500/25 shine">
+                            <Crown className="h-4 w-4 mr-2" />
+                            Unlock All {filteredPosts.length} Posts — Get Premium
+                          </Button>
+                        </Link>
                       </div>
                     )}
-                  </>
+                  </div>
                 )}
               </div>
             )}
+
+            {/* ── SUB-TAB: Hiring Profiles ── */}
+            {hiringSubTab === "profiles" && (
+              <div className="space-y-4">
+                {/* Filters */}
+                <div className="bg-white rounded-2xl border border-slate-200/60 p-4 card-elevated">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Filter className="h-4 w-4 text-violet-500" />
+                    <span className="text-xs font-extrabold text-slate-700 uppercase tracking-wider">Filters</span>
+                  </div>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="flex-1">
+                      <label className="text-[11px] font-bold text-slate-500 mb-1 block">Role</label>
+                      <select
+                        value={hiringRoleFilter}
+                        onChange={(e) => setHiringRoleFilter(e.target.value)}
+                        className="w-full h-9 text-sm font-medium border border-slate-200 rounded-lg px-3 bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors"
+                      >
+                        {HIRING_ROLE_FILTERS.map((r) => (
+                          <option key={r} value={r}>{r}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex-1 sm:max-w-[180px]">
+                      <label className="text-[11px] font-bold text-slate-500 mb-1 block">Work Mode</label>
+                      <select
+                        value={hiringWorkModeFilter}
+                        onChange={(e) => setHiringWorkModeFilter(e.target.value)}
+                        className="w-full h-9 text-sm font-medium border border-slate-200 rounded-lg px-3 bg-slate-50 focus:bg-white focus:border-violet-400 focus:outline-none transition-colors"
+                      >
+                        {WORK_MODE_FILTERS.map((opt) => (
+                          <option key={opt.value} value={opt.value}>{opt.label}</option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-3 flex-wrap">
+                  <p className="text-xs font-bold text-slate-400">
+                    {filteredProfiles.length} {filteredProfiles.length === 1 ? "person" : "people"} hiring
+                    {hiringRoleFilter !== "All Roles" && ` for ${hiringRoleFilter}`}
+                    {hiringWorkModeFilter !== "all" && ` · ${hiringWorkModeFilter}`}
+                  </p>
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full">
+                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    New profiles adding daily
+                  </span>
+                </div>
+
+                {filteredProfiles.length === 0 ? (
+                  <div className="text-center py-16">
+                    <Users className="h-10 w-10 mx-auto text-slate-300 mb-3" />
+                    <p className="font-bold text-slate-500">No profiles found</p>
+                    <p className="text-sm text-slate-400 mt-1">Try changing your filters</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {filteredProfiles.slice(0, FREE_VISIBLE_COUNT).map((profile) => (
+                      <HiringProfileCard key={profile.id} profile={profile} isBlurred={false} />
+                    ))}
+                    {filteredProfiles.length > FREE_VISIBLE_COUNT && (
+                      <>
+                        {hasFullAccess ? (
+                          filteredProfiles.slice(FREE_VISIBLE_COUNT).map((profile) => (
+                            <HiringProfileCard key={profile.id} profile={profile} isBlurred={false} />
+                          ))
+                        ) : (
+                          <div className="relative col-span-2 sm:col-span-3 lg:col-span-4">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4" aria-hidden="true">
+                              {filteredProfiles.slice(FREE_VISIBLE_COUNT, FREE_VISIBLE_COUNT + 4).map((profile) => (
+                                <HiringProfileCard key={profile.id} profile={profile} isBlurred={true} />
+                              ))}
+                            </div>
+                            <div className="absolute inset-0 flex items-center justify-center z-10">
+                              <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-violet-200 p-6 text-center shadow-xl shadow-violet-500/10 max-w-sm mx-4">
+                                <div className="h-12 w-12 rounded-xl bg-linear-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/30">
+                                  <Crown className="h-6 w-6 text-white" />
+                                </div>
+                                <h3 className="text-lg font-extrabold text-slate-800">Premium Access Required</h3>
+                                <p className="text-sm text-slate-500 mt-1.5 mb-4">Unlock 100+ hiring profiles with a premium membership</p>
+                                <Link href="/membership">
+                                  <Button className="w-full gradient-purple text-white font-black border-0 shadow-lg shadow-violet-500/25 shine">
+                                    <Lock className="h-4 w-4 mr-2" />
+                                    Show Full List — Get Premium
+                                  </Button>
+                                </Link>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+
           </div>
         </section>
       )}

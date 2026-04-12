@@ -48,3 +48,16 @@ export interface HiringProfile {
   created_at: string;
   updated_at: string | null;
 }
+
+export interface HiringPost {
+  id: string;
+  title: string;
+  company_name: string;
+  description: string | null;
+  image_url: string | null;
+  tags: string[];
+  work_mode: string;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string | null;
+}

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { CorporateJobsClient } from "./corporate-jobs-client";
+import { CorporateJobsClient } from "../corporate-jobs-client";
 import { getHiringProfiles } from "@/lib/actions/hiring-profiles";
 import { getHiringPosts } from "@/lib/actions/hiring-posts";
 import { createClient } from "@/lib/supabase/server";
 import { getEffectivePremium } from "@/lib/actions/premium";
 
 export const metadata: Metadata = {
-  title: "Corporate Jobs Search — LinkedIn, Glassdoor, Naukri, Indeed",
+  title: "Who's Hiring — Corporate & Private Jobs | Job Alerts 24",
   description:
-    "Search corporate and private sector jobs across LinkedIn, Glassdoor, Naukri, and Indeed. Filter by job role and posting date.",
+    "See who's actively hiring right now. Browse hiring posts and profiles from companies looking for talent across India. Filter by role, work mode, and tags.",
 };
 
-export default async function CorporateJobsPage() {
+export default async function WhoIsHiringPage() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
@@ -37,7 +37,7 @@ export default async function CorporateJobsPage() {
       hiringProfiles={hiringProfiles}
       hiringPosts={hiringPosts}
       hasFullAccess={isPremium || isAdmin}
-      activeTab="search"
+      activeTab="hiring"
     />
   );
 }

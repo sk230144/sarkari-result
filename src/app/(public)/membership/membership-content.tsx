@@ -136,18 +136,21 @@ const highlights = [
 
 export function MembershipContent({
   premiumPlan,
+  premiumExpiresAt,
   referralCode,
   referralCount,
   referralDaysEarned,
   isLoggedIn,
 }: {
   premiumPlan: string | null;
+  premiumExpiresAt?: string | null;
   referralCode: string | null;
   referralCount: number;
   referralDaysEarned: number;
   isLoggedIn: boolean;
 }) {
   const isPremium = !!premiumPlan;
+  const isTrial = premiumPlan === "trial";
   const [copied, setCopied] = useState(false);
   const [canNativeShare, setCanNativeShare] = useState(false);
 
@@ -228,20 +231,24 @@ export function MembershipContent({
       {/* Already Premium Banner */}
       {isPremium && (
         <section className="container mx-auto px-4 -mt-6 relative z-20">
-          <div className="max-w-2xl mx-auto rounded-2xl border border-emerald-200/70 bg-emerald-50/90 p-5 flex items-center gap-4 shadow-lg">
-            <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-              <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+          <div className={`max-w-2xl mx-auto rounded-2xl border p-5 flex items-center gap-4 shadow-lg ${isTrial ? "border-violet-200/70 bg-violet-50/90" : "border-emerald-200/70 bg-emerald-50/90"}`}>
+            <div className={`h-12 w-12 rounded-full flex items-center justify-center shrink-0 ${isTrial ? "bg-violet-100" : "bg-emerald-100"}`}>
+              {isTrial ? <Crown className="h-6 w-6 text-violet-600" /> : <CheckCircle2 className="h-6 w-6 text-emerald-600" />}
             </div>
             <div>
-              <p className="text-sm font-extrabold text-emerald-800">
-                You are a Premium Member!
+              <p className={`text-sm font-extrabold ${isTrial ? "text-violet-800" : "text-emerald-800"}`}>
+                {isTrial ? "🎉 Free Trial Active — All Premium Unlocked!" : "You are a Premium Member!"}
               </p>
-              <p className="text-xs text-emerald-700/80 font-medium mt-0.5">
-                Plan: <span className="font-bold capitalize">{premiumPlan}</span> — All premium tools are unlocked for you.
+              <p className={`text-xs font-medium mt-0.5 ${isTrial ? "text-violet-700/80" : "text-emerald-700/80"}`}>
+                {isTrial && premiumExpiresAt
+                  ? `Trial expires on ${new Date(premiumExpiresAt).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })} — All features unlocked.`
+                  : `Plan: `}
+                {!isTrial && <span className="font-bold capitalize">{premiumPlan}</span>}
+                {!isTrial && " — All premium tools are unlocked for you."}
               </p>
             </div>
             <Link href="/tools" className="ml-auto shrink-0">
-              <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs">
+              <Button size="sm" className={`text-white font-bold text-xs ${isTrial ? "bg-violet-600 hover:bg-violet-700" : "bg-emerald-600 hover:bg-emerald-700"}`}>
                 Open Tools
               </Button>
             </Link>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getUser } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/server";
+import { getEffectivePremium } from "@/lib/actions/premium";
 import { ToolsGrid } from "./tools-grid";
 
 export const metadata: Metadata = {
@@ -15,13 +16,11 @@ export default async function ToolsHubPage() {
 
   if (user) {
     const supabase = await createClient();
-
-    const [{ data: profile }, { data: admin }] = await Promise.all([
-      supabase.from("profiles").select("is_premium").eq("id", user.id).single(),
+    const [effectivePremium, { data: admin }] = await Promise.all([
+      getEffectivePremium(user.id),
       supabase.from("admins").select("user_id").eq("user_id", user.id).single(),
     ]);
-
-    isPremium = !!(admin || profile?.is_premium);
+    isPremium = !!(admin || effectivePremium);
   }
 
   return <ToolsGrid isPremium={isPremium} />;

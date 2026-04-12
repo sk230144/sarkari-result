@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { getUser } from "@/lib/actions/auth";
 import { createClient } from "@/lib/supabase/server";
+import { getEffectivePremium } from "@/lib/actions/premium";
 import { MembershipContent } from "./membership-content";
 
 export const metadata: Metadata = {
@@ -15,17 +16,22 @@ export default async function MembershipPage() {
   let referralCode: string | null = null;
   let referralCount = 0;
   let referralDaysEarned = 0;
+  let premiumExpiresAt: string | null = null;
 
   if (user) {
     const supabase = await createClient();
-    const { data } = await supabase
-      .from("profiles")
-      .select("is_premium, premium_plan, referral_code, referral_count, referral_days_earned")
-      .eq("id", user.id)
-      .single();
+    const [isEffectivePremium, { data }] = await Promise.all([
+      getEffectivePremium(user.id),
+      supabase
+        .from("profiles")
+        .select("premium_plan, premium_expires_at, referral_code, referral_count, referral_days_earned")
+        .eq("id", user.id)
+        .single(),
+    ]);
 
-    if (data?.is_premium) {
-      premiumPlan = data.premium_plan;
+    if (isEffectivePremium) {
+      premiumPlan = data?.premium_plan ?? null;
+      premiumExpiresAt = data?.premium_expires_at ?? null;
     }
     referralCount = data?.referral_count ?? 0;
     referralDaysEarned = data?.referral_days_earned ?? 0;
@@ -50,6 +56,7 @@ export default async function MembershipPage() {
   return (
     <MembershipContent
       premiumPlan={premiumPlan}
+      premiumExpiresAt={premiumExpiresAt}
       referralCode={referralCode}
       referralCount={referralCount}
       referralDaysEarned={referralDaysEarned}

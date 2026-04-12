@@ -18,6 +18,7 @@ import {
 import { CATEGORIES } from "@/lib/constants";
 import { getUser, signOut } from "@/lib/actions/auth";
 import { isAdmin } from "@/lib/actions/admin";
+import { getPremiumStatus } from "@/lib/actions/premium";
 import { createClient } from "@/lib/supabase/server";
 
 const toolLinks = [
@@ -55,19 +56,16 @@ export async function Header() {
   const user = await getUser();
   let userIsAdmin = false;
   let userIsPremium = false;
+  let premiumDaysLeft: number | null = null;
 
   if (user) {
-    const [adminCheck, supabase] = await Promise.all([
+    const [adminCheck, premiumStatus] = await Promise.all([
       isAdmin(),
-      createClient(),
+      getPremiumStatus(user.id),
     ]);
     userIsAdmin = adminCheck;
-    const { data } = await supabase
-      .from("profiles")
-      .select("is_premium")
-      .eq("id", user.id)
-      .single();
-    userIsPremium = !!data?.is_premium;
+    userIsPremium = premiumStatus.isPremium;
+    premiumDaysLeft = premiumStatus.daysLeft;
   }
 
   return (
@@ -108,7 +106,7 @@ export async function Header() {
               Blog
             </Button>
           </Link>
-          {!userIsAdmin && (
+          {!userIsAdmin && !userIsPremium && (
             <Link href="/membership">
               <Button size="sm" className="gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20">
                 <Crown className="h-3.5 w-3.5 mr-1" />
@@ -149,26 +147,17 @@ export async function Header() {
                 Admin
               </Button>
             </Link>
-          ) : (
+          ) : !userIsPremium ? (
             <Link href="/membership">
               <Button
                 size="sm"
                 className="ml-1 gradient-purple text-white font-black text-sm rounded-lg border-0 shadow-md shadow-violet-500/20 hover:shadow-violet-500/40 transition-shadow"
               >
-                {userIsPremium ? (
-                  <>
-                    <ArrowUpRight className="h-3.5 w-3.5 mr-1.5" />
-                    Upgrade
-                  </>
-                ) : (
-                  <>
-                    <Crown className="h-3.5 w-3.5 mr-1.5" />
-                    Premium
-                  </>
-                )}
+                <Crown className="h-3.5 w-3.5 mr-1.5" />
+                Premium
               </Button>
             </Link>
-          )}
+          ) : null}
         </nav>
 
         {/* Right side */}
@@ -193,18 +182,39 @@ export async function Header() {
                     size="sm"
                     className="text-slate-600 hover:text-blue-600 hover:bg-blue-50/80 rounded-lg font-bold gap-2"
                   >
-                    <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User className="h-3.5 w-3.5 text-blue-600" />
+                    <div className={`h-6 w-6 rounded-full flex items-center justify-center relative ${userIsPremium ? "bg-violet-100" : "bg-blue-100"}`}>
+                      {userIsPremium ? (
+                        <Crown className="h-3.5 w-3.5 text-violet-600" />
+                      ) : (
+                        <User className="h-3.5 w-3.5 text-blue-600" />
+                      )}
                     </div>
                     <span className="max-w-[100px] truncate text-xs">
                       {user.user_metadata?.full_name || user.email?.split("@")[0]}
                     </span>
+                    {userIsPremium && premiumDaysLeft !== null && (
+                      <span className="hidden md:inline-flex items-center bg-violet-100 text-violet-700 text-[10px] font-black rounded-full px-1.5 py-0.5">
+                        {premiumDaysLeft}d
+                      </span>
+                    )}
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuContent align="end" className="w-52">
                   <DropdownMenuItem className="text-xs text-slate-400 font-medium focus:bg-transparent" disabled>
                     {user.email}
                   </DropdownMenuItem>
+                  {userIsPremium && (
+                    <DropdownMenuItem disabled className="focus:bg-transparent">
+                      <div className="flex items-center gap-2">
+                        <Crown className="h-3.5 w-3.5 text-violet-500" />
+                        <span className="text-xs font-bold text-violet-700">
+                          {premiumDaysLeft === null
+                            ? "Premium Member (Lifetime)"
+                            : `Premium — ${premiumDaysLeft} day${premiumDaysLeft !== 1 ? "s" : ""} left`}
+                        </span>
+                      </div>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem asChild>
                     <Link href="/membership#referral" className="flex items-center gap-2 font-semibold text-sm text-violet-600">
                       <Gift className="h-3.5 w-3.5" />
@@ -323,23 +333,14 @@ export async function Header() {
                         Admin Panel
                       </Button>
                     </Link>
-                  ) : (
+                  ) : !userIsPremium ? (
                     <Link href="/membership" className="mt-2">
                       <Button className="w-full gradient-purple text-white font-black border-0 h-11 shadow-md shadow-violet-500/20">
-                        {userIsPremium ? (
-                          <>
-                            <ArrowUpRight className="h-4 w-4 mr-2" />
-                            Upgrade Plan
-                          </>
-                        ) : (
-                          <>
-                            <Crown className="h-4 w-4 mr-2" />
-                            Premium Membership
-                          </>
-                        )}
+                        <Crown className="h-4 w-4 mr-2" />
+                        Premium Membership
                       </Button>
                     </Link>
-                  )}
+                  ) : null}
                   <div className="my-3 border-t border-slate-100" />
                   {user && (
                     <Link href="/membership#referral">

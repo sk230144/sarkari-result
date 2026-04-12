@@ -141,6 +141,64 @@ export async function getJobsForUserQualification(qualification: string) {
   return data || [];
 }
 
+export async function claimFreeTrial() {
+  const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { error: "Not logged in" };
+
+  // Fetch profile — don't use .single() so we don't error if row missing
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("is_premium, premium_plan, trial_claimed")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  // If profile exists, check guards
+  if (profile) {
+    if (profile.trial_claimed) return { error: "Trial already claimed" };
+    if (profile.is_premium) return { error: "Already premium" };
+  }
+
+  const expiresAt = new Date();
+  expiresAt.setDate(expiresAt.getDate() + 7);
+
+  const premiumFields = {
+    is_premium: true,
+    premium_plan: "trial",
+    premium_started_at: new Date().toISOString(),
+    premium_expires_at: expiresAt.toISOString(),
+    trial_claimed: true,
+    updated_at: new Date().toISOString(),
+  };
+
+  let error;
+
+  if (!profile) {
+    // Profile doesn't exist yet — upsert it
+    const result = await supabase
+      .from("profiles")
+      .upsert({ id: user.id, email: user.email, ...premiumFields });
+    error = result.error;
+  } else {
+    // Profile exists — just update
+    const result = await supabase
+      .from("profiles")
+      .update(premiumFields)
+      .eq("id", user.id);
+    error = result.error;
+  }
+
+  if (error) {
+    console.error("Error claiming trial:", error);
+    return { error: error.message };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/membership");
+  return { success: true };
+}
+
 export async function deleteUser(userId: string) {
   const supabase = await createClient();
 
