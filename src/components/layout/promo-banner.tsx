@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Crown, Sparkles, Zap, Timer } from "lucide-react";
 import { claimFreeTrial } from "@/lib/actions/users";
@@ -22,11 +22,7 @@ interface PromoBannerProps {
 
 export function PromoBanner({ isLoggedIn, isPremium, trialClaimed, daysLeft }: PromoBannerProps) {
   const router = useRouter();
-  const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return null;
 
   // If premium and has days left — show countdown banner
   if (isPremium && daysLeft !== null) {

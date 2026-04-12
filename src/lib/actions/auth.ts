@@ -44,7 +44,7 @@ export async function signUp(formData: FormData) {
     await claimFreeTrial();
   }
 
-  redirect(trialClaim ? "/membership?trial=claimed" : "/tools/document-locker");
+  redirect(trialClaim ? "/membership?trial=claimed" : "/");
 }
 
 export async function signIn(formData: FormData) {
@@ -67,7 +67,7 @@ export async function signIn(formData: FormData) {
     return { error: error.message };
   }
 
-  redirect(redirectTo || "/tools/document-locker");
+  redirect(redirectTo || "/");
 }
 
 export async function signOut() {
