@@ -1,17 +1,14 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, Briefcase, MapPin, Wifi, Share2, Tag } from "lucide-react";
+import { ArrowLeft, Briefcase, MapPin, Wifi, Tag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { getHiringPostById, getHiringPosts } from "@/lib/actions/hiring-posts";
+import { getHiringPostById } from "@/lib/actions/hiring-posts";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { ShareButton } from "./share-button";
 import { ImageViewer } from "./image-viewer";
 
-export async function generateStaticParams() {
-  const posts = await getHiringPosts();
-  return posts.map((p) => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -89,8 +86,8 @@ export default async function HiringPostPage({
 
   return (
     <div className="min-h-screen page-bg">
-      <div className="page-bg-orb w-[350px] h-[350px] bg-emerald-200/[0.07] top-[5%] -left-[8%]" />
-      <div className="page-bg-orb w-[300px] h-[300px] bg-violet-200/[0.06] top-[50%] -right-[6%]" />
+      <div className="page-bg-orb w-87.5 h-87.5 bg-emerald-200/[0.07] top-[5%] -left-[8%]" />
+      <div className="page-bg-orb w-75 h-75 bg-violet-200/6 top-[50%] -right-[6%]" />
 
       <div className="container mx-auto px-4 py-6 md:py-8 max-w-2xl">
         {/* Back */}
@@ -107,7 +104,7 @@ export default async function HiringPostPage({
 
         <div className="card-elevated bg-white rounded-2xl border border-slate-200/60 overflow-hidden">
           {/* Hero banner */}
-          <div className="relative bg-gradient-to-br from-emerald-600 to-teal-700 p-6 sm:p-8">
+          <div className="relative bg-linear-to-br from-emerald-600 to-teal-700 p-6 sm:p-8">
             <div className="absolute inset-0 opacity-10" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
             <div className="relative flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
