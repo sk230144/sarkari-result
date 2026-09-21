@@ -1,0 +1,103 @@
+import type { Section } from "../striver/sheet-types";
+
+export const AMAZON_SECTIONS: Section[] = [
+  {
+    day: 1,
+    title: "Arrays and Strings",
+    problems: [
+      { n: 1, title: "Two Sum", url: "https://leetcode.com/problems/two-sum", difficulty: "Easy" },
+      { n: 2, title: "Merge Intervals", url: "https://leetcode.com/problems/merge-intervals", difficulty: "Medium" },
+      { n: 3, title: "Group Anagrams", url: "https://leetcode.com/problems/group-anagrams", difficulty: "Medium" },
+      { n: 4, title: "Product of Array Except Self", url: "https://leetcode.com/problems/product-of-array-except-self", difficulty: "Medium" },
+      { n: 5, title: "Maximum Subarray", url: "https://leetcode.com/problems/maximum-subarray", difficulty: "Medium" },
+      { n: 6, title: "Rotate Image", url: "https://leetcode.com/problems/rotate-image", difficulty: "Medium" },
+      { n: 7, title: "3Sum", url: "https://leetcode.com/problems/3sum", difficulty: "Medium" },
+      { n: 8, title: "Trapping Rain Water", url: "https://leetcode.com/problems/trapping-rain-water", difficulty: "Hard" },
+      { n: 9, title: "Integer to English Words", url: "https://leetcode.com/problems/integer-to-english-words", difficulty: "Hard" },
+      { n: 10, title: "Subarray Sum Equals K", url: "https://leetcode.com/problems/subarray-sum-equals-k", difficulty: "Medium" },
+      { n: 11, title: "Maximum Frequency After Subarray Operation", url: "https://leetcode.com/problems/maximum-frequency-after-subarray-operation", difficulty: "Medium" },
+      { n: 12, title: "Max Difference You Can Get From Changing an Integer", url: "https://leetcode.com/problems/max-difference-you-can-get-from-changing-an-integer", difficulty: "Medium" },
+      { n: 13, title: "Analyze User Website Visit Pattern", url: "https://leetcode.com/problems/analyze-user-website-visit-pattern", difficulty: "Medium" },
+      { n: 14, title: "Find First and Last Position of Element in Sorted Array", url: "https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array", difficulty: "Medium" },
+      { n: 15, title: "Max Points on a Line", url: "https://leetcode.com/problems/max-points-on-a-line", difficulty: "Hard" },
+    ],
+  },
+  {
+    day: 2,
+    title: "Sliding Window and Two Pointers",
+    problems: [
+      { n: 16, title: "Longest Substring Without Repeating Characters", url: "https://leetcode.com/problems/longest-substring-without-repeating-characters", difficulty: "Medium" },
+      { n: 17, title: "Minimum Window Substring", url: "https://leetcode.com/problems/minimum-window-substring", difficulty: "Hard" },
+      { n: 18, title: "Container With Most Water", url: "https://leetcode.com/problems/container-with-most-water", difficulty: "Medium" },
+      { n: 19, title: "Longest Repeating Character Replacement", url: "https://leetcode.com/problems/longest-repeating-character-replacement", difficulty: "Medium" },
+      { n: 20, title: "Sliding Window Maximum", url: "https://leetcode.com/problems/sliding-window-maximum", difficulty: "Hard" },
+    ],
+  },
+  {
+    day: 3,
+    title: "Trees and Graphs",
+    problems: [
+      { n: 21, title: "Number of Islands", url: "https://leetcode.com/problems/number-of-islands", difficulty: "Medium" },
+      { n: 22, title: "Course Schedule", url: "https://leetcode.com/problems/course-schedule", difficulty: "Medium" },
+      { n: 23, title: "Rotting Oranges", url: "https://leetcode.com/problems/rotting-oranges", difficulty: "Medium" },
+      { n: 24, title: "Word Ladder", url: "https://leetcode.com/problems/word-ladder", difficulty: "Hard" },
+      { n: 25, title: "Making a Large Island", url: "https://leetcode.com/problems/making-a-large-island", difficulty: "Hard" },
+      { n: 26, title: "Lowest Common Ancestor of a Binary Tree", url: "https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree", difficulty: "Medium" },
+      { n: 27, title: "Binary Tree Zigzag Level Order Traversal", url: "https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal", difficulty: "Medium" },
+      { n: 28, title: "Diameter of Binary Tree", url: "https://leetcode.com/problems/diameter-of-binary-tree", difficulty: "Easy" },
+      { n: 29, title: "Serialize and Deserialize Binary Tree", url: "https://leetcode.com/problems/serialize-and-deserialize-binary-tree", difficulty: "Hard" },
+      { n: 30, title: "Word Search II", url: "https://leetcode.com/problems/word-search-ii", difficulty: "Hard" },
+      { n: 31, title: "Alien Dictionary", url: "https://leetcode.com/problems/alien-dictionary", difficulty: "Hard" },
+      { n: 32, title: "Word Search", url: "https://leetcode.com/problems/word-search", difficulty: "Medium" },
+    ],
+  },
+  {
+    day: 4,
+    title: "Heaps and Priority Queues",
+    problems: [
+      { n: 33, title: "Kth Largest Element in an Array", url: "https://leetcode.com/problems/kth-largest-element-in-an-array", difficulty: "Medium" },
+      { n: 34, title: "Top K Frequent Elements", url: "https://leetcode.com/problems/top-k-frequent-elements", difficulty: "Medium" },
+      { n: 35, title: "Merge k Sorted Lists", url: "https://leetcode.com/problems/merge-k-sorted-lists", difficulty: "Hard" },
+      { n: 36, title: "Find Median from Data Stream", url: "https://leetcode.com/problems/find-median-from-data-stream", difficulty: "Hard" },
+      { n: 37, title: "Reorganize String", url: "https://leetcode.com/problems/reorganize-string", difficulty: "Medium" },
+      { n: 38, title: "Task Scheduler", url: "https://leetcode.com/problems/task-scheduler", difficulty: "Medium" },
+      { n: 39, title: "Maximize Y-Sum by Picking a Triplet of Distinct X-Values", url: "https://leetcode.com/problems/maximize-ysum-by-picking-a-triplet-of-distinct-xvalues", difficulty: "Medium" },
+      { n: 40, title: "Minimum Cost to Connect Sticks", url: "https://leetcode.com/problems/minimum-cost-to-connect-sticks", difficulty: "Medium" },
+      { n: 41, title: "The Skyline Problem", url: "https://leetcode.com/problems/the-skyline-problem", difficulty: "Hard" },
+      { n: 42, title: "Count of Smaller Numbers After Self", url: "https://leetcode.com/problems/count-of-smaller-numbers-after-self", difficulty: "Hard" },
+    ],
+  },
+  {
+    day: 5,
+    title: "Dynamic Programming",
+    problems: [
+      { n: 43, title: "Longest Palindromic Substring", url: "https://leetcode.com/problems/longest-palindromic-substring", difficulty: "Medium" },
+      { n: 44, title: "Coin Change", url: "https://leetcode.com/problems/coin-change", difficulty: "Medium" },
+      { n: 45, title: "Maximum Product Subarray", url: "https://leetcode.com/problems/maximum-product-subarray", difficulty: "Medium" },
+      { n: 46, title: "Jump Game", url: "https://leetcode.com/problems/jump-game", difficulty: "Medium" },
+      { n: 47, title: "Best Time to Buy and Sell Stock", url: "https://leetcode.com/problems/best-time-to-buy-and-sell-stock", difficulty: "Easy" },
+      { n: 48, title: "Word Break II", url: "https://leetcode.com/problems/word-break-ii", difficulty: "Hard" },
+      { n: 49, title: "Burst Balloons", url: "https://leetcode.com/problems/burst-balloons", difficulty: "Hard" },
+      { n: 50, title: "Decode Ways", url: "https://leetcode.com/problems/decode-ways", difficulty: "Medium" },
+      { n: 51, title: "Word Break", url: "https://leetcode.com/problems/word-break", difficulty: "Medium" },
+    ],
+  },
+  {
+    day: 6,
+    title: "Design",
+    problems: [
+      { n: 52, title: "LRU Cache", url: "https://leetcode.com/problems/lru-cache", difficulty: "Medium" },
+      { n: 53, title: "Insert Delete GetRandom O(1)", url: "https://leetcode.com/problems/insert-delete-getrandom-o1", difficulty: "Medium" },
+      { n: 54, title: "LFU Cache", url: "https://leetcode.com/problems/lfu-cache", difficulty: "Hard" },
+      { n: 55, title: "Design In-Memory File System", url: "https://leetcode.com/problems/design-in-memory-file-system", difficulty: "Hard" },
+      { n: 56, title: "Design Search Autocomplete System", url: "https://leetcode.com/problems/design-search-autocomplete-system", difficulty: "Hard" },
+      { n: 57, title: "Design Hit Counter", url: "https://leetcode.com/problems/design-hit-counter", difficulty: "Medium" },
+      { n: 58, title: "Reorder List", url: "https://leetcode.com/problems/reorder-list", difficulty: "Medium" },
+    ],
+  },
+];
+
+export const AMAZON_TOTAL = AMAZON_SECTIONS.reduce(
+  (n, s) => n + s.problems.length,
+  0,
+);

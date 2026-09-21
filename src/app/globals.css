@@ -8,6 +8,30 @@
   --color-brand-neon: #22c55e;
   --color-brand-pill: #1a3821;
 
+  /* DevsUnite system — light chrome (sidebar rail, top bar) */
+  --color-surface: #f9f9f6;
+  --color-surface-bright: #f9f9f6;
+  --color-surface-subtle: #f5f5f0;
+  --color-surface-container-lowest: #ffffff;
+  --color-on-surface: #1a1c1b;
+  --color-on-surface-variant: #3c4a42;
+  --color-outline: #6c7a71;
+  --color-primary: #006c49;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #10b981;
+  --color-on-primary-container: #00422b;
+  --color-inverse-primary: #4edea3;
+  --color-card-obsidian: #121212;
+  --color-card-charcoal: #1e1e1e;
+
+  /* Dashboard canvas — dark analytics surfaces */
+  --color-dash-bg: #0b100d;
+  --color-dash-card: #121914;
+  --color-dash-border: #1e2920;
+  --color-dash-muted: #8c9c90;
+  --color-dash-dim: #647668;
+  --color-dash-accent: #22c55e;
+
   --font-sans: "Plus Jakarta Sans", "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -19,6 +43,17 @@ body {
   color: #f1f5f9;
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* App-shell base: dense UI reads at 14px, not the browser's 16px default. */
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+/* Large type gets tighter tracking so headings don't look airy at size. */
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
 }
 
 ::selection {
@@ -40,6 +75,190 @@ body {
     transparent 1.2px
   );
   background-size: 28px 28px;
+}
+
+/* Hero profile cards: idle drift, and a wider sway while hovered.
+   The rotation is baked into the keyframes so it composes with the motion —
+   a Tailwind rotate-* class would be overwritten by the animated transform. */
+.float-card {
+  animation: cardDrift 6s ease-in-out infinite;
+}
+.float-card:hover {
+  animation: cardSway 1.6s ease-in-out infinite;
+}
+
+@keyframes cardDrift {
+  0%,
+  100% {
+    transform: translateY(0) rotate(var(--tilt, 0deg));
+  }
+  50% {
+    transform: translateY(-10px) rotate(var(--tilt, 0deg));
+  }
+}
+
+@keyframes cardSway {
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(var(--tilt, 0deg));
+  }
+  25% {
+    transform: translate(-12px, -6px) rotate(calc(var(--tilt, 0deg) - 3deg));
+  }
+  75% {
+    transform: translate(12px, -6px) rotate(calc(var(--tilt, 0deg) + 3deg));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .float-card,
+  .float-card:hover {
+    animation: none;
+    transform: rotate(var(--tilt, 0deg));
+  }
+}
+
+/* ── Core Engine mockup animations ─────────────────────────────── */
+
+/* Terminal lines typing in one after another */
+.line-in {
+  opacity: 0;
+  animation: lineIn 0.45s ease-out forwards;
+}
+@keyframes lineIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Blinking caret / status dot */
+.blink {
+  animation: blink 1.4s steps(2, start) infinite;
+}
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* Contribution squares lighting up */
+.cell-pop {
+  animation: cellPop 0.4s ease-out backwards;
+}
+@keyframes cellPop {
+  from {
+    opacity: 0.15;
+    transform: scale(0.6);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Avatars orbiting the community hub */
+.orbit {
+  animation: orbit 18s linear infinite;
+}
+.orbit-rev {
+  animation: orbit 18s linear infinite reverse;
+}
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+/* Counter-rotate so avatars stay upright while the ring spins */
+.orbit-fix {
+  animation: orbit 18s linear infinite reverse;
+}
+
+/* Gentle pulse for share icons and hubs */
+.pulse-soft {
+  animation: pulseSoft 3s ease-in-out infinite;
+}
+@keyframes pulseSoft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.06);
+    opacity: 0.85;
+  }
+}
+
+/* Sync arrow nudging right */
+.nudge-x {
+  animation: nudgeX 1.8s ease-in-out infinite;
+}
+@keyframes nudgeX {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(4px);
+  }
+}
+
+/* Upload progress filling */
+.fill-bar {
+  animation: fillBar 3.2s ease-in-out infinite;
+}
+@keyframes fillBar {
+  0% {
+    width: 8%;
+  }
+  70%,
+  100% {
+    width: 92%;
+  }
+}
+
+/* Ring ripple behind the community hub */
+.ripple {
+  animation: ripple 3s ease-out infinite;
+}
+@keyframes ripple {
+  0% {
+    transform: scale(0.75);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .line-in,
+  .blink,
+  .cell-pop,
+  .orbit,
+  .orbit-rev,
+  .orbit-fix,
+  .pulse-soft,
+  .nudge-x,
+  .fill-bar,
+  .ripple {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 /* Marquee — the track is duplicated in markup, so -50% loops seamlessly */

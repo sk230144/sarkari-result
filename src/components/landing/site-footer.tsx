@@ -2,7 +2,7 @@ import { Flame, Moon, Phone } from "lucide-react";
 
 const PLATFORM = [
   ["Find Jobs", "#jobs"],
-  ["Resources", "#resources"],
+  ["Resources", "/resources"],
   ["AI Copilot", "#copilot"],
   ["Contact", "#contact"],
 ];

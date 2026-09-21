@@ -18,7 +18,7 @@ export function Navbar() {
             <a href="#jobs" className="transition-colors hover:text-white">
               Jobs
             </a>
-            <a href="#resources" className="transition-colors hover:text-white">
+            <a href="/resources" className="transition-colors hover:text-white">
               Resources
             </a>
             <a
