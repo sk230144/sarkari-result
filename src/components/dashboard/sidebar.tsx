@@ -54,7 +54,7 @@ const SECTIONS: NavSection[] = [
           { label: "Rohit Negi Sheet", href: "/dsa-sheets/rohit-negi" },
         ],
       },
-      { label: "20 DSA Patterns", icon: Layers, href: "#dsa-patterns" },
+      { label: "20 DSA Patterns", icon: Layers, href: "/dsa-patterns" },
       { label: "System Design Sheet", icon: Network, href: "/system-design" },
       {
         label: "FAANG Interview Questions",
@@ -129,7 +129,7 @@ export function Sidebar({
       )}
 
       <aside
-        className={`fixed left-0 top-0 z-50 flex h-screen flex-col justify-between bg-[#121212] px-4 py-4 transition-[width,transform] duration-300 ${
+        className={`fixed left-0 top-0 z-50 flex h-screen flex-col justify-between bg-[var(--color-c-obsidian)] px-4 py-4 transition-[width,transform] duration-300 ${
           collapsed ? "w-20" : "w-72"
         } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
@@ -142,10 +142,10 @@ export function Sidebar({
           >
             {!collapsed && (
               <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#006c49]">
-                  <Flame className="h-5 w-5 text-white" />
+                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-primary)]">
+                  <Flame className="h-5 w-5 text-[var(--color-c-text)]" />
                 </div>
-                <span className="text-[17px] font-bold tracking-tight text-[#f9f9f6]">
+                <span className="text-[17px] font-bold tracking-tight text-[var(--color-c-text)]">
                   jobalert24
                 </span>
               </div>
@@ -156,7 +156,7 @@ export function Sidebar({
               onClick={onToggleCollapse}
               aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
               aria-expanded={!collapsed}
-              className="hidden text-[#6c7a71] transition-colors hover:text-[#f9f9f6] lg:block"
+              className="hidden text-[var(--color-c-outline)] transition-colors hover:text-[var(--color-c-text)] lg:block"
             >
               {collapsed ? (
                 <ChevronsRight className="h-5 w-5" />
@@ -169,7 +169,7 @@ export function Sidebar({
               type="button"
               onClick={onMobileClose}
               aria-label="Close menu"
-              className="text-[#6c7a71] transition-colors hover:text-[#f9f9f6] lg:hidden"
+              className="text-[var(--color-c-outline)] transition-colors hover:text-[var(--color-c-text)] lg:hidden"
             >
               <X className="h-5 w-5" />
             </button>
@@ -182,27 +182,27 @@ export function Sidebar({
                 type="button"
                 onClick={onToggleCollapse}
                 aria-label="Search problems and sheets"
-                className="flex h-10 w-full items-center justify-center rounded-lg bg-[#1e1e1e] text-[#6c7a71] transition-colors hover:text-[#f9f9f6]"
+                className="flex h-10 w-full items-center justify-center rounded-lg bg-[var(--color-c-charcoal)] text-[var(--color-c-outline)] transition-colors hover:text-[var(--color-c-text)]"
               >
                 <Search className="h-[18px] w-[18px]" />
               </button>
             ) : (
               <>
-                <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#6c7a71]" />
+                <Search className="pointer-events-none absolute left-4 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-c-outline)]" />
                 <input
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search problems, sheets..."
                   aria-label="Search problems and sheets"
-                  className="h-10 w-full rounded-lg bg-[#1e1e1e] pl-9 pr-8 text-xs text-[#f9f9f6] placeholder:text-[#6c7a71] focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+                  className="h-10 w-full rounded-lg bg-[var(--color-c-charcoal)] pl-9 pr-8 text-xs text-[var(--color-c-text)] placeholder:text-[var(--color-c-outline)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-emerald)]"
                 />
                 {query && (
                   <button
                     type="button"
                     onClick={() => setQuery("")}
                     aria-label="Clear search"
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7a71] hover:text-[#f9f9f6]"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-c-outline)] hover:text-[var(--color-c-text)]"
                   >
                     <X className="h-3.5 w-3.5" />
                   </button>
@@ -214,7 +214,7 @@ export function Sidebar({
           {/* Nav */}
           <nav className="flex min-h-0 flex-col gap-1 overflow-y-auto pr-1">
             {empty && (
-              <p className="px-3 py-4 text-xs text-[#6c7a71]">
+              <p className="px-3 py-4 text-xs text-[var(--color-c-outline)]">
                 No matches for “{query}”.
               </p>
             )}
@@ -223,13 +223,13 @@ export function Sidebar({
               <div key={section.heading ?? `s-${si}`} className="flex flex-col gap-1">
                 {section.heading && !collapsed && (
                   <div className="px-2 pt-2">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[#6c7a71]">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-outline)]">
                       {section.heading}
                     </span>
                   </div>
                 )}
                 {section.heading && collapsed && (
-                  <div className="mx-auto my-2 h-px w-8 bg-[#1e1e1e]" />
+                  <div className="mx-auto my-2 h-px w-8 bg-[var(--color-c-charcoal)]" />
                 )}
 
                 {section.items.map((item) => {
@@ -265,8 +265,8 @@ export function Sidebar({
                           collapsed ? "justify-center" : "justify-between"
                         } ${
                           isActive
-                            ? "bg-[#10b981] font-bold text-[#00422b] shadow-sm"
-                            : "font-medium text-[#6c7a71] hover:bg-[#1e1e1e] hover:text-[#f9f9f6]"
+                            ? "bg-[var(--color-c-emerald)] font-bold text-[var(--color-c-on-primary-container)] shadow-sm"
+                            : "font-medium text-[var(--color-c-outline)] hover:bg-[var(--color-c-charcoal)] hover:text-[var(--color-c-text)]"
                         }`}
                       >
                         <span
@@ -305,7 +305,7 @@ export function Sidebar({
                       </Tag>
 
                       {item.children && isOpen && !collapsed && (
-                        <div className="mt-1 flex flex-col gap-1 border-l border-[#1e1e1e] pl-4 ml-4">
+                        <div className="mt-1 flex flex-col gap-1 border-l border-[var(--color-c-charcoal)] pl-4 ml-4">
                           {item.children.map((child) => (
                             <Link
                               key={child.label}
@@ -316,8 +316,8 @@ export function Sidebar({
                               }}
                               className={`rounded-lg px-3 py-1.5 text-xs transition-all ${
                                 activeHref === child.href
-                                  ? "bg-[#1e1e1e] font-semibold text-[#4edea3]"
-                                  : "text-[#6c7a71] hover:bg-[#1e1e1e] hover:text-[#f9f9f6]"
+                                  ? "bg-[var(--color-c-charcoal)] font-semibold text-[var(--color-c-emerald-4)]"
+                                  : "text-[var(--color-c-outline)] hover:bg-[var(--color-c-charcoal)] hover:text-[var(--color-c-text)]"
                               }`}
                             >
                               {child.label}
@@ -338,7 +338,7 @@ export function Sidebar({
           <button
             type="button"
             title={collapsed ? "Become a Campus Ambassador" : undefined}
-            className={`flex w-full items-center justify-center gap-1 rounded-full bg-white font-semibold text-[#1a1c1b] shadow-sm transition-colors hover:bg-[#f5f5f0] ${
+            className={`flex w-full items-center justify-center gap-1 rounded-full bg-white font-semibold text-[var(--color-c-ink)] shadow-sm transition-colors hover:bg-[var(--color-c-surface-subtle)] ${
               collapsed ? "h-10 px-0" : "px-3 py-2.5 text-[13px]"
             }`}
           >

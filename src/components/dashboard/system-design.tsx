@@ -93,15 +93,15 @@ export function SystemDesign() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-6 lg:px-8">
       {/* Header */}
       <header className="flex flex-col gap-1.5">
-        <h1 className="text-[28px] font-bold leading-9 tracking-tight text-white">
+        <h1 className="text-[28px] font-bold leading-9 tracking-tight text-[var(--color-c-text)]">
           Top {total} System Design Interview Questions
         </h1>
-        <p className="max-w-2xl text-[13px] leading-relaxed text-[#8c9c90]">
+        <p className="max-w-2xl text-[13px] leading-relaxed text-[var(--color-c-muted)]">
           {total} hand-picked high-level and low-level system design questions,
           each with a real description, expected key points, and the concepts it
           teaches.
         </p>
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6c7a71]">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-outline)]">
           By DevsUnite · {total} Questions
         </p>
       </header>
@@ -109,20 +109,20 @@ export function SystemDesign() {
       {/* Progress + filters */}
       <section className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <span className="text-[28px] font-bold leading-none text-white">
+          <span className="text-[28px] font-bold leading-none text-[var(--color-c-text)]">
             {percent}%
           </span>
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-6">
-              <span className="text-[11px] font-semibold text-[#d1d5db]">
+              <span className="text-[11px] font-semibold text-[var(--color-c-text-4)]">
                 Overall Progress
               </span>
-              <span className="text-[11px] text-[#6c7a71]">
+              <span className="text-[11px] text-[var(--color-c-outline)]">
                 {completed}/{total}
               </span>
             </div>
             <div
-              className="h-1 w-36 overflow-hidden rounded-full bg-[#2a2f35]"
+              className="h-1 w-36 overflow-hidden rounded-full bg-[var(--color-c-surface-cool-3)]"
               role="progressbar"
               aria-valuenow={percent}
               aria-valuemin={0}
@@ -130,14 +130,14 @@ export function SystemDesign() {
               aria-label="Overall progress"
             >
               <div
-                className="h-full rounded-full bg-[#22c55e] transition-all duration-300"
+                className="h-full rounded-full bg-[var(--color-c-accent)] transition-all duration-300"
                 style={{ width: `${percent}%` }}
               />
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-1 self-start rounded-full border border-[#2a2f35] bg-[#15181c] p-1 sm:self-auto">
+        <div className="flex items-center gap-1 self-start rounded-full border border-[var(--color-c-surface-cool-3)] bg-[var(--color-c-surface-6b)] p-1 sm:self-auto">
           {FILTERS.map((f) => {
             const active = filter === f.value;
             return (
@@ -148,12 +148,12 @@ export function SystemDesign() {
                 aria-pressed={active}
                 className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-[11px] font-semibold transition-all ${
                   active
-                    ? "bg-[#22c55e] text-[#06200f]"
-                    : "text-[#8c9c90] hover:text-white"
+                    ? "bg-[var(--color-c-accent)] text-[var(--color-c-green-dim)]"
+                    : "text-[var(--color-c-muted)] hover:text-[var(--color-c-text)]"
                 }`}
               >
                 <span>{f.label}</span>
-                <span className={active ? "opacity-70" : "text-[#6c7a71]"}>
+                <span className={active ? "opacity-70" : "text-[var(--color-c-outline)]"}>
                   {f.count}
                 </span>
               </button>
@@ -184,7 +184,7 @@ export function SystemDesign() {
               {/* Top row */}
               <div className="relative mb-3 flex items-start justify-between gap-2">
                 <span className="inline-flex items-center gap-1.5 rounded-full bg-black/25 px-2 py-0.5 text-[10px] font-bold text-white/85">
-                  <span className="h-1.5 w-1.5 rounded-full bg-[#60a5fa]" />
+                  <span className="h-1.5 w-1.5 rounded-full bg-[var(--color-c-blue)]" />
                   {q.level}
                 </span>
                 <button
@@ -195,7 +195,7 @@ export function SystemDesign() {
                   onClick={() => toggleDone(q.slug)}
                   className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full border transition-colors ${
                     isDone
-                      ? "border-[#22c55e] bg-[#22c55e] text-[#06200f]"
+                      ? "border-[var(--color-c-accent)] bg-[var(--color-c-accent)] text-[var(--color-c-green-dim)]"
                       : "border-white/25 text-transparent hover:border-white/60"
                   }`}
                 >
@@ -240,7 +240,7 @@ export function SystemDesign() {
                 type="button"
                 onClick={() => togglePoints(q.slug)}
                 aria-expanded={pointsOpen}
-                className={`relative mb-2 flex items-center gap-1 text-[11px] font-medium transition-colors ${t.body} hover:text-white`}
+                className={`relative mb-2 flex items-center gap-1 text-[11px] font-medium transition-colors ${t.body} hover:text-[var(--color-c-text)]`}
               >
                 <ListChecks className="h-3.5 w-3.5" />
                 <span>Key points</span>
@@ -305,7 +305,7 @@ export function SystemDesign() {
                   <button
                     type="button"
                     onClick={() => openNote(q.slug)}
-                    className="inline-flex items-center gap-1 rounded border border-white/15 px-1.5 py-0.5 text-[10px] font-medium text-white/60 transition-colors hover:border-white/40 hover:text-white"
+                    className="inline-flex items-center gap-1 rounded border border-white/15 px-1.5 py-0.5 text-[10px] font-medium text-white/60 transition-colors hover:border-white/40 hover:text-[var(--color-c-text)]"
                   >
                     <StickyNote className="h-3 w-3" />
                     {notes[q.slug] ? "Edit note" : "Add note"}
@@ -319,14 +319,14 @@ export function SystemDesign() {
 
       {/* FAQ */}
       <section className="mt-2 flex flex-col gap-3">
-        <h2 className="text-[17px] font-bold text-white">
+        <h2 className="text-[17px] font-bold text-[var(--color-c-text)]">
           Frequently asked questions
         </h2>
-        <div className="divide-y divide-[#22272c] rounded-xl border border-[#22272c] bg-[#15181c]">
+        <div className="divide-y divide-[var(--color-c-border-cool)] rounded-xl border border-[var(--color-c-border-cool)] bg-[var(--color-c-surface-6b)]">
           {FAQS.map((f) => (
             <div key={f.q} className="p-5">
-              <h3 className="mb-1.5 text-[13px] font-bold text-white">{f.q}</h3>
-              <p className="text-[12px] leading-relaxed text-[#8c9c90]">
+              <h3 className="mb-1.5 text-[13px] font-bold text-[var(--color-c-text)]">{f.q}</h3>
+              <p className="text-[12px] leading-relaxed text-[var(--color-c-muted)]">
                 {f.a}
               </p>
             </div>
@@ -345,9 +345,9 @@ export function SystemDesign() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex w-full max-w-md flex-col gap-3 rounded-xl border border-[#2a2f35] bg-[#15181c] p-5 shadow-2xl"
+            className="flex w-full max-w-md flex-col gap-3 rounded-xl border border-[var(--color-c-surface-cool-3)] bg-[var(--color-c-surface-6b)] p-5 shadow-2xl"
           >
-            <h3 className="text-[15px] font-bold text-white">
+            <h3 className="text-[15px] font-bold text-[var(--color-c-text)]">
               {QUESTIONS.find((q) => q.slug === noteFor)?.title}
             </h3>
             <textarea
@@ -356,20 +356,20 @@ export function SystemDesign() {
               value={draftNote}
               onChange={(e) => setDraftNote(e.target.value)}
               placeholder="Your approach, gotchas to remember, links…"
-              className="w-full resize-none rounded-lg bg-[#0e1114] p-3 text-[13px] text-white placeholder:text-[#6c7a71] focus:outline-none focus:ring-1 focus:ring-[#22c55e]"
+              className="w-full resize-none rounded-lg bg-[var(--color-c-surface-cool)] p-3 text-[13px] text-[var(--color-c-text)] placeholder:text-[var(--color-c-outline)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-accent)]"
             />
             <div className="flex items-center justify-end gap-2">
               <button
                 type="button"
                 onClick={() => setNoteFor(null)}
-                className="rounded-lg px-3 py-2 text-[12px] text-[#8c9c90] transition-colors hover:text-white"
+                className="rounded-lg px-3 py-2 text-[12px] text-[var(--color-c-muted)] transition-colors hover:text-[var(--color-c-text)]"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={saveNote}
-                className="rounded-lg bg-[#22c55e] px-4 py-2 text-[12px] font-bold text-[#06200f] transition-colors hover:bg-[#16a34a]"
+                className="rounded-lg bg-[var(--color-c-accent)] px-4 py-2 text-[12px] font-bold text-[var(--color-c-green-dim)] transition-colors hover:bg-[var(--color-c-accent-2)]"
               >
                 Save note
               </button>

@@ -7,30 +7,30 @@ const TOOLS = [
     name: "Cover Letter",
     body: "Generate a personalized, ATS-friendly cover letter for any job in seconds.",
     href: "#cover-letter",
-    tint: "text-[#a78bfa]",
-    chip: "bg-[#a78bfa]/15",
-    wash: "from-[#a78bfa]/[0.10]",
-    link: "text-[#a78bfa]",
+    tint: "text-[var(--color-c-violet)]",
+    chip: "bg-[var(--color-c-violet)]/15",
+    wash: "from-[var(--color-c-violet)]/[0.10]",
+    link: "text-[var(--color-c-violet)]",
   },
   {
     icon: Monitor,
     name: "Mock Interview",
     body: "Practice technical & HR rounds with AI-generated, role-specific questions.",
     href: "#mock-interview",
-    tint: "text-[#60a5fa]",
-    chip: "bg-[#60a5fa]/15",
-    wash: "from-[#60a5fa]/[0.10]",
-    link: "text-[#60a5fa]",
+    tint: "text-[var(--color-c-blue)]",
+    chip: "bg-[var(--color-c-blue)]/15",
+    wash: "from-[var(--color-c-blue)]/[0.10]",
+    link: "text-[var(--color-c-blue)]",
   },
   {
     icon: Target,
     name: "Resume Analysis",
     body: "Get your ATS score, missing keywords, and a fix-it checklist instantly.",
     href: "#resume-analysis",
-    tint: "text-[#fbbf24]",
-    chip: "bg-[#fbbf24]/15",
-    wash: "from-[#fbbf24]/[0.10]",
-    link: "text-[#fbbf24]",
+    tint: "text-[var(--color-c-amber)]",
+    chip: "bg-[var(--color-c-amber)]/15",
+    wash: "from-[var(--color-c-amber)]/[0.10]",
+    link: "text-[var(--color-c-amber)]",
   },
 ];
 
@@ -39,10 +39,10 @@ export function MoreTools() {
     <>
       <section className="px-6 py-12">
         <div className="mx-auto max-w-4xl">
-          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[#a3e635]">
+          <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-[var(--color-c-lime)]">
             [ Complete your toolkit ]
           </p>
-          <h2 className="mt-2 text-[22px] font-bold tracking-tight text-white">
+          <h2 className="mt-2 text-[22px] font-bold tracking-tight text-[var(--color-c-text)]">
             Discover more tools
           </h2>
 
@@ -51,11 +51,11 @@ export function MoreTools() {
               <a
                 key={t.name}
                 href={t.href}
-                className="group flex flex-col overflow-hidden rounded-xl border border-[#242a22] bg-[#111411] transition-all hover:-translate-y-0.5 hover:border-[#2f363d]"
+                className="group flex flex-col overflow-hidden rounded-xl border border-[var(--color-c-neutral-2)] bg-[var(--color-c-surface-2)] transition-all hover:-translate-y-0.5 hover:border-[var(--color-c-border-cool-2)]"
               >
                 {/* Abstract preview */}
                 <div
-                  className={`relative flex h-24 items-center justify-center border-b border-[#242a22] bg-gradient-to-br ${t.wash} to-transparent`}
+                  className={`relative flex h-24 items-center justify-center border-b border-[var(--color-c-neutral-2)] bg-gradient-to-br ${t.wash} to-transparent`}
                 >
                   <div
                     aria-hidden
@@ -84,10 +84,10 @@ export function MoreTools() {
                 </div>
 
                 <div className="p-4">
-                  <h3 className="mb-1 text-[12px] font-bold text-white">
+                  <h3 className="mb-1 text-[12px] font-bold text-[var(--color-c-text)]">
                     {t.name}
                   </h3>
-                  <p className="mb-2 text-[11px] leading-relaxed text-[#8c9c90]">
+                  <p className="mb-2 text-[11px] leading-relaxed text-[var(--color-c-muted)]">
                     {t.body}
                   </p>
                   <span
@@ -105,7 +105,7 @@ export function MoreTools() {
 
       {/* Closing CTA */}
       <section className="px-6 pb-16">
-        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-[#242a22] bg-[#0b0e0b] px-6 py-16 text-center">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-2xl border border-[var(--color-c-neutral-2)] bg-[var(--color-c-canvas)] px-6 py-16 text-center">
           <div
             aria-hidden
             className="pointer-events-none absolute left-1/2 top-0 h-64 w-[600px] max-w-[120vw] -translate-x-1/2 -translate-y-1/2 rounded-full"
@@ -124,17 +124,17 @@ export function MoreTools() {
             <span
               key={cls}
               aria-hidden
-              className={`pointer-events-none absolute h-4 w-4 border-[#3f4740] ${cls}`}
+              className={`pointer-events-none absolute h-4 w-4 border-[var(--color-c-border-strong)] ${cls}`}
             />
           ))}
 
           <div className="relative">
-            <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight tracking-tight text-white">
+            <h2 className="text-[clamp(1.6rem,4vw,2.4rem)] font-bold leading-tight tracking-tight text-[var(--color-c-text)]">
               Ready to build your
               <br />
-              <span className="text-[#a3e635]">developer portfolio?</span>
+              <span className="text-[var(--color-c-lime)]">developer portfolio?</span>
             </h2>
-            <p className="mx-auto mt-3 max-w-sm text-[12px] text-[#8c9c90]">
+            <p className="mx-auto mt-3 max-w-sm text-[12px] text-[var(--color-c-muted)]">
               Join 500+ engineers already sharing their portfolio with
               recruiters.
             </p>
@@ -142,7 +142,7 @@ export function MoreTools() {
               <BuildCta variant="compact" />
               <a
                 href="#preview"
-                className="text-[11px] text-[#6b7280] underline-offset-4 hover:text-[#d1d5db] hover:underline"
+                className="text-[11px] text-[var(--color-c-dim)] underline-offset-4 hover:text-[var(--color-c-text-4)] hover:underline"
               >
                 See what your portfolio looks like →
               </a>

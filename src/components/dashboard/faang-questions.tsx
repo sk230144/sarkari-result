@@ -24,10 +24,10 @@ export function FaangQuestions() {
     <div className="mx-auto flex w-full max-w-7xl flex-col gap-6 px-6 py-6 lg:px-8">
       {/* Header */}
       <header className="flex flex-col gap-1.5">
-        <h1 className="text-[28px] font-bold leading-9 tracking-tight text-white">
+        <h1 className="text-[28px] font-bold leading-9 tracking-tight text-[var(--color-c-text)]">
           FAANG Interview Questions
         </h1>
-        <p className="max-w-xl text-[13px] leading-relaxed text-[#8c9c90]">
+        <p className="max-w-xl text-[13px] leading-relaxed text-[var(--color-c-muted)]">
           Real, recently reported coding interview questions. Pick a company to
           see what it actually asks.
         </p>
@@ -36,28 +36,28 @@ export function FaangQuestions() {
       {/* Search */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full sm:max-w-xs">
-          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#6c7a71]" />
+          <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[var(--color-c-outline)]" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search company or topic…"
             aria-label="Search companies"
-            className="h-9 w-full rounded-lg border border-[#22272c] bg-[#15181c] pl-9 pr-8 text-[12px] text-white placeholder:text-[#6c7a71] focus:outline-none focus:ring-1 focus:ring-[#22c55e]"
+            className="h-9 w-full rounded-lg border border-[var(--color-c-border-cool)] bg-[var(--color-c-surface-6b)] pl-9 pr-8 text-[12px] text-[var(--color-c-text)] placeholder:text-[var(--color-c-outline)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-accent)]"
           />
           {query && (
             <button
               type="button"
               onClick={() => setQuery("")}
               aria-label="Clear search"
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7a71] hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-c-outline)] hover:text-[var(--color-c-text)]"
             >
               <X className="h-3.5 w-3.5" />
             </button>
           )}
         </div>
 
-        <p className="text-[11px] font-semibold uppercase tracking-wider text-[#6c7a71]">
+        <p className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-outline)]">
           {visible.length} {visible.length === 1 ? "company" : "companies"} ·{" "}
           {totalQuestions} questions
         </p>
@@ -65,7 +65,7 @@ export function FaangQuestions() {
 
       {/* Company grid */}
       {visible.length === 0 ? (
-        <p className="rounded-xl border border-[#22272c] bg-[#15181c] p-10 text-center text-[13px] text-[#8c9c90]">
+        <p className="rounded-xl border border-[var(--color-c-border-cool)] bg-[var(--color-c-surface-6b)] p-10 text-center text-[13px] text-[var(--color-c-muted)]">
           No companies match “{query}”.
         </p>
       ) : (
@@ -74,7 +74,7 @@ export function FaangQuestions() {
             <a
               key={c.slug}
               href={c.route ?? `#${c.slug}`}
-              className="group flex flex-col overflow-hidden rounded-xl border border-[#22272c] bg-[#15181c] p-3 transition-all hover:-translate-y-0.5 hover:border-[#2f363d]"
+              className="group flex flex-col overflow-hidden rounded-xl border border-[var(--color-c-border-cool)] bg-[var(--color-c-surface-6b)] p-3 transition-all hover:-translate-y-0.5 hover:border-[var(--color-c-border-cool-2)]"
             >
               {/* Logo panel */}
               <div
@@ -89,19 +89,19 @@ export function FaangQuestions() {
                 />
               </div>
 
-              <h2 className="mb-1 text-[13px] font-bold text-white">
+              <h2 className="mb-1 text-[13px] font-bold text-[var(--color-c-text)]">
                 {c.name} Interview Questions
               </h2>
 
-              <p className="mb-3 text-[11px] leading-relaxed text-[#8c9c90]">
+              <p className="mb-3 text-[11px] leading-relaxed text-[var(--color-c-muted)]">
                 {describe(c)}
               </p>
 
-              <div className="mt-auto flex items-center justify-between border-t border-[#22272c] pt-2.5">
-                <span className="text-[11px] font-semibold text-[#d1d5db]">
+              <div className="mt-auto flex items-center justify-between border-t border-[var(--color-c-border-cool)] pt-2.5">
+                <span className="text-[11px] font-semibold text-[var(--color-c-text-4)]">
                   {c.questions} Questions
                 </span>
-                <ArrowRight className="h-3.5 w-3.5 text-[#6c7a71] transition-all group-hover:translate-x-0.5 group-hover:text-[#22c55e]" />
+                <ArrowRight className="h-3.5 w-3.5 text-[var(--color-c-outline)] transition-all group-hover:translate-x-0.5 group-hover:text-[var(--color-c-accent)]" />
               </div>
             </a>
           ))}

@@ -33,11 +33,11 @@ export function PortfolioFaq() {
     <section className="px-6 py-16">
       <div className="mx-auto max-w-2xl">
         <div className="mb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#2f4a25] bg-[#16210f] px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[#a3e635]">
-            <span className="blink h-1 w-1 rounded-full bg-[#a3e635]" />
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-c-olive)] bg-[var(--color-c-chip-easy)] px-3 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-lime)]">
+            <span className="blink h-1 w-1 rounded-full bg-[var(--color-c-lime)]" />
             FAQ
           </span>
-          <h2 className="mt-4 text-[26px] font-bold tracking-tight text-white">
+          <h2 className="mt-4 text-[26px] font-bold tracking-tight text-[var(--color-c-text)]">
             Frequently Asked
           </h2>
         </div>
@@ -48,7 +48,7 @@ export function PortfolioFaq() {
             return (
               <div
                 key={f.q}
-                className="overflow-hidden rounded-xl border border-[#242a22] bg-[#111411]"
+                className="overflow-hidden rounded-xl border border-[var(--color-c-neutral-2)] bg-[var(--color-c-surface-2)]"
               >
                 <button
                   type="button"
@@ -57,14 +57,14 @@ export function PortfolioFaq() {
                   aria-controls={`pf-faq-${i}`}
                   className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors hover:bg-white/[0.02]"
                 >
-                  <span className="font-mono text-[9px] text-[#a3e635]">
+                  <span className="font-mono text-[9px] text-[var(--color-c-lime)]">
                     {String(i + 1).padStart(2, "0")}
                   </span>
-                  <span className="flex-1 text-[12px] font-bold text-white">
+                  <span className="flex-1 text-[12px] font-bold text-[var(--color-c-text)]">
                     {f.q}
                   </span>
                   <ChevronDown
-                    className={`h-4 w-4 shrink-0 text-[#6b7280] transition-transform ${
+                    className={`h-4 w-4 shrink-0 text-[var(--color-c-dim)] transition-transform ${
                       isOpen ? "rotate-180" : ""
                     }`}
                   />
@@ -72,7 +72,7 @@ export function PortfolioFaq() {
                 {isOpen && (
                   <p
                     id={`pf-faq-${i}`}
-                    className="border-t border-[#242a22] px-4 py-3.5 pl-12 text-[11px] leading-relaxed text-[#8c9c90]"
+                    className="border-t border-[var(--color-c-neutral-2)] px-4 py-3.5 pl-12 text-[11px] leading-relaxed text-[var(--color-c-muted)]"
                   >
                     {f.a}
                   </p>

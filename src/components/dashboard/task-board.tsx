@@ -41,8 +41,8 @@ type Task = {
 const TAG_STYLES: Record<Tag, { pill: string; dot: string }> = {
   Resume: { pill: "bg-blue-500/15 text-blue-400", dot: "bg-blue-400" },
   "DSA Sheets": { pill: "bg-amber-400/15 text-amber-300", dot: "bg-amber-400" },
-  Interview: { pill: "bg-[#D8B4E2]/20 text-[#D8B4E2]", dot: "bg-[#D8B4E2]" },
-  Applied: { pill: "bg-[#10b981]/20 text-[#bff365]", dot: "bg-[#10b981]" },
+  Interview: { pill: "bg-[var(--color-c-violet-soft)]/20 text-[var(--color-c-violet-soft)]", dot: "bg-[var(--color-c-violet-soft)]" },
+  Applied: { pill: "bg-[var(--color-c-emerald)]/20 text-[var(--color-c-lime-soft)]", dot: "bg-[var(--color-c-emerald)]" },
 };
 
 const COLUMNS: {
@@ -61,7 +61,7 @@ const COLUMNS: {
     glow: "shadow-[0_0_8px_rgba(59,130,246,0.8)]",
     badge: "bg-blue-500/20 text-blue-400",
     ring: "inset 0 0 0 1px rgba(59, 130, 246, 0.28)",
-    bg: "bg-[#0e1626]/90",
+    bg: "bg-[var(--color-c-blue-dim)]/90",
   },
   {
     status: "inprogress",
@@ -70,25 +70,25 @@ const COLUMNS: {
     glow: "shadow-[0_0_8px_rgba(245,158,11,0.8)]",
     badge: "bg-amber-400/20 text-amber-400",
     ring: "inset 0 0 0 1px rgba(245, 158, 11, 0.32)",
-    bg: "bg-[#1e1708]/90",
+    bg: "bg-[var(--color-c-amber-dim-2)]/90",
   },
   {
     status: "done",
     label: "Done",
     dot: "bg-emerald-400",
     glow: "shadow-[0_0_8px_rgba(16,185,129,0.8)]",
-    badge: "bg-[#10b981]/20 text-[#10b981]",
+    badge: "bg-[var(--color-c-emerald)]/20 text-[var(--color-c-emerald)]",
     ring: "inset 0 0 0 1px rgba(16, 185, 129, 0.32)",
-    bg: "bg-[#0f1d13]/90",
+    bg: "bg-[var(--color-c-surface-1d)]/90",
   },
 ];
 
 const FILTERS: { label: string; value: Tag | "all"; dot?: string }[] = [
   { label: "All Tasks", value: "all" },
-  { label: "Resume", value: "Resume", dot: "bg-[#dce2f7]" },
-  { label: "DSA Sheets", value: "DSA Sheets", dot: "bg-[#bff365]" },
-  { label: "Interview", value: "Interview", dot: "bg-[#D8B4E2]" },
-  { label: "Applications", value: "Applied", dot: "bg-[#10b981]" },
+  { label: "Resume", value: "Resume", dot: "bg-[var(--color-c-blue-soft)]" },
+  { label: "DSA Sheets", value: "DSA Sheets", dot: "bg-[var(--color-c-lime-soft)]" },
+  { label: "Interview", value: "Interview", dot: "bg-[var(--color-c-violet-soft)]" },
+  { label: "Applications", value: "Applied", dot: "bg-[var(--color-c-emerald)]" },
 ];
 
 const INITIAL: Task[] = [
@@ -224,16 +224,16 @@ export function TaskBoard() {
     <div className="flex w-full min-w-0 flex-col gap-8 px-4 py-8 lg:px-8">
       {/* Header */}
       <div className="flex max-w-5xl flex-col gap-2">
-        <div className="flex flex-wrap items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[#10b981]">
-          <span className="inline-block h-2 w-2 animate-ping rounded-full bg-[#10b981]" />
+        <div className="flex flex-wrap items-center gap-1 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-emerald)]">
+          <span className="inline-block h-2 w-2 animate-ping rounded-full bg-[var(--color-c-emerald)]" />
           <span>Developer Career Sprint Engine</span>
-          <span className="mx-1 text-[#6c7a71]">•</span>
-          <span className="font-mono text-[#6c7a71]">v2.4.0-prod</span>
+          <span className="mx-1 text-[var(--color-c-outline)]">•</span>
+          <span className="font-mono text-[var(--color-c-outline)]">v2.4.0-prod</span>
         </div>
-        <h1 className="select-none text-[30px] font-extrabold uppercase leading-none tracking-tight text-[#f9f9f6]">
+        <h1 className="select-none text-[30px] font-extrabold uppercase leading-none tracking-tight text-[var(--color-c-text)]">
           Task Board
         </h1>
-        <p className="max-w-4xl text-[13px] leading-relaxed text-[#bbcabf]">
+        <p className="max-w-4xl text-[13px] leading-relaxed text-[var(--color-c-text-muted)]">
           Plan your job search day by day. Track resume edits, cover letter
           drafts, mock interview practice, DSA problems, portfolio updates, and
           recruiter follow ups, all on one board synced to your account.
@@ -241,47 +241,47 @@ export function TaskBoard() {
       </div>
 
       {/* Metric strip */}
-      <div className="grid grid-cols-1 gap-4 rounded-xl bg-[#1e1e1e]/80 p-4 backdrop-blur-md md:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 rounded-xl bg-[var(--color-c-charcoal)]/80 p-4 backdrop-blur-md md:grid-cols-4">
         <div className="flex items-center gap-4 px-2">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#006c49]/20 text-[#10b981]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-primary)]/20 text-[var(--color-c-emerald)]">
             <Flag className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider text-[#6c7a71]">
+            <span className="text-[11px] uppercase tracking-wider text-[var(--color-c-outline)]">
               Active Cadence
             </span>
-            <span className="text-[15px] font-bold text-[#f9f9f6]">Sprint 24</span>
+            <span className="text-[15px] font-bold text-[var(--color-c-text)]">Sprint 24</span>
           </div>
         </div>
 
         <div className="flex items-center gap-4 px-2">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#575e70]/20 text-[#f9f9f6]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-dim-3)]/20 text-[var(--color-c-text)]">
             <ListChecks className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider text-[#6c7a71]">
+            <span className="text-[11px] uppercase tracking-wider text-[var(--color-c-outline)]">
               Pipeline Load
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[15px] font-bold text-[#f9f9f6]">{total}</span>
-              <span className="text-xs text-[#6c7a71]">Tasks synced</span>
+              <span className="text-[15px] font-bold text-[var(--color-c-text)]">{total}</span>
+              <span className="text-xs text-[var(--color-c-outline)]">Tasks synced</span>
             </div>
           </div>
         </div>
 
         <div className="flex items-center gap-4 px-2">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[#10b981]/20 text-[#bff365]">
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-emerald)]/20 text-[var(--color-c-lime-soft)]">
             <CheckCircle2 className="h-5 w-5" />
           </div>
           <div className="flex flex-col">
-            <span className="text-[11px] uppercase tracking-wider text-[#6c7a71]">
+            <span className="text-[11px] uppercase tracking-wider text-[var(--color-c-outline)]">
               Completion Rate
             </span>
             <div className="flex items-baseline gap-1.5">
-              <span className="text-[15px] font-bold text-[#bff365]">
+              <span className="text-[15px] font-bold text-[var(--color-c-lime-soft)]">
                 {completion}%
               </span>
-              <span className="text-xs text-[#6c7a71]">
+              <span className="text-xs text-[var(--color-c-outline)]">
                 {doneCount} of {total} finished
               </span>
             </div>
@@ -290,12 +290,12 @@ export function TaskBoard() {
 
         <div className="flex flex-col justify-center gap-1.5 px-2">
           <div className="flex items-center justify-between text-[11px]">
-            <span className="text-[#6c7a71]">Weekly Target Velocity</span>
-            <span className="font-semibold text-[#10b981]">75% On Track</span>
+            <span className="text-[var(--color-c-outline)]">Weekly Target Velocity</span>
+            <span className="font-semibold text-[var(--color-c-emerald)]">75% On Track</span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-[#121212]">
+          <div className="h-2 w-full overflow-hidden rounded-full bg-[var(--color-c-obsidian)]">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-[#006c49] to-[#10b981]"
+              className="h-full rounded-full bg-gradient-to-r from-[var(--color-c-primary)] to-[var(--color-c-emerald)]"
               style={{ width: "75%" }}
             />
           </div>
@@ -319,15 +319,15 @@ export function TaskBoard() {
                 aria-pressed={active}
                 className={`flex shrink-0 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] transition-all ${
                   active
-                    ? "bg-[#10b981] font-semibold text-[#00422b] shadow-sm"
-                    : "bg-[#1e1e1e] font-medium text-[#6c7a71] hover:text-[#f9f9f6]"
+                    ? "bg-[var(--color-c-emerald)] font-semibold text-[var(--color-c-on-primary-container)] shadow-sm"
+                    : "bg-[var(--color-c-charcoal)] font-medium text-[var(--color-c-outline)] hover:text-[var(--color-c-text)]"
                 }`}
               >
                 {f.dot && <span className={`h-2 w-2 rounded-full ${f.dot}`} />}
                 <span>{f.label}</span>
                 <span
                   className={`rounded-full px-1.5 text-[11px] font-bold ${
-                    active ? "bg-[#00422b]/20" : "bg-[#121212] text-[#6c7a71]"
+                    active ? "bg-[var(--color-c-on-primary-container)]/20" : "bg-[var(--color-c-obsidian)] text-[var(--color-c-outline)]"
                   }`}
                 >
                   {count}
@@ -339,21 +339,21 @@ export function TaskBoard() {
 
         <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
           <div className="relative flex-1 sm:w-64">
-            <Search className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[#6c7a71]" />
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-[18px] w-[18px] -translate-y-1/2 text-[var(--color-c-outline)]" />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search tasks or keywords..."
               aria-label="Search tasks"
-              className="h-10 w-full rounded-lg bg-[#1e1e1e] pl-9 pr-8 text-xs text-[#f9f9f6] placeholder:text-[#6c7a71] focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+              className="h-10 w-full rounded-lg bg-[var(--color-c-charcoal)] pl-9 pr-8 text-xs text-[var(--color-c-text)] placeholder:text-[var(--color-c-outline)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-emerald)]"
             />
             {query && (
               <button
                 type="button"
                 onClick={() => setQuery("")}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[#6c7a71] hover:text-[#f9f9f6]"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--color-c-outline)] hover:text-[var(--color-c-text)]"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -362,7 +362,7 @@ export function TaskBoard() {
           <button
             type="button"
             onClick={() => openModal("todo")}
-            className="flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-[#10b981] px-4 text-[13px] font-bold text-white shadow-[0_0_16px_rgba(16,185,129,0.3)] transition-all hover:bg-[#264B2E] active:scale-95"
+            className="flex h-10 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-lg bg-[var(--color-c-emerald)] px-4 text-[13px] font-bold text-[var(--color-c-text)] shadow-[0_0_16px_rgba(16,185,129,0.3)] transition-all hover:bg-[var(--color-c-forest-13)] active:scale-95"
           >
             <Plus className="h-[18px] w-[18px]" />
             <span>New Task</span>
@@ -386,7 +386,7 @@ export function TaskBoard() {
               onDragLeave={() => setOverCol(null)}
               onDrop={() => drop(col.status)}
               className={`flex min-h-[500px] flex-col rounded-2xl p-4 transition-all ${col.bg} ${
-                overCol === col.status ? "ring-2 ring-[#10b981]/50" : ""
+                overCol === col.status ? "ring-2 ring-[var(--color-c-emerald)]/50" : ""
               }`}
               style={{ boxShadow: col.ring }}
             >
@@ -395,7 +395,7 @@ export function TaskBoard() {
                   <span
                     className={`h-2.5 w-2.5 rounded-full ${col.dot} ${col.glow}`}
                   />
-                  <span className="text-sm font-bold text-[#f9f9f6]">
+                  <span className="text-sm font-bold text-[var(--color-c-text)]">
                     {col.label}
                   </span>
                   <span
@@ -409,7 +409,7 @@ export function TaskBoard() {
                   onClick={() => openModal(col.status)}
                   title={`Add task to ${col.label}`}
                   aria-label={`Add task to ${col.label}`}
-                  className="flex h-7 w-7 items-center justify-center rounded-lg text-[#6c7a71] transition-colors hover:bg-[#1e1e1e]/50 hover:text-[#f9f9f6]"
+                  className="flex h-7 w-7 items-center justify-center rounded-lg text-[var(--color-c-outline)] transition-colors hover:bg-[var(--color-c-charcoal)]/50 hover:text-[var(--color-c-text)]"
                 >
                   <Plus className="h-[18px] w-[18px]" />
                 </button>
@@ -417,7 +417,7 @@ export function TaskBoard() {
 
               <div className="flex flex-1 flex-col gap-2">
                 {cards.length === 0 && (
-                  <p className="px-1 py-6 text-center text-xs text-[#6c7a71]">
+                  <p className="px-1 py-6 text-center text-xs text-[var(--color-c-outline)]">
                     {allInCol === 0
                       ? "No tasks yet."
                       : "No tasks match the current filter."}
@@ -439,7 +439,7 @@ export function TaskBoard() {
                         setDragId(null);
                         setOverCol(null);
                       }}
-                      className={`group relative cursor-grab rounded-xl bg-[#1e1e1e]/90 p-4 shadow-sm transition-all hover:bg-[#1e1e1e] active:cursor-grabbing ${
+                      className={`group relative cursor-grab rounded-xl bg-[var(--color-c-charcoal)]/90 p-4 shadow-sm transition-all hover:bg-[var(--color-c-charcoal)] active:cursor-grabbing ${
                         dragging ? "opacity-40" : ""
                       }`}
                     >
@@ -456,7 +456,7 @@ export function TaskBoard() {
                           className={`flex items-center gap-1 text-[11px] ${
                             task.metaIcon === "timer"
                               ? "font-semibold text-amber-400"
-                              : "text-[#6c7a71]"
+                              : "text-[var(--color-c-outline)]"
                           }`}
                         >
                           <MetaIcon className="h-3.5 w-3.5" />
@@ -465,17 +465,17 @@ export function TaskBoard() {
                       </div>
 
                       <h4
-                        className={`text-[13px] font-medium text-[#f9f9f6] transition-colors group-hover:text-[#10b981] ${
-                          task.done ? "line-through decoration-[#6c7a71]/60" : ""
+                        className={`text-[13px] font-medium text-[var(--color-c-text)] transition-colors group-hover:text-[var(--color-c-emerald)] ${
+                          task.done ? "line-through decoration-[var(--color-c-outline)]/60" : ""
                         }`}
                       >
                         {task.title}
                       </h4>
 
-                      <div className="mt-3 flex items-center justify-between pt-2.5 text-[12px] text-[#6c7a71]">
+                      <div className="mt-3 flex items-center justify-between pt-2.5 text-[12px] text-[var(--color-c-outline)]">
                         <div
                           className={`flex items-center gap-1 font-mono ${
-                            task.refIcon === "code" ? "text-[#bff365]" : ""
+                            task.refIcon === "code" ? "text-[var(--color-c-lime-soft)]" : ""
                           }`}
                         >
                           <RefIcon className="h-3.5 w-3.5" />
@@ -483,9 +483,9 @@ export function TaskBoard() {
                         </div>
                         <div className="flex items-center gap-2">
                           {task.done ? (
-                            <CircleCheck className="h-4 w-4 text-[#10b981]" />
+                            <CircleCheck className="h-4 w-4 text-[var(--color-c-emerald)]" />
                           ) : (
-                            <MessageSquare className="h-4 w-4 cursor-pointer transition-colors hover:text-[#f9f9f6]" />
+                            <MessageSquare className="h-4 w-4 cursor-pointer transition-colors hover:text-[var(--color-c-text)]" />
                           )}
                           {/* Keyboard-accessible alternative to dragging */}
                           <button
@@ -493,7 +493,7 @@ export function TaskBoard() {
                             onClick={() => move(task.id, 1)}
                             disabled={task.status === "done"}
                             aria-label={`Move "${task.title}" to next column`}
-                            className="cursor-pointer transition-colors hover:text-[#f9f9f6] disabled:cursor-not-allowed disabled:opacity-30"
+                            className="cursor-pointer transition-colors hover:text-[var(--color-c-text)] disabled:cursor-not-allowed disabled:opacity-30"
                           >
                             <GripVertical className="h-4 w-4" />
                           </button>
@@ -507,7 +507,7 @@ export function TaskBoard() {
               <button
                 type="button"
                 onClick={() => openModal(col.status)}
-                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#1e1e1e]/30 py-2.5 text-[13px] text-[#6c7a71] transition-all hover:bg-[#1e1e1e]/70 hover:text-[#f9f9f6]"
+                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-[var(--color-c-charcoal)]/30 py-2.5 text-[13px] text-[var(--color-c-outline)] transition-all hover:bg-[var(--color-c-charcoal)]/70 hover:text-[var(--color-c-text)]"
               >
                 <Plus className="h-[18px] w-[18px]" />
                 <span>Add task</span>
@@ -518,21 +518,21 @@ export function TaskBoard() {
       </div>
 
       {/* Sync tray */}
-      <div className="mt-4 flex flex-col items-start justify-between gap-4 rounded-2xl bg-[#1e1e1e]/60 p-6 md:flex-row md:items-center">
+      <div className="mt-4 flex flex-col items-start justify-between gap-4 rounded-2xl bg-[var(--color-c-charcoal)]/60 p-6 md:flex-row md:items-center">
         <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#10b981]/15 text-[#10b981]">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[var(--color-c-emerald)]/15 text-[var(--color-c-emerald)]">
             <MonitorCheck className="h-6 w-6" />
           </div>
           <div className="flex flex-col">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-sm font-semibold text-[#f9f9f6]">
+              <h3 className="text-sm font-semibold text-[var(--color-c-text)]">
                 Synced with Job Alert 24 Daily Bot
               </h3>
-              <span className="rounded-full bg-[#006c49]/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[#10b981]">
+              <span className="rounded-full bg-[var(--color-c-primary)]/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wider text-[var(--color-c-emerald)]">
                 Live
               </span>
             </div>
-            <p className="text-xs text-[#6c7a71]">
+            <p className="text-xs text-[var(--color-c-outline)]">
               Completing tasks automatically updates your sprint streak &amp;
               campus leaderboard status.
             </p>
@@ -541,14 +541,14 @@ export function TaskBoard() {
         <div className="flex w-full items-center gap-2 md:w-auto">
           <button
             type="button"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#1e1e1e] px-4 py-2 text-[13px] font-medium text-[#f9f9f6] transition-colors hover:bg-[#121212] md:flex-initial"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--color-c-charcoal)] px-4 py-2 text-[13px] font-medium text-[var(--color-c-text)] transition-colors hover:bg-[var(--color-c-obsidian)] md:flex-initial"
           >
             <History className="h-[18px] w-[18px]" />
             <span>View Archive</span>
           </button>
           <button
             type="button"
-            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[#F5F5F0] px-4 py-2 text-[13px] font-semibold text-[#1a1c1b] transition-colors hover:bg-[#f9f9f6] md:flex-initial"
+            className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-[var(--color-c-surface-subtle)] px-4 py-2 text-[13px] font-semibold text-[var(--color-c-ink)] transition-colors hover:bg-[var(--color-c-text)] md:flex-initial"
           >
             <Share2 className="h-[18px] w-[18px]" />
             <span>Export Board</span>
@@ -559,7 +559,7 @@ export function TaskBoard() {
       {/* New task modal */}
       {modalOpen && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#121212]/80 p-4 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-[var(--color-c-obsidian)]/80 p-4 backdrop-blur-sm"
           onClick={() => setModalOpen(false)}
           role="dialog"
           aria-modal="true"
@@ -567,12 +567,12 @@ export function TaskBoard() {
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="flex w-full max-w-lg flex-col gap-4 rounded-2xl bg-[#1e1e1e] p-6 shadow-2xl"
+            className="flex w-full max-w-lg flex-col gap-4 rounded-2xl bg-[var(--color-c-charcoal)] p-6 shadow-2xl"
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <span className="h-2.5 w-2.5 rounded-full bg-[#10b981]" />
-                <h3 className="text-base font-bold text-[#f9f9f6]">
+                <span className="h-2.5 w-2.5 rounded-full bg-[var(--color-c-emerald)]" />
+                <h3 className="text-base font-bold text-[var(--color-c-text)]">
                   Add New Task
                 </h3>
               </div>
@@ -580,7 +580,7 @@ export function TaskBoard() {
                 type="button"
                 onClick={() => setModalOpen(false)}
                 aria-label="Close"
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6c7a71] transition-colors hover:bg-[#121212] hover:text-[#f9f9f6]"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[var(--color-c-outline)] transition-colors hover:bg-[var(--color-c-obsidian)] hover:text-[var(--color-c-text)]"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -589,7 +589,7 @@ export function TaskBoard() {
             <div className="flex flex-col gap-2">
               <label
                 htmlFor="task-title"
-                className="text-[11px] font-semibold uppercase text-[#6c7a71]"
+                className="text-[11px] font-semibold uppercase text-[var(--color-c-outline)]"
               >
                 Task Title
               </label>
@@ -600,7 +600,7 @@ export function TaskBoard() {
                 onChange={(e) => setDraftTitle(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && createTask()}
                 placeholder="e.g., Draft cold email for Stripe hiring manager"
-                className="h-11 w-full rounded-lg bg-[#121212] px-3 text-[13px] text-[#f9f9f6] placeholder:text-[#6c7a71] focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+                className="h-11 w-full rounded-lg bg-[var(--color-c-obsidian)] px-3 text-[13px] text-[var(--color-c-text)] placeholder:text-[var(--color-c-outline)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-emerald)]"
               />
             </div>
 
@@ -608,7 +608,7 @@ export function TaskBoard() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="task-tag"
-                  className="text-[11px] font-semibold uppercase text-[#6c7a71]"
+                  className="text-[11px] font-semibold uppercase text-[var(--color-c-outline)]"
                 >
                   Category Tag
                 </label>
@@ -616,7 +616,7 @@ export function TaskBoard() {
                   id="task-tag"
                   value={draftTag}
                   onChange={(e) => setDraftTag(e.target.value as Tag)}
-                  className="h-10 w-full rounded-lg bg-[#121212] px-3 text-xs text-[#f9f9f6] focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+                  className="h-10 w-full rounded-lg bg-[var(--color-c-obsidian)] px-3 text-xs text-[var(--color-c-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-emerald)]"
                 >
                   {(Object.keys(TAG_STYLES) as Tag[]).map((t) => (
                     <option key={t} value={t}>
@@ -628,7 +628,7 @@ export function TaskBoard() {
               <div className="flex flex-col gap-1.5">
                 <label
                   htmlFor="task-col"
-                  className="text-[11px] font-semibold uppercase text-[#6c7a71]"
+                  className="text-[11px] font-semibold uppercase text-[var(--color-c-outline)]"
                 >
                   Column Status
                 </label>
@@ -636,7 +636,7 @@ export function TaskBoard() {
                   id="task-col"
                   value={draftCol}
                   onChange={(e) => setDraftCol(e.target.value as Status)}
-                  className="h-10 w-full rounded-lg bg-[#121212] px-3 text-xs text-[#f9f9f6] focus:outline-none focus:ring-1 focus:ring-[#10b981]"
+                  className="h-10 w-full rounded-lg bg-[var(--color-c-obsidian)] px-3 text-xs text-[var(--color-c-text)] focus:outline-none focus:ring-1 focus:ring-[var(--color-c-emerald)]"
                 >
                   {COLUMNS.map((c) => (
                     <option key={c.status} value={c.status}>
@@ -651,7 +651,7 @@ export function TaskBoard() {
               <button
                 type="button"
                 onClick={() => setModalOpen(false)}
-                className="rounded-lg px-4 py-2 text-[13px] text-[#6c7a71] transition-colors hover:text-[#f9f9f6]"
+                className="rounded-lg px-4 py-2 text-[13px] text-[var(--color-c-outline)] transition-colors hover:text-[var(--color-c-text)]"
               >
                 Cancel
               </button>
@@ -659,7 +659,7 @@ export function TaskBoard() {
                 type="button"
                 onClick={createTask}
                 disabled={!draftTitle.trim()}
-                className="rounded-lg bg-[#10b981] px-5 py-2.5 text-[13px] font-bold text-white shadow-md transition-all hover:bg-[#264B2E] disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg bg-[var(--color-c-emerald)] px-5 py-2.5 text-[13px] font-bold text-[var(--color-c-text)] shadow-md transition-all hover:bg-[var(--color-c-forest-13)] disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Save Task
               </button>

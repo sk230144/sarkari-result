@@ -2,10 +2,10 @@ import { Radar } from "lucide-react";
 
 export function SkillAnalysis() {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-[#1e2920] bg-[#121914] p-6 shadow-sm lg:col-span-6">
+    <div className="flex flex-col justify-between rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-dash-card)] p-6 shadow-sm lg:col-span-6">
       <div className="mb-2 flex items-center justify-between">
-        <span className="text-sm font-semibold text-white">Skill Analysis</span>
-        <Radar className="h-5 w-5 text-[#8c9c90]" />
+        <span className="text-sm font-semibold text-[var(--color-c-text)]">Skill Analysis</span>
+        <Radar className="h-5 w-5 text-[var(--color-c-muted)]" />
       </div>
 
       <div className="flex w-full items-center justify-center py-4">
@@ -97,9 +97,9 @@ export function SkillAnalysis() {
         </svg>
       </div>
 
-      <div className="text-center text-xs text-[#8c9c90]">
+      <div className="text-center text-xs text-[var(--color-c-muted)]">
         DSA mastery lead:{" "}
-        <span className="font-semibold text-[#22c55e]">
+        <span className="font-semibold text-[var(--color-c-accent)]">
           Level 1 (Foundation)
         </span>
       </div>

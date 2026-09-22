@@ -17,7 +17,7 @@ function MiniProfile({
   accent: string;
 }) {
   return (
-    <div className="relative z-20 w-[190px] cursor-default select-none rounded-2xl border border-white/10 bg-[#1a1d1a]/95 p-3 shadow-2xl backdrop-blur-sm">
+    <div className="relative z-20 w-[190px] cursor-default select-none rounded-2xl border border-white/10 bg-[var(--color-c-surface-10)]/95 p-3 shadow-2xl backdrop-blur-sm">
       <div className="mb-2 flex items-center gap-2">
         <div
           className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-black ${accent}`}
@@ -25,22 +25,22 @@ function MiniProfile({
           {initial}
         </div>
         <div className="min-w-0">
-          <p className="truncate text-[11px] font-bold text-white">{name}</p>
-          <p className="truncate text-[10px] text-[#9ca3af]">{role}</p>
+          <p className="truncate text-[11px] font-bold text-[var(--color-c-text)]">{name}</p>
+          <p className="truncate text-[10px] text-[var(--color-c-text-dim)]">{role}</p>
         </div>
       </div>
       <div className="mb-2 flex flex-wrap gap-1">
         {tags.map((t) => (
           <span
             key={t}
-            className="rounded-md bg-white/[0.07] px-1.5 py-0.5 text-[9px] font-medium text-[#d1d5db]"
+            className="rounded-md bg-white/[0.07] px-1.5 py-0.5 text-[9px] font-medium text-[var(--color-c-text-4)]"
           >
             {t}
           </span>
         ))}
       </div>
-      <p className="flex items-center gap-1 font-mono text-[9px] text-[#a3e635]">
-        <span className="h-1 w-1 rounded-full bg-[#a3e635]" />
+      <p className="flex items-center gap-1 font-mono text-[9px] text-[var(--color-c-lime)]">
+        <span className="h-1 w-1 rounded-full bg-[var(--color-c-lime)]" />
         {status}
       </p>
     </div>
@@ -63,13 +63,13 @@ export function PortfolioHero() {
         {/* Display headline */}
         <div className="relative text-center">
           <h1 className="select-none font-extrabold uppercase leading-[0.85] tracking-tight">
-            <span className="block text-[clamp(2.75rem,9vw,6.5rem)] text-[#a3e635]">
+            <span className="block text-[clamp(2.75rem,9vw,6.5rem)] text-[var(--color-c-lime)]">
               Resume
             </span>
-            <span className="block text-[clamp(3.25rem,12vw,9rem)] text-[#f5f5f0]">
+            <span className="block text-[clamp(3.25rem,12vw,9rem)] text-[var(--color-c-surface-subtle)]">
               Portfolio
             </span>
-            <span className="block text-[clamp(1.75rem,5.5vw,4rem)] text-[#6b7280]">
+            <span className="block text-[clamp(1.75rem,5.5vw,4rem)] text-[var(--color-c-dim)]">
               60 Seconds
             </span>
           </h1>
@@ -85,7 +85,7 @@ export function PortfolioHero() {
               role="Frontend Dev"
               tags={["Next.js", "TypeScript", "Figma"]}
               status="Built in 58s"
-              accent="bg-[#60a5fa]"
+              accent="bg-[var(--color-c-blue)]"
             />
           </div>
 
@@ -100,7 +100,7 @@ export function PortfolioHero() {
               role="Full Stack Dev"
               tags={["React", "Node.js", "AWS"]}
               status="Portfolio live"
-              accent="bg-[#a3e635]"
+              accent="bg-[var(--color-c-lime)]"
             />
           </div>
 
@@ -108,7 +108,7 @@ export function PortfolioHero() {
           <svg
             aria-hidden
             viewBox="0 0 60 60"
-            className="pointer-events-none absolute right-[20%] top-2 hidden h-14 w-14 text-[#a3e635] lg:block"
+            className="pointer-events-none absolute right-[20%] top-2 hidden h-14 w-14 text-[var(--color-c-lime)] lg:block"
             fill="none"
             stroke="currentColor"
             strokeWidth="3"
@@ -120,7 +120,7 @@ export function PortfolioHero() {
           <svg
             aria-hidden
             viewBox="0 0 80 40"
-            className="pointer-events-none absolute bottom-10 left-[22%] hidden h-12 w-20 text-[#a3e635] lg:block"
+            className="pointer-events-none absolute bottom-10 left-[22%] hidden h-12 w-20 text-[var(--color-c-lime)] lg:block"
             fill="none"
             stroke="currentColor"
             strokeWidth="3"
@@ -132,7 +132,7 @@ export function PortfolioHero() {
 
           {/* Rotating badge */}
           <div className="pointer-events-none absolute -right-2 bottom-2 hidden h-[88px] w-[88px] place-items-center lg:grid">
-            <div className="absolute inset-0 rounded-full bg-[#a3e635] shadow-[0_0_30px_rgba(163,230,53,0.45)]" />
+            <div className="absolute inset-0 rounded-full bg-[var(--color-c-lime)] shadow-[0_0_30px_rgba(163,230,53,0.45)]" />
             <svg
               viewBox="0 0 100 100"
               className="absolute inset-0 h-full w-full animate-[spin_12s_linear_infinite]"
@@ -155,7 +155,7 @@ export function PortfolioHero() {
         </div>
 
         {/* Subtitle */}
-        <p className="mx-auto mt-14 max-w-md text-center text-[13px] leading-relaxed text-[#9ca3af]">
+        <p className="mx-auto mt-14 max-w-md text-center text-[13px] leading-relaxed text-[var(--color-c-text-dim)]">
           Upload your resume PDF. Our AI extracts skills, experience, and
           projects, and deploys your developer portfolio in seconds.
         </p>
@@ -166,21 +166,21 @@ export function PortfolioHero() {
         </div>
 
         {/* Stat bar */}
-        <div className="mx-auto mt-10 grid max-w-lg grid-cols-3 overflow-hidden rounded-xl border border-[#242a22] bg-[#101310]">
+        <div className="mx-auto mt-10 grid max-w-lg grid-cols-3 overflow-hidden rounded-xl border border-[var(--color-c-neutral-2)] bg-[var(--color-c-surface-1b)]">
           {[
-            { icon: Zap, tint: "text-[#a3e635]", value: "60s", label: "To go live" },
-            { icon: Globe, tint: "text-[#60a5fa]", value: "Zero", label: "Configuration" },
-            { icon: Star, tint: "text-[#fbbf24]", value: "100%", label: "Free forever" },
+            { icon: Zap, tint: "text-[var(--color-c-lime)]", value: "60s", label: "To go live" },
+            { icon: Globe, tint: "text-[var(--color-c-blue)]", value: "Zero", label: "Configuration" },
+            { icon: Star, tint: "text-[var(--color-c-amber)]", value: "100%", label: "Free forever" },
           ].map(({ icon: Icon, tint, value, label }, i) => (
             <div
               key={label}
               className={`flex flex-col items-center gap-1 px-4 py-5 ${
-                i < 2 ? "border-r border-[#242a22]" : ""
+                i < 2 ? "border-r border-[var(--color-c-neutral-2)]" : ""
               }`}
             >
               <Icon className={`h-4 w-4 ${tint}`} />
-              <span className="text-[15px] font-bold text-white">{value}</span>
-              <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[#6b7280]">
+              <span className="text-[15px] font-bold text-[var(--color-c-text)]">{value}</span>
+              <span className="text-[9px] font-semibold uppercase tracking-[0.12em] text-[var(--color-c-dim)]">
                 {label}
               </span>
             </div>

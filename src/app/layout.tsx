@@ -1,6 +1,10 @@
 import type { Metadata } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
+import {
+  ThemeProvider,
+  THEME_INIT_SCRIPT,
+} from "@/components/theme/theme-provider";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -18,8 +22,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={jakarta.variable}>
-      <body>{children}</body>
+    <html lang="en" className={jakarta.variable} suppressHydrationWarning>
+      <head>
+        {/* Applies the saved theme before first paint — no flash of dark. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body>
+        <ThemeProvider>{children}</ThemeProvider>
+      </body>
     </html>
   );
 }

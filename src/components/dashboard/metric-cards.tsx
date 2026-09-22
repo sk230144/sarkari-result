@@ -14,39 +14,39 @@ const METRICS: Metric[] = [
   {
     label: "Problems Solved",
     icon: CheckCircle2,
-    tint: "bg-[#10b981]/15 text-[#10b981]",
-    hover: "hover:border-[#10b981]/40",
+    tint: "bg-[var(--color-c-emerald)]/15 text-[var(--color-c-emerald)]",
+    hover: "hover:border-[var(--color-c-emerald)]/40",
     value: "6",
     suffix: "/1943",
   },
   {
     label: "Completion",
     icon: PieChart,
-    tint: "bg-[#3b82f6]/15 text-[#3b82f6]",
-    hover: "hover:border-[#3b82f6]/40",
+    tint: "bg-[var(--color-c-blue-2)]/15 text-[var(--color-c-blue-2)]",
+    hover: "hover:border-[var(--color-c-blue-2)]/40",
     value: "0%",
   },
   {
     label: "Current Streak",
     icon: Flame,
-    tint: "bg-[#f97316]/15 text-[#f97316]",
-    hover: "hover:border-[#f97316]/40",
+    tint: "bg-[var(--color-c-orange)]/15 text-[var(--color-c-orange)]",
+    hover: "hover:border-[var(--color-c-orange)]/40",
     value: "2",
     suffix: " days",
   },
   {
     label: "Longest Streak",
     icon: Zap,
-    tint: "bg-[#ef4444]/15 text-[#ef4444]",
-    hover: "hover:border-[#ef4444]/40",
+    tint: "bg-[var(--color-c-red-2)]/15 text-[var(--color-c-red-2)]",
+    hover: "hover:border-[var(--color-c-red-2)]/40",
     value: "2",
     suffix: " days",
   },
   {
     label: "Jobs Applied",
     icon: Briefcase,
-    tint: "bg-[#a855f7]/15 text-[#c084fc]",
-    hover: "hover:border-[#a855f7]/40",
+    tint: "bg-[var(--color-c-violet-2)]/15 text-[var(--color-c-violet-3)]",
+    hover: "hover:border-[var(--color-c-violet-2)]/40",
     value: "1",
     wide: true,
   },
@@ -58,7 +58,7 @@ export function MetricCards() {
       {METRICS.map(({ label, icon: Icon, tint, hover, value, suffix, wide }) => (
         <div
           key={label}
-          className={`flex flex-col justify-between rounded-xl border border-[#1e2920] bg-[#121914] p-4 shadow-sm transition-all ${hover} ${
+          className={`flex flex-col justify-between rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-dash-card)] p-4 shadow-sm transition-all ${hover} ${
             wide ? "col-span-2 md:col-span-1" : ""
           }`}
         >
@@ -68,14 +68,14 @@ export function MetricCards() {
             >
               <Icon className="h-[15px] w-[15px]" />
             </div>
-            <span className="text-[11px] font-medium tracking-wide text-[#8c9c90]">
+            <span className="text-[11px] font-medium tracking-wide text-[var(--color-c-muted)]">
               {label}
             </span>
           </div>
-          <div className="text-[19px] font-bold tracking-tight text-white">
+          <div className="text-[19px] font-bold tracking-tight text-[var(--color-c-text)]">
             {value}
             {suffix && (
-              <span className="ml-0.5 text-sm font-normal text-[#8c9c90]">
+              <span className="ml-0.5 text-sm font-normal text-[var(--color-c-muted)]">
                 {suffix}
               </span>
             )}

@@ -51,49 +51,49 @@ const TESTIMONIALS: Testimonial[] = [
 
 const THEMES = {
   charcoal: {
-    card: "bg-[#181a17] border border-[#282b24]",
-    quote: "text-[#9ca3af]",
-    body: "text-[#d1d5db]",
-    divider: "border-[#292c25]",
-    name: "text-white",
-    role: "text-[#9ca3af]",
-    avatar: "bg-[#242721] text-[#9ca3af]",
+    card: "bg-[var(--color-c-surface-8b)] border border-[var(--color-c-neutral-3)]",
+    quote: "text-[var(--color-c-text-dim)]",
+    body: "text-[var(--color-c-text-4)]",
+    divider: "border-[var(--color-c-neutral-4)]",
+    name: "text-[var(--color-c-text)]",
+    role: "text-[var(--color-c-text-dim)]",
+    avatar: "bg-[var(--color-c-neutral-1)] text-[var(--color-c-text-dim)]",
   },
   pink: {
-    card: "bg-[#f5c6e8]",
+    card: "bg-[var(--color-c-pink-soft)]",
     quote: "text-black",
     body: "text-black font-medium",
     divider: "border-black/20",
     name: "text-black",
     role: "text-black/70 font-semibold",
-    avatar: "bg-black text-[#f5c6e8]",
+    avatar: "bg-black text-[var(--color-c-pink-soft)]",
   },
   green: {
-    card: "bg-[#142a18] border border-[#294c2e]",
-    quote: "text-[#4ade80]",
-    body: "text-[#e2e8f0]",
-    divider: "border-[#294c2e]",
-    name: "text-white",
-    role: "text-[#a3b8a6]",
-    avatar: "bg-[#1e4222] text-[#4ade80]",
+    card: "bg-[var(--color-c-green-dim-6)] border border-[var(--color-c-forest-19)]",
+    quote: "text-[var(--color-c-green)]",
+    body: "text-[var(--color-c-text-3)]",
+    divider: "border-[var(--color-c-forest-19)]",
+    name: "text-[var(--color-c-text)]",
+    role: "text-[var(--color-c-text-muted-2)]",
+    avatar: "bg-[var(--color-c-forest-29)] text-[var(--color-c-green)]",
   },
   lime: {
-    card: "bg-[#8cf058]",
+    card: "bg-[var(--color-c-lime-2)]",
     quote: "text-black",
     body: "text-black font-semibold",
     divider: "border-black/20",
     name: "text-black",
     role: "text-black/80 font-bold",
-    avatar: "bg-black text-[#8cf058]",
+    avatar: "bg-black text-[var(--color-c-lime-2)]",
   },
   forest: {
-    card: "bg-[#122817] border border-[#244527]",
-    quote: "text-[#4ade80]",
-    body: "text-[#e2e8f0]",
-    divider: "border-[#244527]",
-    name: "text-white",
-    role: "text-[#a3b8a6]",
-    avatar: "bg-[#1e4222] text-[#4ade80]",
+    card: "bg-[var(--color-c-surface-3b)] border border-[var(--color-c-forest-10)]",
+    quote: "text-[var(--color-c-green)]",
+    body: "text-[var(--color-c-text-3)]",
+    divider: "border-[var(--color-c-forest-10)]",
+    name: "text-[var(--color-c-text)]",
+    role: "text-[var(--color-c-text-muted-2)]",
+    avatar: "bg-[var(--color-c-forest-29)] text-[var(--color-c-green)]",
   },
 } as const;
 
@@ -101,7 +101,7 @@ export function Testimonials() {
   return (
     <section className="mx-auto max-w-7xl overflow-hidden px-6 py-24">
       <div className="mx-auto mb-16 max-w-2xl text-center">
-        <h2 className="mb-3 text-4xl font-extrabold tracking-tight text-white sm:text-5xl">
+        <h2 className="mb-3 text-4xl font-extrabold tracking-tight text-[var(--color-c-text)] sm:text-5xl">
           From overlooked to hired.
         </h2>
       </div>

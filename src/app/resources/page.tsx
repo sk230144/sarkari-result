@@ -18,10 +18,10 @@ export default function ResourcesPage() {
     <DashboardShell>
       <div className="flex w-full min-w-0 flex-col gap-8 px-6 py-8 lg:px-10">
         <div className="flex flex-col gap-1">
-          <h1 className="text-[26px] font-bold leading-8 tracking-tight text-white">
+          <h1 className="text-[26px] font-bold leading-8 tracking-tight text-[var(--color-c-text)]">
             Interview Prep Resources
           </h1>
-          <p className="text-[13px] text-[#8c9c90]">
+          <p className="text-[13px] text-[var(--color-c-muted)]">
             Free, structured prep material: DSA sheets, coding patterns, and
             system design questions.
           </p>

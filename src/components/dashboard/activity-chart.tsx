@@ -56,16 +56,16 @@ export function ActivityChart() {
   }, [period]);
 
   return (
-    <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1e2920] bg-[#121914] p-6 shadow-sm lg:col-span-8">
+    <div className="relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-dash-card)] p-6 shadow-sm lg:col-span-8">
       <div className="flex items-start justify-between">
         <div>
-          <span className="text-[11px] font-semibold uppercase tracking-wider text-[#8c9c90]">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-muted)]">
             Activity
           </span>
-          <div className="mt-1 text-[24px] font-bold leading-8 text-white">
+          <div className="mt-1 text-[24px] font-bold leading-8 text-[var(--color-c-text)]">
             {total}
           </div>
-          <div className="text-xs text-[#8c9c90]">
+          <div className="text-xs text-[var(--color-c-muted)]">
             total activity in this period
           </div>
         </div>
@@ -73,7 +73,7 @@ export function ActivityChart() {
         <div
           role="group"
           aria-label="Select time range"
-          className="flex items-center gap-1 rounded-full border border-[#1e2920] bg-[#0c120e] p-1"
+          className="flex items-center gap-1 rounded-full border border-[var(--color-c-border)] bg-[var(--color-c-surface-0)] p-1"
         >
           {PERIODS.map((p) => (
             <button
@@ -83,8 +83,8 @@ export function ActivityChart() {
               aria-pressed={p === period}
               className={
                 p === period
-                  ? "rounded-full bg-[#22c55e] px-3 py-1 text-xs font-semibold text-[#06200f] shadow-sm"
-                  : "rounded-full px-3 py-1 text-xs font-semibold text-[#8c9c90] transition-colors hover:text-white"
+                  ? "rounded-full bg-[var(--color-c-accent)] px-3 py-1 text-xs font-semibold text-[var(--color-c-green-dim)] shadow-sm"
+                  : "rounded-full px-3 py-1 text-xs font-semibold text-[var(--color-c-muted)] transition-colors hover:text-[var(--color-c-text)]"
               }
             >
               {p}
@@ -137,11 +137,11 @@ export function ActivityChart() {
         </svg>
       </div>
 
-      <div className="flex items-center justify-between border-t border-[#1a251c] pt-2 text-xs text-[#8c9c90]">
+      <div className="flex items-center justify-between border-t border-[var(--color-c-surface-11)] pt-2 text-xs text-[var(--color-c-muted)]">
         <div className="flex items-center gap-2">
-          <span className="h-2 w-2 rounded-full bg-[#22c55e]" />
+          <span className="h-2 w-2 rounded-full bg-[var(--color-c-accent)]" />
           <span>
-            <strong className="text-white">
+            <strong className="text-[var(--color-c-text)]">
               {SERIES[period][SERIES[period].length - 1]}
             </strong>{" "}
             today
@@ -149,16 +149,16 @@ export function ActivityChart() {
         </div>
         <div className="flex items-center gap-4">
           <span>
-            <strong className="text-white">{peak}</strong> peak
+            <strong className="text-[var(--color-c-text)]">{peak}</strong> peak
           </span>
-          <span className="text-[#3c4a40]">|</span>
+          <span className="text-[var(--color-c-on-surface-variant)]">|</span>
           <span>
-            <strong className="text-white">{Math.min(...SERIES[period])}</strong>{" "}
+            <strong className="text-[var(--color-c-text)]">{Math.min(...SERIES[period])}</strong>{" "}
             low
           </span>
-          <span className="text-[#3c4a40]">|</span>
+          <span className="text-[var(--color-c-on-surface-variant)]">|</span>
           <span>
-            <strong className="text-white">{avg}</strong> avg
+            <strong className="text-[var(--color-c-text)]">{avg}</strong> avg
           </span>
         </div>
       </div>

@@ -47,11 +47,11 @@ export function BuildCta({
         }}
         className={
           variant === "primary"
-            ? "group inline-flex items-center gap-2 rounded-full border border-[#2f3b2a] bg-[#111511] px-7 py-3.5 text-[13px] font-bold text-white shadow-[0_0_25px_rgba(163,230,53,0.18)] transition-all hover:border-[#a3e635]/50 hover:shadow-[0_0_35px_rgba(163,230,53,0.3)]"
-            : "group inline-flex items-center gap-2 rounded-full border border-[#2f3b2a] bg-[#111511] px-6 py-3 text-[12px] font-bold text-white shadow-[0_0_25px_rgba(163,230,53,0.18)] transition-all hover:border-[#a3e635]/50"
+            ? "group inline-flex items-center gap-2 rounded-full border border-[var(--color-c-forest-26)] bg-[var(--color-c-surface-2b)] px-7 py-3.5 text-[13px] font-bold text-[var(--color-c-text)] shadow-[0_0_25px_rgba(163,230,53,0.18)] transition-all hover:border-[var(--color-c-lime)]/50 hover:shadow-[0_0_35px_rgba(163,230,53,0.3)]"
+            : "group inline-flex items-center gap-2 rounded-full border border-[var(--color-c-forest-26)] bg-[var(--color-c-surface-2b)] px-6 py-3 text-[12px] font-bold text-[var(--color-c-text)] shadow-[0_0_25px_rgba(163,230,53,0.18)] transition-all hover:border-[var(--color-c-lime)]/50"
         }
       >
-        <Sparkles className="h-4 w-4 text-[#a3e635]" />
+        <Sparkles className="h-4 w-4 text-[var(--color-c-lime)]" />
         {label}
         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
       </button>
@@ -63,25 +63,25 @@ export function BuildCta({
           aria-label="Building your portfolio"
           className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4 backdrop-blur-sm"
         >
-          <div className="w-full max-w-sm rounded-2xl border border-[#242a22] bg-[#111411] p-6 shadow-2xl">
+          <div className="w-full max-w-sm rounded-2xl border border-[var(--color-c-neutral-2)] bg-[var(--color-c-surface-2)] p-6 shadow-2xl">
             <div className="mb-5 flex items-center gap-3">
-              <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[#16210f]">
-                <span className="ripple absolute inset-0 rounded-full border border-[#a3e635]/40" />
-                <Sparkles className="h-5 w-5 text-[#a3e635]" />
+              <span className="relative flex h-10 w-10 items-center justify-center rounded-full bg-[var(--color-c-chip-easy)]">
+                <span className="ripple absolute inset-0 rounded-full border border-[var(--color-c-lime)]/40" />
+                <Sparkles className="h-5 w-5 text-[var(--color-c-lime)]" />
               </span>
               <div>
-                <p className="text-[13px] font-bold text-white">
+                <p className="text-[13px] font-bold text-[var(--color-c-text)]">
                   Building your portfolio
                 </p>
-                <p className="text-[11px] text-[#8c9c90]">
+                <p className="text-[11px] text-[var(--color-c-muted)]">
                   This usually takes under a minute.
                 </p>
               </div>
             </div>
 
-            <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-[#1e241d]">
+            <div className="mb-5 h-1 w-full overflow-hidden rounded-full bg-[var(--color-c-track)]">
               <div
-                className="h-full rounded-full bg-[#a3e635] transition-all duration-500"
+                className="h-full rounded-full bg-[var(--color-c-lime)] transition-all duration-500"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -95,10 +95,10 @@ export function BuildCta({
                     <span
                       className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors ${
                         complete
-                          ? "border-[#a3e635] bg-[#a3e635] text-black"
+                          ? "border-[var(--color-c-lime)] bg-[var(--color-c-lime)] text-black"
                           : active
-                            ? "border-[#a3e635] text-[#a3e635]"
-                            : "border-[#2f363d] text-transparent"
+                            ? "border-[var(--color-c-lime)] text-[var(--color-c-lime)]"
+                            : "border-[var(--color-c-border-cool-2)] text-transparent"
                       }`}
                     >
                       {complete ? (
@@ -110,10 +110,10 @@ export function BuildCta({
                     <span
                       className={`text-[11px] transition-colors ${
                         complete
-                          ? "text-[#6b7280] line-through"
+                          ? "text-[var(--color-c-dim)] line-through"
                           : active
-                            ? "text-white"
-                            : "text-[#6b7280]"
+                            ? "text-[var(--color-c-text)]"
+                            : "text-[var(--color-c-dim)]"
                       }`}
                     >
                       {s}

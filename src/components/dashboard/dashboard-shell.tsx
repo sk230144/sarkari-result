@@ -29,8 +29,8 @@ export function DashboardShell({
         }`}
       >
         <main
-          className={`min-h-screen w-full pt-16 text-[#e5e7eb] ${
-            canvas === "obsidian" ? "bg-[#121212]" : "bg-[#0b100d]"
+          className={`min-h-screen w-full pt-16 text-[var(--color-c-text-2)] ${
+            canvas === "obsidian" ? "bg-[var(--color-c-obsidian)]" : "bg-[var(--color-c-dash)]"
           }`}
         >
           {children}

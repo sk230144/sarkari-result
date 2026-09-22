@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function ProfilePage() {
   return (
-    <main className="min-h-screen w-full bg-[#0b100d] text-[#e5e7eb]">
+    <main className="min-h-screen w-full bg-[var(--color-c-dash)] text-[var(--color-c-text-2)]">
       <div className="mx-auto w-full max-w-6xl px-4 py-5 lg:px-6">
         <ProfileHeader />
 
