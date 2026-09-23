@@ -1,7 +1,7 @@
 import { Crosshair, Smartphone, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { AccountMenu } from "@/components/auth/account-menu";
 
 export function Navbar() {
   return (
@@ -45,8 +45,7 @@ export function Navbar() {
             <Smartphone className="h-4 w-4 text-[var(--color-c-text-dim)]" />
             <span>Download App</span>
           </a>
-          <ThemeToggle />
-          <div className="ml-1 h-8 w-8 overflow-hidden rounded-full border border-[var(--color-c-forest-25)] bg-[var(--color-c-raised-2)]" />
+          <AccountMenu />
         </div>
       </div>
     </header>

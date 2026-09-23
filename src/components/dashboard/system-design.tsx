@@ -1,12 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useSheetProgress } from "@/components/striver/use-sheet-progress";
 import {
   Check,
   ChevronDown,
   ArrowRight,
   StickyNote,
   ListChecks,
+  Loader2,
+  Cloud,
+  CloudOff,
 } from "lucide-react";
 import {
   QUESTIONS,
@@ -36,11 +42,24 @@ function YouTubeIcon({ className }: { className?: string }) {
 
 export function SystemDesign() {
   const [filter, setFilter] = useState<Filter>("all");
-  const [done, setDone] = useState<string[]>([]);
   const [openPoints, setOpenPoints] = useState<string[]>([]);
-  const [notes, setNotes] = useState<Record<string, string>>({});
   const [noteFor, setNoteFor] = useState<string | null>(null);
   const [draftNote, setDraftNote] = useState("");
+
+  // Same persistence as the DSA and FAANG sheets: Supabase when signed in,
+  // localStorage otherwise. Keyed by slug rather than a number.
+  const {
+    done,
+    notes,
+    status,
+    saving,
+    error: saveError,
+    synced,
+    toggle: toggleDone,
+    setNote,
+  } = useSheetProgress("system-design");
+
+  const pathname = usePathname();
 
   const visible = useMemo(
     () =>
@@ -53,12 +72,6 @@ export function SystemDesign() {
   const total = QUESTIONS.length;
   const completed = done.length;
   const percent = Math.round((completed / total) * 100);
-
-  function toggleDone(slug: string) {
-    setDone((p) =>
-      p.includes(slug) ? p.filter((s) => s !== slug) : [...p, slug],
-    );
-  }
 
   function togglePoints(slug: string) {
     setOpenPoints((p) =>
@@ -73,13 +86,7 @@ export function SystemDesign() {
 
   function saveNote() {
     if (!noteFor) return;
-    const text = draftNote.trim();
-    setNotes((p) => {
-      const next = { ...p };
-      if (text) next[noteFor] = text;
-      else delete next[noteFor];
-      return next;
-    });
+    setNote(noteFor, draftNote);
     setNoteFor(null);
   }
 
@@ -113,14 +120,48 @@ export function SystemDesign() {
             {percent}%
           </span>
           <div className="flex flex-col gap-1.5">
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-4">
               <span className="text-[11px] font-semibold text-[var(--color-c-text-4)]">
                 Overall Progress
               </span>
               <span className="text-[11px] text-[var(--color-c-outline)]">
                 {completed}/{total}
               </span>
+              {/* Where progress is going, and whether a write is in flight. */}
+              {status === "loading" ? (
+                <span className="inline-flex items-center gap-1 text-[10px] text-[var(--color-c-dim)]">
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                  Loading
+                </span>
+              ) : synced ? (
+                <span
+                  className="inline-flex items-center gap-1 text-[10px] text-[var(--color-c-dim)]"
+                  title="Saved to your account"
+                >
+                  {saving ? (
+                    <Loader2 className="h-3 w-3 animate-spin text-[var(--color-c-lime)]" />
+                  ) : (
+                    <Cloud className="h-3 w-3 text-[var(--color-c-lime)]" />
+                  )}
+                  {saving ? "Saving" : "Synced"}
+                </span>
+              ) : (
+                <Link
+                  href={`/login?next=${encodeURIComponent(pathname)}`}
+                  className="inline-flex items-center gap-1 text-[10px] text-[var(--color-c-muted)] transition-colors hover:text-[var(--color-c-lime)]"
+                  title="Progress is saved in this browser only"
+                >
+                  <CloudOff className="h-3 w-3" />
+                  Sign in to sync
+                </Link>
+              )}
             </div>
+            {/* A failed write must be visible, not silent. */}
+            {saveError && (
+              <span className="text-[10px] text-[var(--color-c-red)]">
+                Could not save: {saveError}
+              </span>
+            )}
             <div
               className="h-1 w-36 overflow-hidden rounded-full bg-[var(--color-c-surface-cool-3)]"
               role="progressbar"

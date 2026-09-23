@@ -218,7 +218,12 @@ export function ShaderBackground({ className }: { className?: string }) {
       gl.deleteShader(vs);
       gl.deleteShader(fs);
       gl.deleteBuffer(buf);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      // Deliberately NOT calling loseContext(): it kills the context for
+      // good, and React re-runs effects on every remount (twice in Strict
+      // Mode). The second mount would get a dead canvas and render nothing,
+      // which showed as a white hero after navigating back to this page.
+      // Deleting the GL objects above is enough; the browser reclaims the
+      // context when the canvas is garbage collected.
     };
   }, []);
 
@@ -227,7 +232,16 @@ export function ShaderBackground({ className }: { className?: string }) {
       ref={canvasRef}
       aria-hidden
       className={className}
-      style={{ display: "block", width: "100%", height: "100%" }}
+      style={{
+        display: "block",
+        width: "100%",
+        height: "100%",
+        // The shader bails out on any WebGL failure — no context, a driver
+        // that refuses to compile, a blocked GPU. Without a colour here the
+        // canvas is transparent and the page behind shows through, which
+        // renders the dark hero white.
+        backgroundColor: "var(--color-c-canvas-deep)",
+      }}
     />
   );
 }

@@ -1,5 +1,5 @@
-import { Zap, Bell, Settings, User, Menu } from "lucide-react";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
+import { Zap, Bell, Settings, Menu } from "lucide-react";
+import { AccountMenu } from "@/components/auth/account-menu";
 
 export function Topbar({
   collapsed,
@@ -36,7 +36,6 @@ export function Topbar({
         </div>
 
         <div className="flex items-center gap-3">
-          <ThemeToggle />
           <button
             type="button"
             aria-label="Notifications"
@@ -51,9 +50,7 @@ export function Topbar({
           >
             <Settings className="h-5 w-5" />
           </button>
-          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--color-c-emerald)]">
-            <User className="h-[18px] w-[18px] text-[var(--color-c-on-primary-container)]" />
-          </div>
+          <AccountMenu />
         </div>
       </div>
     </header>

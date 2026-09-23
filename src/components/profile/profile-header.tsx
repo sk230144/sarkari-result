@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { ThemeToggle } from "@/components/theme/theme-toggle";
 import {
   Pencil,
   ImagePlus,
@@ -51,7 +50,6 @@ export function ProfileHeader() {
               <ImagePlus className="h-3.5 w-3.5" />
               Add banner
             </button>
-            <ThemeToggle />
           </div>
         </div>
 

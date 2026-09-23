@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Check,
   ChevronDown,
@@ -14,8 +14,15 @@ import {
   ListChecks,
   Trophy,
   BookOpen,
+  Loader2,
+  Cloud,
+  CloudOff,
+  AlertCircle,
 } from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { Difficulty, SheetConfig } from "./sheet-types";
+import { useSheetProgress } from "./use-sheet-progress";
 
 type Filter = "all" | "todo" | "done";
 
@@ -28,31 +35,23 @@ const DIFFICULTY_STYLES: Record<Difficulty, string> = {
 
 
 
-/** localStorage can throw (private mode, blocked storage) — never let that break render. */
-function load<T>(key: string, fallback: T): T {
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function save(key: string, value: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch {
-    /* quota or blocked — progress just won't persist */
-  }
-}
-
 export function DsaSheetTracker({ config }: { config: SheetConfig }) {
   const { sections: SECTIONS, groupLabel } = config;
   const TOTAL = SECTIONS.reduce((n, s) => n + s.problems.length, 0);
-  const DONE_KEY = `${config.storageKey}-done`;
-  const NOTES_KEY = `${config.storageKey}-notes`;
-  const [done, setDone] = useState<number[]>([]);
-  const [notes, setNotes] = useState<Record<number, string>>({});
+
+  // Progress lives in Supabase for signed-in readers and in localStorage
+  // for everyone else; the hook hides which one is in play.
+  const {
+    done,
+    notes,
+    status,
+    saving,
+    error: saveError,
+    synced,
+    toggle,
+    setNote,
+    reset: resetProgress,
+  } = useSheetProgress(config.storageKey);
 
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Filter>("all");
@@ -60,30 +59,11 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
   const [expanded, setExpanded] = useState<number[]>([]);
   const [noteFor, setNoteFor] = useState<number | null>(null);
   const [draft, setDraft] = useState("");
+  // Used to send the reader back here after signing in.
+  const pathname = usePathname();
 
-  /**
-   * Saved progress is read after mount, never during render: the server has no
-   * localStorage, so seeding initial state from it would mismatch on hydration.
-   */
-  const [ready, setReady] = useState(false);
-  /* eslint-disable react-hooks/set-state-in-effect -- restore must run post-mount */
-  useEffect(() => {
-    const savedDone = load<number[]>(DONE_KEY, []);
-    const savedNotes = load<Record<number, string>>(NOTES_KEY, {});
-    if (savedDone.length) setDone(savedDone);
-    if (Object.keys(savedNotes).length) setNotes(savedNotes);
-    setReady(true);
-  }, [DONE_KEY, NOTES_KEY]);
-  /* eslint-enable react-hooks/set-state-in-effect */
-
-  useEffect(() => {
-    if (ready) save(DONE_KEY, done);
-  }, [done, ready, DONE_KEY]);
-
-  useEffect(() => {
-    if (ready) save(NOTES_KEY, notes);
-  }, [notes, ready, NOTES_KEY]);
-
+  // Keys arrive as strings so slug-based sheets can share this hook;
+  // these sheets number their problems, so compare as strings.
   const doneSet = useMemo(() => new Set(done), [done]);
 
   const visibleDays = useMemo(() => {
@@ -92,8 +72,8 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
       ...d,
       problems: d.problems.filter((p) => {
         if (q && !p.title.toLowerCase().includes(q)) return false;
-        if (filter === "done") return doneSet.has(p.n);
-        if (filter === "todo") return !doneSet.has(p.n);
+        if (filter === "done") return doneSet.has(String(p.n));
+        if (filter === "todo") return !doneSet.has(String(p.n));
         return true;
       }),
     })).filter((d) => d.problems.length > 0);
@@ -106,10 +86,6 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
   const completed = done.length;
   const pct = Math.round((completed / TOTAL) * 100);
 
-  function toggle(n: number) {
-    setDone((p) => (p.includes(n) ? p.filter((x) => x !== n) : [...p, n]));
-  }
-
   function toggleDay(day: number) {
     setExpanded((p) =>
       p.includes(day) ? p.filter((d) => d !== day) : [...p, day],
@@ -118,20 +94,15 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
 
   function saveNote() {
     if (noteFor === null) return;
-    const text = draft.trim();
-    setNotes((p) => {
-      const next = { ...p };
-      if (text) next[noteFor] = text;
-      else delete next[noteFor];
-      return next;
-    });
+    setNote(noteFor, draft);
     setNoteFor(null);
   }
 
   function resetAll() {
-    if (!confirm("Reset all progress and notes for this sheet?")) return;
-    setDone([]);
-    setNotes({});
+    const where = synced ? "your account" : "this browser";
+    if (!confirm(`Reset all progress and notes for this sheet from ${where}?`))
+      return;
+    void resetProgress();
   }
 
   return (
@@ -200,6 +171,34 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {/* Where progress is going, and whether a write is in flight. */}
+            {status === "loading" ? (
+              <span className="inline-flex items-center gap-1.5 text-[10px] text-[var(--color-c-dim)]">
+                <Loader2 className="h-3 w-3 animate-spin" />
+                Loading progress
+              </span>
+            ) : synced ? (
+              <span
+                className="inline-flex items-center gap-1.5 text-[10px] text-[var(--color-c-dim)]"
+                title="Saved to your account — available on any device"
+              >
+                {saving ? (
+                  <Loader2 className="h-3 w-3 animate-spin text-[var(--color-c-lime)]" />
+                ) : (
+                  <Cloud className="h-3 w-3 text-[var(--color-c-lime)]" />
+                )}
+                {saving ? "Saving" : "Synced"}
+              </span>
+            ) : (
+              <Link
+                href={`/login?next=${encodeURIComponent(pathname)}`}
+                className="inline-flex items-center gap-1.5 rounded-full border border-[var(--color-c-neutral-6)] px-2.5 py-1 text-[10px] font-medium text-[var(--color-c-muted)] transition-colors hover:border-[var(--color-c-lime)] hover:text-[var(--color-c-lime)]"
+                title="Progress is saved in this browser only"
+              >
+                <CloudOff className="h-3 w-3" />
+                Sign in to sync
+              </Link>
+            )}
             {completed === TOTAL && completed > 0 && (
               <span className="inline-flex items-center gap-1 rounded-full border border-[var(--color-c-olive)] bg-[var(--color-c-chip-easy)] px-2.5 py-1 text-[10px] font-bold text-[var(--color-c-lime)]">
                 <Trophy className="h-3 w-3" />
@@ -217,6 +216,14 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
             </button>
           </div>
         </div>
+        {/* A failed write must be visible — otherwise a reader keeps
+            ticking questions that are silently not being saved. */}
+        {saveError && (
+          <p className="mb-2 flex items-start gap-1.5 rounded-lg bg-[var(--color-c-chip-hard)] px-3 py-2 text-[11px] text-[var(--color-c-red)]">
+            <AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+            Could not save your progress: {saveError}
+          </p>
+        )}
         <div
           className="h-1.5 w-full overflow-hidden rounded-full bg-[var(--color-c-track)]"
           role="progressbar"
@@ -304,7 +311,7 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
       ) : (
         <div className="flex flex-col gap-3">
           {visibleDays.map((d) => {
-            const dayDone = d.problems.filter((p) => doneSet.has(p.n)).length;
+            const dayDone = d.problems.filter((p) => doneSet.has(String(p.n))).length;
             // A search or filter narrows the list, so open what survived —
             // otherwise the matches would sit hidden inside closed sections.
             const isOpen = isNarrowed || expanded.includes(d.day);
@@ -356,7 +363,7 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
                 {isOpen && (
                   <ul className="divide-y divide-[var(--color-c-divider-soft)] border-t border-[var(--color-c-border)]">
                     {d.problems.map((p) => {
-                      const isDone = doneSet.has(p.n);
+                      const isDone = doneSet.has(String(p.n));
                       const note = notes[p.n];
 
                       return (

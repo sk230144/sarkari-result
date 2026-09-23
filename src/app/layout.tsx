@@ -5,6 +5,7 @@ import {
   ThemeProvider,
   THEME_INIT_SCRIPT,
 } from "@/components/theme/theme-provider";
+import { AuthProvider } from "@/components/auth/auth-provider";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -23,12 +24,20 @@ export default function RootLayout({
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={jakarta.variable} suppressHydrationWarning>
-      <head>
-        {/* Applies the saved theme before first paint — no flash of dark. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
-      </head>
       <body>
-        <ThemeProvider>{children}</ThemeProvider>
+        {/*
+          Applies the saved theme before first paint, so a returning reader
+          never sees the wrong theme flash.
+
+          Deliberately at the top of <body> rather than in an explicit
+          <head>: Next.js owns <head> and injects its own tags there, and
+          declaring one manually displaced the auto-injected <meta charset>,
+          which React then reported as a hydration mismatch.
+        */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+        <ThemeProvider>
+          <AuthProvider>{children}</AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
