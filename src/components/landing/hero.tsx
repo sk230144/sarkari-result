@@ -77,7 +77,7 @@ export function Hero() {
 
         <div className="flex flex-wrap items-center justify-center gap-4">
           <a
-            href="#jobs"
+            href="/jobs"
             className="inline-flex items-center gap-2 rounded-full bg-[var(--color-c-green)] px-7 py-3.5 text-sm font-bold text-black shadow-[0_0_20px_rgba(74,222,128,0.4)] transition-all hover:-translate-y-0.5 hover:bg-[var(--color-c-emerald-2)]"
           >
             <Search className="h-4 w-4" strokeWidth={2.5} />

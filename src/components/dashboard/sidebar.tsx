@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Logo, LogoClimb } from "@/components/ui/logo";
 import {
-  Flame,
   ChevronsLeft,
   ChevronsRight,
   Search,
@@ -140,15 +140,15 @@ export function Sidebar({
               collapsed ? "justify-center" : "justify-between"
             }`}
           >
-            {!collapsed && (
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-primary)]">
-                  <Flame className="h-5 w-5 text-[var(--color-c-text)]" />
-                </div>
-                <span className="text-[17px] font-bold tracking-tight text-[var(--color-c-text)]">
-                  jobalert24
-                </span>
-              </div>
+            {!collapsed ? (
+              <Link href="/" aria-label="jobalert24 home">
+                <Logo markClassName="h-8 w-8 shrink-0" size="sm" />
+              </Link>
+            ) : (
+              // Collapsed rail: the mark alone still identifies the product.
+              <Link href="/" aria-label="jobalert24 home">
+                <LogoClimb className="h-7 w-7 text-[var(--color-c-lime)]" />
+              </Link>
             )}
 
             <button

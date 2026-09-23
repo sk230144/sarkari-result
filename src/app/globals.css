@@ -797,3 +797,306 @@ h3 {
       color 180ms ease;
   }
 }
+
+/* ===== Brand loader =====================================================
+   Counter-rotating rings around a breathing flame, plus a shimmer for
+   card skeletons. All of it pure CSS so a loading screen needs no JS.
+   ======================================================================== */
+
+.loader-ring {
+  animation: loaderSpin 1.1s linear infinite;
+}
+
+.loader-ring-slow {
+  /* Opposite direction and slower, so the two rings never sync up. */
+  animation: loaderSpin 1.8s linear infinite reverse;
+}
+
+@keyframes loaderSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.loader-flame {
+  animation: loaderFlame 1.6s ease-in-out infinite;
+}
+
+@keyframes loaderFlame {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.14);
+    opacity: 1;
+  }
+}
+
+.loader-glow {
+  animation: loaderGlow 1.6s ease-in-out infinite;
+}
+
+@keyframes loaderGlow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.9);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.15);
+  }
+}
+
+.loader-dot {
+  display: inline-block;
+  animation: loaderDot 1.2s ease-in-out infinite;
+}
+.loader-dot-2 {
+  animation-delay: 0.16s;
+}
+.loader-dot-3 {
+  animation-delay: 0.32s;
+}
+
+@keyframes loaderDot {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  40% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+
+/* Skeleton shimmer — a highlight sweeping left to right across the card. */
+.skeleton-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.skeleton-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  transform: translateX(-100%);
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(163, 230, 53, 0.06),
+    transparent
+  );
+  animation: skeletonSweep 1.6s ease-in-out infinite;
+}
+
+@keyframes skeletonSweep {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* A loading screen must never become a strobe for motion-sensitive readers:
+   keep the flame's opacity pulse, drop everything that moves. */
+@media (prefers-reduced-motion: reduce) {
+  .loader-ring,
+  .loader-ring-slow,
+  .loader-glow,
+  .loader-dot,
+  .skeleton-card::after {
+    animation: none;
+  }
+  .loader-ring {
+    border-color: var(--color-c-lime);
+    opacity: 0.4;
+  }
+  .loader-flame {
+    animation: loaderFadePulse 2s ease-in-out infinite;
+  }
+  @keyframes loaderFadePulse {
+    0%,
+    100% {
+      opacity: 0.6;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}
+
+/* ===== Logo animation ===================================================
+   The figure walks: legs and arms counter-swing, the body bobs, and the
+   arc draws itself in. Two modes — "always" for the loading screen,
+   "hover" for the navbar and footer, where constant motion would nag.
+
+   SVG transforms rotate about the element's own box unless told otherwise,
+   so every limb sets transform-origin at its pivot joint in user units.
+   ======================================================================== */
+
+.logo-anim-always .logo-walker,
+.logo-anim-hover:hover .logo-walker,
+.logo-anim-hover:focus-visible .logo-walker,
+.group:hover .logo-anim-hover .logo-walker {
+  animation: logoBob 0.85s ease-in-out infinite;
+}
+
+.logo-anim-always .logo-leg-front,
+.logo-anim-hover:hover .logo-leg-front,
+.logo-anim-hover:focus-visible .logo-leg-front,
+.group:hover .logo-anim-hover .logo-leg-front {
+  animation: logoLegFront 0.85s ease-in-out infinite;
+}
+
+.logo-anim-always .logo-leg-back,
+.logo-anim-hover:hover .logo-leg-back,
+.logo-anim-hover:focus-visible .logo-leg-back,
+.group:hover .logo-anim-hover .logo-leg-back {
+  animation: logoLegBack 0.85s ease-in-out infinite;
+}
+
+.logo-anim-always .logo-arm-front,
+.logo-anim-hover:hover .logo-arm-front,
+.logo-anim-hover:focus-visible .logo-arm-front,
+.group:hover .logo-anim-hover .logo-arm-front {
+  animation: logoArmFront 0.85s ease-in-out infinite;
+}
+
+.logo-anim-always .logo-arm-back,
+.logo-anim-hover:hover .logo-arm-back,
+.logo-anim-hover:focus-visible .logo-arm-back,
+.group:hover .logo-anim-hover .logo-arm-back {
+  animation: logoArmBack 0.85s ease-in-out infinite;
+}
+
+/* The arc redraws itself, then the arrow pops — a "path ahead" beat. */
+.logo-anim-always .logo-arc,
+.logo-anim-hover:hover .logo-arc,
+.logo-anim-hover:focus-visible .logo-arc,
+.group:hover .logo-anim-hover .logo-arc {
+  stroke-dasharray: 52;
+  animation: logoArcDraw 3.2s ease-in-out infinite;
+}
+
+.logo-anim-always .logo-arrow,
+.logo-anim-hover:hover .logo-arrow,
+.logo-anim-hover:focus-visible .logo-arrow,
+.group:hover .logo-anim-hover .logo-arrow {
+  animation: logoArrowPulse 3.2s ease-in-out infinite;
+}
+
+/* Hip joint for both legs, shoulder for both arms — in viewBox units. */
+.logo-leg-front,
+.logo-leg-back {
+  transform-origin: 19.5px 28px;
+}
+.logo-arm-front,
+.logo-arm-back {
+  transform-origin: 21px 21.5px;
+}
+
+@keyframes logoBob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-1.1px);
+  }
+}
+
+@keyframes logoLegFront {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-17deg);
+  }
+}
+
+@keyframes logoLegBack {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(15deg);
+  }
+}
+
+/* Arms swing opposite their same-side leg, as a real stride does. */
+@keyframes logoArmFront {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(9deg);
+  }
+}
+
+@keyframes logoArmBack {
+  0%,
+  100% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-11deg);
+  }
+}
+
+@keyframes logoArcDraw {
+  0% {
+    stroke-dashoffset: 52;
+    opacity: 0.1;
+  }
+  45%,
+  70% {
+    stroke-dashoffset: 0;
+    opacity: 0.32;
+  }
+  100% {
+    stroke-dashoffset: 0;
+    opacity: 0.18;
+  }
+}
+
+@keyframes logoArrowPulse {
+  0%,
+  35% {
+    opacity: 0.35;
+    transform: translate(-1.5px, 1.5px);
+  }
+  55%,
+  100% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+}
+
+/* A walking logo is decorative motion — stop it entirely when asked. */
+@media (prefers-reduced-motion: reduce) {
+  .logo-anim-always .logo-walker,
+  .logo-anim-always .logo-leg-front,
+  .logo-anim-always .logo-leg-back,
+  .logo-anim-always .logo-arm-front,
+  .logo-anim-always .logo-arm-back,
+  .logo-anim-always .logo-arc,
+  .logo-anim-always .logo-arrow,
+  .logo-anim-hover:hover .logo-walker,
+  .logo-anim-hover:hover .logo-leg-front,
+  .logo-anim-hover:hover .logo-leg-back,
+  .logo-anim-hover:hover .logo-arm-front,
+  .logo-anim-hover:hover .logo-arm-back,
+  .logo-anim-hover:hover .logo-arc,
+  .logo-anim-hover:hover .logo-arrow {
+    animation: none;
+  }
+  .logo-anim-always .logo-arc,
+  .logo-anim-hover:hover .logo-arc {
+    stroke-dasharray: none;
+  }
+}

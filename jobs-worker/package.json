@@ -1,0 +1,26 @@
+{
+  "name": "jobs24-worker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Jobs24 ingestion worker \u2014 fetches, normalizes and upserts India-tech + India-eligible remote jobs.",
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "sync": "node src/jobs/syncAll.js",
+    "sync:once": "node src/jobs/syncAll.js --once",
+    "sync:source": "node src/jobs/syncSource.js",
+    "verify:stale": "node src/jobs/verifyStale.js",
+    "seed": "node src/jobs/seedCompanies.js",
+    "health": "node src/server.js",
+    "test": "node src/jobs/selfTest.js",
+    "dry-run": "node src/jobs/dryRun.js",
+    "purge": "node src/jobs/purgeOld.js",
+    "size": "node src/jobs/purgeOld.js --dry-run"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "sanitize-html": "^2.13.0"
+  }
+}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <!--
+    Favicon: the Career Climb mark on a dark rounded tile.
+
+    Simplified from the full logo — at 16px the thin trailing arm and the
+    briefcase handle turn to mush, so both are dropped and the remaining
+    strokes are thickened. The silhouette still reads as a figure striding
+    up an arc with a case.
+  -->
+  <rect width="48" height="48" rx="11" fill="#0c0e0b"/>
+  <g stroke="#a3e635" fill="#a3e635" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M5 38C11 38 15 33 20 26C25 19 30 12 40 10" stroke-width="3.2" fill="none" opacity="0.3"/>
+    <path d="M34 9.5L41 9.5L40 16.5" stroke-width="3.6" fill="none"/>
+    <circle cx="21.5" cy="13" r="4.4"/>
+    <path d="M21 19.5L19.5 28M19.5 28L15 38M19.5 28L26 33.5L28.5 40" stroke-width="3.8" fill="none"/>
+    <path d="M21.5 21.5L29 19" stroke-width="3.4" fill="none"/>
+    <rect x="28.5" y="17.5" width="9.5" height="7" rx="1.6" stroke="none"/>
+  </g>
+</svg>

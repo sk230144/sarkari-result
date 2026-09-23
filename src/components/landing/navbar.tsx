@@ -1,4 +1,6 @@
-import { Flame, Crosshair, Smartphone, Sparkles } from "lucide-react";
+import { Crosshair, Smartphone, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { Logo } from "@/components/ui/logo";
 import { ThemeToggle } from "@/components/theme/theme-toggle";
 
 export function Navbar() {
@@ -6,17 +8,12 @@ export function Navbar() {
     <header className="fixed inset-x-0 top-0 z-50 border-b border-[var(--color-c-surface-15)] bg-[var(--color-c-canvas-deep)]/90 backdrop-blur-md">
       <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <div className="flex items-center gap-10">
-          <a href="#" className="flex items-center gap-2.5">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-c-forest-22)] bg-[var(--color-c-raised-2)]">
-              <Flame className="h-5 w-5 text-[var(--color-c-green)]" />
-            </div>
-            <span className="text-xl font-bold lowercase tracking-tight text-[var(--color-c-text)]">
-              jobalert24
-            </span>
-          </a>
+          <Link href="/" aria-label="jobalert24 home">
+            <Logo markClassName="h-9 w-9" />
+          </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-[var(--color-c-text-dim)] md:flex">
-            <a href="#jobs" className="transition-colors hover:text-[var(--color-c-text)]">
+            <a href="/jobs" className="transition-colors hover:text-[var(--color-c-text)]">
               Jobs
             </a>
             <a href="/resources" className="transition-colors hover:text-[var(--color-c-text)]">

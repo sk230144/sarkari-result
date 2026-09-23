@@ -21,7 +21,7 @@ export function BottomCta() {
               More interviews, offers, and a faster path to your next role.
             </p>
             <a
-              href="#jobs"
+              href="/jobs"
               className="inline-flex items-center gap-2 rounded-full bg-[var(--color-c-green)] px-7 py-3.5 text-sm font-bold text-black shadow-[0_0_20px_rgba(74,222,128,0.3)] transition-all hover:bg-[var(--color-c-emerald-2)]"
             >
               <span>Search jobs →</span>

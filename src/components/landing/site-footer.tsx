@@ -1,7 +1,8 @@
-import { Flame, Moon, Phone } from "lucide-react";
+import { Moon, Phone } from "lucide-react";
+import { Logo } from "@/components/ui/logo";
 
 const PLATFORM = [
-  ["Find Jobs", "#jobs"],
+  ["Find Jobs", "/jobs"],
   ["Resources", "/resources"],
   ["AI Copilot", "#copilot"],
   ["Contact", "#contact"],
@@ -18,14 +19,7 @@ export function SiteFooter() {
   return (
     <footer className="w-full border-t border-[var(--color-c-raised)] bg-[var(--color-c-canvas-deep)] px-6 py-16">
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-12 md:flex-row">
-        <div className="flex items-center gap-2.5">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-[var(--color-c-forest-22)] bg-[var(--color-c-raised-2)]">
-            <Flame className="h-5 w-5 text-[var(--color-c-green)]" />
-          </div>
-          <span className="text-xl font-bold lowercase tracking-tight text-[var(--color-c-text)]">
-            jobalert24
-          </span>
-        </div>
+        <Logo markClassName="h-9 w-9" />
 
         <div className="flex gap-16 text-xs">
           <div>
