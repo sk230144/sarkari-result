@@ -3,8 +3,15 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, LogOut, FileText, Loader2 } from "lucide-react";
+import { User, LogOut, FileText, Loader2, Shield } from "lucide-react";
 import { useAuth } from "./auth-provider";
+
+/**
+ * Emails that see the admin link. This only controls whether the link is
+ * rendered — the page itself is gated server-side, so hiding it here is a
+ * convenience, not the security boundary.
+ */
+const ADMIN_EMAILS = ["risabht043@gmail.com"];
 
 /**
  * Profile control in the header.
@@ -66,6 +73,7 @@ export function AccountMenu() {
     user.email?.split("@")[0] ||
     "Account";
   const initial = name.charAt(0).toUpperCase();
+  const isAdminUser = ADMIN_EMAILS.includes((user.email ?? "").toLowerCase());
 
   return (
     <div ref={boxRef} className="relative">
@@ -103,6 +111,18 @@ export function AccountMenu() {
             <FileText className="h-3.5 w-3.5" />
             Profile &amp; resume
           </Link>
+
+          {isAdminUser && (
+            <Link
+              href="/admin"
+              onClick={() => setOpen(false)}
+              role="menuitem"
+              className="flex items-center gap-2.5 px-3 py-2.5 text-[12px] text-[var(--color-c-text-4)] transition-colors hover:bg-[var(--color-c-surface-2)] hover:text-[var(--color-c-text)]"
+            >
+              <Shield className="h-3.5 w-3.5" />
+              Admin
+            </Link>
+          )}
 
           <button
             type="button"

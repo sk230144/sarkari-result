@@ -6,6 +6,7 @@ import {
   THEME_INIT_SCRIPT,
 } from "@/components/theme/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
+import { PageTracker } from "@/components/analytics/page-tracker";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -36,7 +37,11 @@ export default function RootLayout({
         */}
         <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
         <ThemeProvider>
-          <AuthProvider>{children}</AuthProvider>
+          <AuthProvider>
+            {/* Records page views for the admin view. Renders nothing. */}
+            <PageTracker />
+            {children}
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>
