@@ -1100,3 +1100,154 @@ h3 {
     stroke-dasharray: none;
   }
 }
+
+/* ── Cover letter page ─────────────────────────────────────────── */
+
+/* Underline that draws itself under the headline's key word */
+.cl-underline {
+  transform-origin: left center;
+  animation: clUnderline 0.9s cubic-bezier(0.65, 0, 0.35, 1) 0.6s backwards;
+}
+@keyframes clUnderline {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+/* Solid block caret for the typing mockups */
+.cl-caret {
+  animation: clCaret 1s steps(1, end) infinite;
+}
+@keyframes clCaret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Highlight bar that wipes in behind a matched sentence */
+.cl-highlight {
+  background-image: linear-gradient(
+    90deg,
+    rgba(163, 230, 53, 0.16),
+    rgba(163, 230, 53, 0.1)
+  );
+  background-repeat: no-repeat;
+  animation: clHighlight 0.7s ease-out backwards;
+}
+@keyframes clHighlight {
+  from {
+    background-size: 0% 100%;
+  }
+  to {
+    background-size: 100% 100%;
+  }
+}
+
+/* Scanning line sweeping down a panel while it "analyses" */
+.cl-scan {
+  animation: clScan 2.6s ease-in-out infinite;
+}
+@keyframes clScan {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15%,
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+/* Slow spin for the regenerate icon */
+.cl-spin-slow {
+  animation: orbit 6s linear infinite;
+}
+
+/* Sections rising into view as the reader scrolls */
+.cl-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.7s ease-out,
+    transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.cl-reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Soft glow that breathes behind the primary CTA */
+.cl-glow {
+  animation: clGlow 3.2s ease-in-out infinite;
+}
+@keyframes clGlow {
+  0%,
+  100% {
+    box-shadow: 0 10px 40px -8px rgba(163, 230, 53, 0.45);
+  }
+  50% {
+    box-shadow: 0 14px 60px -6px rgba(163, 230, 53, 0.7);
+  }
+}
+
+/* Modal entrance: backdrop fades, panel rises and settles */
+.cl-overlay-in {
+  animation: clFade 0.25s ease-out both;
+}
+.cl-modal-in {
+  animation: clModalIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+.cl-fade {
+  animation: clFadeUp 0.35s ease-out both;
+}
+@keyframes clFade {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes clModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.97);
+  }
+}
+@keyframes clFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-overlay-in,
+  .cl-modal-in,
+  .cl-fade {
+    animation: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cl-underline,
+  .cl-caret,
+  .cl-highlight,
+  .cl-scan,
+  .cl-spin-slow,
+  .cl-glow {
+    animation: none;
+  }
+  .cl-highlight {
+    background-size: 100% 100%;
+  }
+  .cl-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

@@ -7,9 +7,40 @@ import {
   Activity,
   FileText,
   BarChart3,
+  Sparkles,
 } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { isAdmin, getAdminData } from "@/lib/admin";
+import { USD_TO_INR } from "@/lib/ai-pricing";
+
+/** "₹1.24" with the USD figure alongside; tiny amounts keep enough decimals to read. */
+function inr(usd: number): string {
+  const rs = usd * USD_TO_INR;
+  if (!usd) return "₹0";
+  return `₹${rs < 1 ? rs.toFixed(3) : rs.toFixed(2)}`;
+}
+
+function usdText(usd: number): string {
+  return `$${usd < 0.01 ? usd.toFixed(5) : usd.toFixed(3)}`;
+}
+
+/** 950, 12.4k, 3.1M */
+function tokens(n: number): string {
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
+  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}k`;
+  return String(n);
+}
+
+const KIND_LABELS: Record<string, string> = {
+  cover_letter: "Cover letter · all 3 styles",
+  cover_letter_operator: "Cover letter · regenerate Operator",
+  cover_letter_believer: "Cover letter · regenerate Believer",
+  cover_letter_short: "Cover letter · regenerate Quick Apply",
+  cover_letter_edit_shorter: "Cover letter · edit: shorter",
+  cover_letter_edit_formal: "Cover letter · edit: more formal",
+  cover_letter_edit_confident: "Cover letter · edit: more confident",
+  cover_letter_edit_warmer: "Cover letter · edit: warmer",
+};
 
 export const metadata: Metadata = {
   title: "Admin — Job Alert 24",
@@ -58,6 +89,7 @@ const SECTION_LABELS: Record<string, string> = {
   "task-board": "Task Board",
   resources: "Resources",
   "portfolio-builder": "Portfolio Builder",
+  "cover-letter": "Cover Letter",
   profile: "Profile",
   login: "Login",
   signup: "Signup",
@@ -69,8 +101,9 @@ export default async function AdminPage() {
   // existence is not disclosed to anyone who is not an admin.
   if (!(await isAdmin())) notFound();
 
-  const { users, sections, totals } = await getAdminData();
+  const { users, sections, totals, ai } = await getAdminData();
   const maxViews = sections[0]?.views ?? 1;
+  const aiUsers = users.filter((u) => u.ai.calls > 0).sort((a, b) => b.ai.costUsd - a.ai.costUsd);
 
   return (
     <DashboardShell canvas="obsidian" sidebar={false} backTo="/">
@@ -141,6 +174,125 @@ export default async function AdminPage() {
           )}
         </section>
 
+        {/* AI usage and cost */}
+        <section className="rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-5">
+          <h2 className="flex items-center gap-2 text-[14px] font-bold text-[var(--color-c-text)]">
+            <Sparkles className="h-4 w-4 text-[var(--color-c-lime)]" />
+            AI usage &amp; cost
+            <span className="text-[11px] font-normal text-[var(--color-c-dim)]">
+              estimated from logged tokens at ₹{USD_TO_INR}/$
+            </span>
+          </h2>
+
+          {!ai.ready ? (
+            <EmptyNote>
+              The ai_usage table does not exist yet. Run
+              supabase/migrations/0008_cover_letters.sql in the Supabase SQL
+              editor and this section will start filling.
+            </EmptyNote>
+          ) : ai.totals.calls === 0 ? (
+            <EmptyNote>No AI calls yet. Every cover letter generation and edit will show up here.</EmptyNote>
+          ) : (
+            <>
+              <div className="mt-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
+                <Stat
+                  icon={<Sparkles className="h-4 w-4" />}
+                  label="Total cost"
+                  value={inr(ai.totals.costUsd)}
+                  sub={usdText(ai.totals.costUsd)}
+                />
+                <Stat
+                  icon={<Clock className="h-4 w-4" />}
+                  label="Last 24 hours"
+                  value={inr(ai.last24h.costUsd)}
+                  sub={`${ai.last24h.calls} calls`}
+                />
+                <Stat
+                  icon={<Activity className="h-4 w-4" />}
+                  label="AI calls"
+                  value={ai.totals.calls}
+                  sub={`avg ${inr(ai.totals.costUsd / ai.totals.calls)} each`}
+                />
+                <Stat
+                  icon={<BarChart3 className="h-4 w-4" />}
+                  label="Tokens"
+                  value={tokens(ai.totals.input + ai.totals.output + ai.totals.thinking)}
+                  sub={`${tokens(ai.totals.input)} in · ${tokens(ai.totals.output + ai.totals.thinking)} out`}
+                />
+              </div>
+
+              {/* By feature */}
+              <h3 className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-dim)]">
+                By feature
+              </h3>
+              <div className="mt-2 flex flex-col gap-2">
+                {ai.byKind.map((k) => (
+                  <div key={k.kind} className="flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px]">
+                    <span className="min-w-0 flex-1 truncate font-medium text-[var(--color-c-text-4)]">
+                      {KIND_LABELS[k.kind] ?? k.kind}
+                    </span>
+                    <span className="text-[var(--color-c-dim)]">{k.calls} calls</span>
+                    <span className="text-[var(--color-c-dim)]">
+                      {k.users} {k.users === 1 ? "user" : "users"}
+                    </span>
+                    <span className="text-[var(--color-c-dim)]">
+                      {tokens(k.input)} in · {tokens(k.output + k.thinking)} out
+                    </span>
+                    <span className="w-16 text-right font-semibold text-[var(--color-c-lime)]">
+                      {inr(k.costUsd)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+
+              {/* By user */}
+              <h3 className="mt-6 text-[11px] font-semibold uppercase tracking-wider text-[var(--color-c-dim)]">
+                By user · highest cost first
+              </h3>
+              <div className="mt-2 overflow-x-auto">
+                <table className="w-full min-w-[640px] text-left text-[12px]">
+                  <thead>
+                    <tr className="border-b border-[var(--color-c-border)] text-[10px] uppercase tracking-wider text-[var(--color-c-dim)]">
+                      <th className="py-2 pr-3 font-semibold">User</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Calls</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Input</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Output</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Thinking</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Cost</th>
+                      <th className="py-2 pr-3 text-right font-semibold">Per call</th>
+                      <th className="py-2 text-right font-semibold">Last call</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {aiUsers.map((u) => (
+                      <tr key={u.id} className="border-b border-[var(--color-c-border)] last:border-0">
+                        <td className="max-w-[220px] py-2.5 pr-3">
+                          <p className="truncate font-semibold text-[var(--color-c-text)]">
+                            {u.fullName ?? u.email.split("@")[0]}
+                          </p>
+                          <p className="truncate text-[10px] text-[var(--color-c-dim)]">{u.email}</p>
+                        </td>
+                        <td className="py-2.5 pr-3 text-right text-[var(--color-c-text-4)]">{u.ai.calls}</td>
+                        <td className="py-2.5 pr-3 text-right text-[var(--color-c-text-4)]">{tokens(u.ai.input)}</td>
+                        <td className="py-2.5 pr-3 text-right text-[var(--color-c-text-4)]">{tokens(u.ai.output)}</td>
+                        <td className="py-2.5 pr-3 text-right text-[var(--color-c-text-4)]">{tokens(u.ai.thinking)}</td>
+                        <td className="py-2.5 pr-3 text-right">
+                          <span className="font-bold text-[var(--color-c-lime)]">{inr(u.ai.costUsd)}</span>
+                          <span className="block text-[10px] text-[var(--color-c-dim)]">{usdText(u.ai.costUsd)}</span>
+                        </td>
+                        <td className="py-2.5 pr-3 text-right text-[var(--color-c-text-4)]">
+                          {inr(u.ai.costUsd / u.ai.calls)}
+                        </td>
+                        <td className="py-2.5 text-right text-[var(--color-c-dim)]">{ago(u.ai.lastCallAt)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          )}
+        </section>
+
         {/* Users */}
         <section className="rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-5">
           <h2 className="flex items-center gap-2 text-[14px] font-bold text-[var(--color-c-text)]">
@@ -185,6 +337,9 @@ export default async function AdminPage() {
                     <Field label="Last active" value={ago(u.lastSeenAt ?? u.lastSignInAt)} />
                     <Field label="Last login" value={ago(u.lastSignInAt)} />
                     <Field label="Joined" value={ago(u.createdAt)} />
+                    {u.ai.calls > 0 && (
+                      <Field label="AI cost" value={`${inr(u.ai.costUsd)} · ${u.ai.calls} calls`} strong />
+                    )}
                   </div>
                 </div>
 
@@ -263,10 +418,12 @@ function Stat({
   icon,
   label,
   value,
+  sub,
 }: {
   icon: React.ReactNode;
   label: string;
-  value: number;
+  value: number | string;
+  sub?: string;
 }) {
   return (
     <div className="rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-4">
@@ -275,8 +432,9 @@ function Stat({
         {label}
       </span>
       <p className="mt-1.5 text-[24px] font-bold leading-none text-[var(--color-c-text)]">
-        {value.toLocaleString("en-IN")}
+        {typeof value === "number" ? value.toLocaleString("en-IN") : value}
       </p>
+      {sub && <p className="mt-1 text-[11px] text-[var(--color-c-dim)]">{sub}</p>}
     </div>
   );
 }

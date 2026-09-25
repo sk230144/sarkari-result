@@ -6,7 +6,7 @@ const TOOLS = [
     icon: FileText,
     name: "Cover Letter",
     body: "Generate a personalized, ATS-friendly cover letter for any job in seconds.",
-    href: "#cover-letter",
+    href: "/cover-letter",
     tint: "text-[var(--color-c-violet)]",
     chip: "bg-[var(--color-c-violet)]/15",
     wash: "from-[var(--color-c-violet)]/[0.10]",

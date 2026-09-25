@@ -2,6 +2,7 @@ import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
+import { costUsd } from "./ai-pricing";
 
 /**
  * Who may see the admin section.
@@ -41,9 +42,12 @@ export async function currentUserEmail(): Promise<string | null> {
   return user?.email ?? null;
 }
 
-export async function isAdmin(): Promise<boolean> {
-  const email = await currentUserEmail();
+export function isAdminEmail(email: string | null | undefined): boolean {
   return Boolean(email && ADMIN_EMAILS.includes(email.toLowerCase()));
+}
+
+export async function isAdmin(): Promise<boolean> {
+  return isAdminEmail(await currentUserEmail());
 }
 
 /**
@@ -83,7 +87,23 @@ export type AdminUser = {
   sections: UserSection[];
   /** Most recent page view, which tracks activity more closely than logins. */
   lastSeenAt: string | null;
+  ai: AiTotals;
 };
+
+export type AiTotals = {
+  calls: number;
+  input: number;
+  output: number;
+  thinking: number;
+  costUsd: number;
+  lastCallAt: string | null;
+};
+
+export type AiKindStat = AiTotals & { kind: string; users: number };
+
+function emptyAi(): AiTotals {
+  return { calls: 0, input: 0, output: 0, thinking: 0, costUsd: 0, lastCallAt: null };
+}
 
 export type SectionStat = {
   section: string;
@@ -101,6 +121,13 @@ export async function getAdminData(): Promise<{
     signedInLast7d: number;
     views: number;
     trackedHours: number;
+  };
+  ai: {
+    /** False until migration 0008 has created the ai_usage table. */
+    ready: boolean;
+    totals: AiTotals;
+    last24h: AiTotals;
+    byKind: AiKindStat[];
   };
 }> {
   const db = adminDb();
@@ -122,9 +149,51 @@ export async function getAdminData(): Promise<{
     .order("created_at", { ascending: false })
     .limit(50000);
 
+  const { data: usage, error: usageError } = await db
+    .from("ai_usage")
+    .select("user_id, kind, model, input_tokens, output_tokens, thinking_tokens, created_at")
+    .order("created_at", { ascending: false })
+    .limit(50000);
+
   const profileById = new Map(
     (profiles ?? []).map((p) => [p.id as string, p]),
   );
+
+  const aiByUser = new Map<string, AiTotals>();
+  const aiByKind = new Map<string, AiTotals & { users: Set<string> }>();
+  const aiTotals = emptyAi();
+  const aiDay = emptyAi();
+  const dayAgo = Date.now() - 86_400_000;
+
+  const add = (t: AiTotals, input: number, output: number, thinking: number, cost: number, at: string) => {
+    t.calls += 1;
+    t.input += input;
+    t.output += output;
+    t.thinking += thinking;
+    t.costUsd += cost;
+    // Rows arrive newest-first.
+    if (!t.lastCallAt) t.lastCallAt = at;
+  };
+
+  for (const r of usage ?? []) {
+    const input = (r.input_tokens as number) ?? 0;
+    const output = (r.output_tokens as number) ?? 0;
+    const thinking = (r.thinking_tokens as number) ?? 0;
+    const at = r.created_at as string;
+    const cost = costUsd(r.model as string, input, output, thinking);
+
+    const u = aiByUser.get(r.user_id as string) ?? emptyAi();
+    add(u, input, output, thinking, cost, at);
+    aiByUser.set(r.user_id as string, u);
+
+    const k = aiByKind.get(r.kind as string) ?? { ...emptyAi(), users: new Set<string>() };
+    add(k, input, output, thinking, cost, at);
+    k.users.add(r.user_id as string);
+    aiByKind.set(r.kind as string, k);
+
+    add(aiTotals, input, output, thinking, cost, at);
+    if (Date.parse(at) > dayAgo) add(aiDay, input, output, thinking, cost, at);
+  }
 
   // Fold the view rows into per-user and per-section totals in one pass.
   const perUser = new Map<
@@ -191,6 +260,7 @@ export async function getAdminData(): Promise<{
           seconds: s.seconds,
         }))
         .sort((a, b) => b.views - a.views),
+      ai: aiByUser.get(u.id) ?? emptyAi(),
     };
   });
 
@@ -223,6 +293,14 @@ export async function getAdminData(): Promise<{
       ).length,
       views: (views ?? []).length,
       trackedHours: Math.round((totalSeconds / 3600) * 10) / 10,
+    },
+    ai: {
+      ready: !usageError,
+      totals: aiTotals,
+      last24h: aiDay,
+      byKind: [...aiByKind.entries()]
+        .map(([kind, k]) => ({ ...k, kind, users: k.users.size }))
+        .sort((a, b) => b.costUsd - a.costUsd),
     },
   };
 }
