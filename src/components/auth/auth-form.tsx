@@ -85,7 +85,11 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
 
     await supabase
       .from("profiles")
-      .update({ resume_path: path, resume_filename: file.name })
+      .update({
+        resume_path: path,
+        resume_filename: file.name,
+        resume_uploaded_at: new Date().toISOString(),
+      })
       .eq("id", userId);
   }
 
@@ -155,6 +159,16 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
           );
           console.error("resume upload failed", upErr);
         }
+      }
+
+      // Credit whoever invited them. Best effort: never blocks signup.
+      const ref = params.get("ref");
+      if (ref) {
+        await fetch("/api/profile/referral", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ref }),
+        }).catch(() => {});
       }
 
       router.push(next);
