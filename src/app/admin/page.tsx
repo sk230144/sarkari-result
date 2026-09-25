@@ -40,6 +40,10 @@ const KIND_LABELS: Record<string, string> = {
   cover_letter_edit_formal: "Cover letter · edit: more formal",
   cover_letter_edit_confident: "Cover letter · edit: more confident",
   cover_letter_edit_warmer: "Cover letter · edit: warmer",
+  analysis_cv: "Resume analysis · CV profile (once per resume)",
+  analysis_jd: "Resume analysis · JD profile (once per job, shared)",
+  analysis_judgment: "Resume analysis · judgment",
+  analysis_risk: "Resume analysis · AI risk (once per role)",
 };
 
 export const metadata: Metadata = {

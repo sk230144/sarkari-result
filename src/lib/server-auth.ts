@@ -30,19 +30,35 @@ export function serviceDb(): SupabaseClient {
   return createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
 }
 
-/** Paid AI calls allowed per user in any rolling 24 hours. */
+/** Cover letter AI calls (generate, regenerate, edit) per user per rolling 24 h. */
 export const DAILY_AI_LIMIT = Number(process.env.AI_DAILY_LIMIT_PER_USER) || 20;
 
-/** Remaining paid calls for this user, or null when the user is unlimited. */
+/** New resume analyses per user per rolling 24 h (cached re-opens are free). */
+export const DAILY_ANALYSIS_LIMIT = Number(process.env.AI_DAILY_ANALYSES_PER_USER) || 10;
+
+const dayAgo = () => new Date(Date.now() - 24 * 3600 * 1000).toISOString();
+
+/** Remaining cover letter calls for this user, or null when unlimited. */
 export async function remainingAiCalls(db: SupabaseClient, user: User): Promise<number | null> {
   if (isAdminEmail(user.email)) return null;
-  const since = new Date(Date.now() - 24 * 3600 * 1000).toISOString();
   const { count } = await db
     .from("ai_usage")
     .select("id", { count: "exact", head: true })
     .eq("user_id", user.id)
-    .gte("created_at", since);
+    .like("kind", "cover_letter%")
+    .gte("created_at", dayAgo());
   return Math.max(0, DAILY_AI_LIMIT - (count ?? 0));
+}
+
+/** Remaining new analyses for this user, or null when unlimited. */
+export async function remainingAnalyses(db: SupabaseClient, user: User): Promise<number | null> {
+  if (isAdminEmail(user.email)) return null;
+  const { count } = await db
+    .from("resume_reports")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", dayAgo());
+  return Math.max(0, DAILY_ANALYSIS_LIMIT - (count ?? 0));
 }
 
 export async function logAiUsage(

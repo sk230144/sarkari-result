@@ -21,10 +21,17 @@ import {
   FileText,
   ArrowRight,
   Clock,
+  Database,
 } from "lucide-react";
 import { Modal } from "./modal";
 import { prefersReducedMotion } from "./primitives";
-import type { Analysis } from "./sample-data";
+import type { AnalysisResult, ResourceCard as Card } from "@/lib/analyzer/config";
+
+const CARD_ICONS: Record<Card["icon"], React.ComponentType<{ className?: string }>> = {
+  "system-design": Network,
+  interview: Building,
+  portfolio: BadgeCheck,
+};
 
 function Section({
   icon: Icon,
@@ -54,38 +61,25 @@ function Section({
   );
 }
 
-function ResourceCard({
-  icon: Icon,
-  title,
-  body,
-  href,
-  cta,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  body: string;
-  href: string;
-  cta: string;
-}) {
+function ResourceCard({ card }: { card: Card }) {
+  const Icon = CARD_ICONS[card.icon];
   return (
     <div className="group flex flex-col rounded-xl border border-[var(--color-c-lime)]/20 bg-[#1a2115] p-4 transition-colors hover:border-[var(--color-c-lime)]/45">
       <div className="flex items-start gap-2.5">
         <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[var(--color-c-lime)]/10">
           <Icon className="h-4 w-4 text-[var(--color-c-lime)]" />
         </span>
-        <p className="flex-1 text-[13px] font-bold leading-snug text-[var(--color-c-text)]">
-          {title}
-        </p>
+        <p className="flex-1 text-[13px] font-bold leading-snug text-[var(--color-c-text)]">{card.title}</p>
         <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[8px] uppercase tracking-wider text-[var(--color-c-dim)]">
           Resource
         </span>
       </div>
-      <p className="mt-2 flex-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{body}</p>
+      <p className="mt-2 flex-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{card.body}</p>
       <Link
-        href={href}
+        href={card.href}
         className="mt-3 inline-flex w-fit items-center gap-1.5 rounded-lg bg-[var(--color-c-lime)] px-3 py-2 text-[11px] font-bold text-black transition-transform group-hover:translate-x-0.5"
       >
-        {cta}
+        {card.cta}
         <ArrowRight className="h-3 w-3" />
       </Link>
     </div>
@@ -93,14 +87,15 @@ function ResourceCard({
 }
 
 export function AnalysisModal({
-  data,
+  result,
   onClose,
   onCoverLetter,
 }: {
-  data: Analysis;
+  result: AnalysisResult;
   onClose: () => void;
   onCoverLetter: () => void;
 }) {
+  const data = result.report;
   // Ring and bars start empty and fill after mount, so the score animates in.
   const [filled, setFilled] = useState(false);
   const [riskOpen, setRiskOpen] = useState(false);
@@ -112,24 +107,32 @@ export function AnalysisModal({
 
   const R = 34;
   const C = 2 * Math.PI * R;
-  const ringColor = data.score >= 75 ? "#a3e635" : data.score >= 50 ? "#f59e0b" : "#ef4444";
+  const ringColor = data.score >= 80 ? "#a3e635" : data.score >= 60 ? "#84cc16" : data.score >= 40 ? "#f59e0b" : "#ef4444";
+  const VerdictIcon = data.score >= 60 ? CheckCircle2 : AlertTriangle;
 
   return (
-    <Modal label={`${data.role} resume analysis`} onClose={onClose} className="h-[min(92vh,900px)] max-w-2xl">
+    <Modal label={`${data.jdTitle} resume analysis`} onClose={onClose} className="h-[min(92vh,900px)] max-w-2xl">
       {/* Header */}
       <div className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4">
         <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-[var(--color-c-lime)]/25 bg-[var(--color-c-lime)]/10">
           <FileText className="h-4 w-4 text-[var(--color-c-lime)]" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="truncate text-[14px] font-bold text-[var(--color-c-text)]">{data.role}</p>
+          <p className="truncate text-[14px] font-bold text-[var(--color-c-text)]">{data.jdTitle}</p>
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--color-c-dim)]">
             AI match report
+            {result.remaining !== null && ` · ${result.remaining} left today`}
           </p>
         </div>
-        <span className="hidden rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-amber-300 sm:inline">
-          Sample preview
-        </span>
+        {result.cached && (
+          <span
+            title="Same resume and job as before, so no new AI call was made"
+            className="hidden items-center gap-1 rounded-full border border-sky-400/30 bg-sky-400/10 px-2.5 py-1 font-mono text-[9px] font-bold uppercase tracking-wider text-sky-300 sm:inline-flex"
+          >
+            <Database className="h-3 w-3" />
+            Saved report
+          </span>
+        )}
         <button
           type="button"
           onClick={onClose}
@@ -166,7 +169,7 @@ export function AnalysisModal({
             </div>
             <div className="flex-1">
               <p className="flex items-center gap-1.5 text-[15px] font-bold" style={{ color: ringColor }}>
-                <AlertTriangle className="h-4 w-4" />
+                <VerdictIcon className="h-4 w-4" />
                 {data.verdict}
               </p>
               <p className="mt-1 text-[12px] text-[var(--color-c-muted)]">{data.summary}</p>
@@ -189,57 +192,62 @@ export function AnalysisModal({
               </div>
             </div>
           </div>
-          <p className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2.5 text-[12px] leading-relaxed text-amber-200/90">
-            <span className="font-bold text-amber-300">Watch title match: </span>
-            {data.titleWarning}
-          </p>
+          {data.titleWarning && (
+            <p className="mt-4 rounded-xl border border-amber-400/20 bg-amber-400/[0.06] px-3 py-2.5 text-[12px] leading-relaxed text-amber-200/90">
+              <span className="font-bold text-amber-300">Watch title match: </span>
+              {data.titleWarning}
+            </p>
+          )}
         </section>
 
         {/* Matches and gaps */}
         <div className="grid gap-3 sm:grid-cols-2">
           <Section icon={CheckCircle2} title={`Matched (${data.matched.length})`}>
-            <div className="flex flex-wrap gap-1.5">
-              {data.matched.map((m) => (
-                <span key={m} className="rounded-lg border border-[var(--color-c-lime)]/30 bg-[var(--color-c-lime)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--color-c-lime)]">
-                  {m}
-                </span>
-              ))}
-            </div>
+            {data.matched.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {data.matched.map((m) => (
+                  <span
+                    key={m}
+                    className="rounded-lg border border-[var(--color-c-lime)]/30 bg-[var(--color-c-lime)]/10 px-2.5 py-1 text-[11px] font-semibold text-[var(--color-c-lime)]"
+                  >
+                    {m}
+                  </span>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[12px] text-[var(--color-c-dim)]">No listed skills matched yet.</p>
+            )}
           </Section>
           <Section icon={XCircle} title={`Gaps (${data.gaps.length})`}>
-            <div className="flex flex-wrap gap-1.5">
-              {data.gaps.map((g) => (
-                <span key={g.skill} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-c-text)]">
-                  {g.skill}
+            {data.gaps.length ? (
+              <div className="flex flex-wrap gap-1.5">
+                {data.gaps.map((g) => (
                   <span
-                    className={`rounded px-1 font-mono text-[8px] font-bold uppercase ${
-                      g.level === "Required" ? "bg-red-500/20 text-red-300" : "bg-amber-400/20 text-amber-300"
-                    }`}
+                    key={g.skill}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] font-semibold text-[var(--color-c-text)]"
                   >
-                    {g.level}
+                    {g.skill}
+                    <span
+                      className={`rounded px-1 font-mono text-[8px] font-bold uppercase ${
+                        g.type === "Required" ? "bg-red-500/20 text-red-300" : "bg-amber-400/20 text-amber-300"
+                      }`}
+                    >
+                      {g.type}
+                    </span>
                   </span>
-                </span>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-[12px] text-[var(--color-c-dim)]">No skill gaps. Nice.</p>
+            )}
           </Section>
         </div>
 
         <Section icon={BookOpen} title="Helpful resources">
           <div className="grid gap-3 sm:grid-cols-2">
-            <ResourceCard
-              icon={Network}
-              title="Strengthen your system design skills"
-              body="Almost every technical interview touches system design. Learn the fundamentals recruiters expect."
-              href="/system-design"
-              cta="Open System Design Sheet"
-            />
-            <ResourceCard
-              icon={Building}
-              title="Practice real company interview questions"
-              body="Real interview questions tagged by company, from 18 top tech companies."
-              href="/faang-questions"
-              cta="Open Interview Questions"
-            />
+            {data.resources.map((c) => (
+              <ResourceCard key={c.href} card={c} />
+            ))}
           </div>
         </Section>
 
@@ -256,34 +264,56 @@ export function AnalysisModal({
           </div>
         </Section>
 
-        <Section icon={Plus} title="Close the gap" tone="lime">
-          <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-lime)]">Add skill</p>
-          <p className="mt-1 text-[13px] font-bold text-[var(--color-c-text)]">{data.closeTheGap.title}</p>
-          <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{data.closeTheGap.body}</p>
-        </Section>
+        {data.closeTheGap.length > 0 && (
+          <Section icon={Plus} title="Close the gap" tone="lime">
+            <div className="space-y-3">
+              {data.closeTheGap.map((c) => (
+                <div key={c.title}>
+                  <p className="font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-lime)]">
+                    Add skill
+                  </p>
+                  <p className="mt-1 text-[13px] font-bold text-[var(--color-c-text)]">{c.title}</p>
+                  <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{c.body}</p>
+                </div>
+              ))}
+            </div>
+          </Section>
+        )}
 
         <Section icon={Route} title="Your path to this role">
           <p className="text-[12px] text-[var(--color-c-muted)]">{data.path.intro}</p>
-          <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-dim)]">Topics to learn</p>
-          <div className="mt-1.5 flex flex-wrap gap-1.5">
-            {data.path.topics.map((t) => (
-              <span key={t} className="rounded-lg bg-[var(--color-c-lime)] px-2.5 py-1 text-[11px] font-bold text-black">
-                {t}
-              </span>
-            ))}
-          </div>
-          <p className="mt-4 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-dim)]">Projects to build</p>
-          <div className="mt-1.5 space-y-2">
-            {data.path.projects.map((p) => (
-              <div key={p.title} className="rounded-xl border border-white/[0.06] bg-black/20 p-3">
-                <p className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--color-c-text)]">
-                  <Hammer className="h-3 w-3 text-[var(--color-c-lime)]" />
-                  {p.title}
-                </p>
-                <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-c-muted)]">{p.body}</p>
+          {data.path.topics.length > 0 && (
+            <>
+              <p className="mt-3 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-dim)]">
+                Topics to learn
+              </p>
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {data.path.topics.map((t) => (
+                  <span key={t} className="rounded-lg bg-[var(--color-c-lime)] px-2.5 py-1 text-[11px] font-bold text-black">
+                    {t}
+                  </span>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          )}
+          {data.path.projects.length > 0 && (
+            <>
+              <p className="mt-4 font-mono text-[9px] font-bold uppercase tracking-wider text-[var(--color-c-dim)]">
+                Projects to build
+              </p>
+              <div className="mt-1.5 space-y-2">
+                {data.path.projects.map((p) => (
+                  <div key={p.title} className="rounded-xl border border-white/[0.06] bg-black/20 p-3">
+                    <p className="flex items-center gap-1.5 text-[12px] font-bold text-[var(--color-c-text)]">
+                      <Hammer className="h-3 w-3 text-[var(--color-c-lime)]" />
+                      {p.title}
+                    </p>
+                    <p className="mt-1 text-[11.5px] leading-relaxed text-[var(--color-c-muted)]">{p.body}</p>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
           <p className="mt-3 flex items-center gap-1.5 text-[12px] text-[var(--color-c-text-4)]">
             <Clock className="h-3.5 w-3.5 text-[var(--color-c-lime)]" />
             <span className="font-semibold">Realistic timeline:</span> {data.path.timeline}
@@ -291,49 +321,46 @@ export function AnalysisModal({
         </Section>
 
         <Section icon={Hammer} title="Keep building">
-          <ResourceCard
-            icon={BadgeCheck}
-            title="Build a live project portfolio"
-            body="A working link beats a PDF every time. Turn your existing projects into a real portfolio in minutes."
-            href="/portfolio-builder"
-            cta="Build My Portfolio"
-          />
+          <ResourceCard card={data.keepBuilding} />
         </Section>
 
-        {/* AI risk, collapsed by default */}
-        <section className="cl-fade overflow-hidden rounded-2xl border border-amber-400/20 bg-amber-400/[0.03]">
-          <button
-            type="button"
-            onClick={() => setRiskOpen((v) => !v)}
-            aria-expanded={riskOpen}
-            className="flex w-full items-center gap-3 p-4 text-left"
-          >
-            <Bot className="h-4 w-4 text-amber-400" />
-            <span className="flex-1">
-              <span className="block text-[13px] font-bold text-[var(--color-c-text)]">AI disruption risk</span>
-              <span className="text-[11px] text-amber-300/90">
-                {data.aiRisk.level} · expected timeline {data.aiRisk.timeline}
+        {data.aiRisk && (
+          <section className="cl-fade overflow-hidden rounded-2xl border border-amber-400/20 bg-amber-400/[0.03]">
+            <button
+              type="button"
+              onClick={() => setRiskOpen((v) => !v)}
+              aria-expanded={riskOpen}
+              className="flex w-full items-center gap-3 p-4 text-left"
+            >
+              <Bot className="h-4 w-4 text-amber-400" />
+              <span className="flex-1">
+                <span className="block text-[13px] font-bold text-[var(--color-c-text)]">AI disruption risk</span>
+                <span className="text-[11px] text-amber-300/90">
+                  {data.aiRisk.level} · expected timeline {data.aiRisk.timeline} · estimate
+                </span>
               </span>
-            </span>
-            <ChevronDown className={`h-4 w-4 text-[var(--color-c-dim)] transition-transform duration-300 ${riskOpen ? "rotate-180" : ""}`} />
-          </button>
-          <div className={`grid transition-[grid-template-rows] duration-300 ${riskOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
-            <div className="overflow-hidden">
-              <div className="space-y-3 px-4 pb-4">
-                {[
-                  ["Automation risk", data.aiRisk.automation, "text-red-300"],
-                  ["Human edge", data.aiRisk.edge, "text-[var(--color-c-lime)]"],
-                  ["How to adapt", data.aiRisk.adapt, "text-sky-300"],
-                ].map(([label, body, tint]) => (
-                  <div key={label} className="rounded-xl border border-white/[0.06] bg-black/20 p-3">
-                    <p className={`font-mono text-[9px] font-bold uppercase tracking-wider ${tint}`}>{label}</p>
-                    <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{body}</p>
-                  </div>
-                ))}
+              <ChevronDown
+                className={`h-4 w-4 text-[var(--color-c-dim)] transition-transform duration-300 ${riskOpen ? "rotate-180" : ""}`}
+              />
+            </button>
+            <div className={`grid transition-[grid-template-rows] duration-300 ${riskOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"}`}>
+              <div className="overflow-hidden">
+                <div className="space-y-3 px-4 pb-4">
+                  {[
+                    ["Automation risk", data.aiRisk.automation, "text-red-300"],
+                    ["Human edge", data.aiRisk.edge, "text-[var(--color-c-lime)]"],
+                    ["How to adapt", data.aiRisk.adapt, "text-sky-300"],
+                  ].map(([label, body, tint]) => (
+                    <div key={label} className="rounded-xl border border-white/[0.06] bg-black/20 p-3">
+                      <p className={`font-mono text-[9px] font-bold uppercase tracking-wider ${tint}`}>{label}</p>
+                      <p className="mt-1 text-[12px] leading-relaxed text-[var(--color-c-muted)]">{body}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </div>
 
       {/* Footer actions */}

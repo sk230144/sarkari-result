@@ -20,8 +20,8 @@ import { Kicker, Reveal } from "./primitives";
 import { StepLoader } from "./modal";
 import { LetterModal } from "./letter-modal";
 import { AnalysisModal } from "./analysis-modal";
-import { sampleAnalysis } from "./sample-data";
 import { ROLES, type LetterResult } from "@/lib/cover-letter-config";
+import type { AnalysisResult } from "@/lib/analyzer/config";
 import { RESUME_MAX_BYTES, JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
 
 const MAX_PDF_BYTES = RESUME_MAX_BYTES;
@@ -70,6 +70,8 @@ export function CoverLetterWorkspace() {
   const [opening, setOpening] = useState(false);
   const [letter, setLetter] = useState<LetterResult | null>(null);
   const [letterReady, setLetterReady] = useState(false);
+  const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+  const [analysisReady, setAnalysisReady] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   // Resume key -> cvId, so the same file is only sent to /api/cv once.
   const cvIds = useRef(new Map<string, string>());
@@ -188,20 +190,39 @@ export function CoverLetterWorkspace() {
     }
   }
 
-  function startAnalysis() {
+  async function startAnalysis() {
+    if (!user) {
+      setError(NEED_LOGIN);
+      return;
+    }
     if (!active) {
       setError("Choose a resume first — your saved one, or upload a PDF.");
       return;
     }
     setError(null);
+    setAnalysisReady(false);
     setStage("loading-analysis");
+    try {
+      const cvId = await ensureCvId();
+      const res = await fetch("/api/resume-analysis", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cvId, role, jd }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not analyse your resume.");
+      setAnalysis(json as AnalysisResult);
+      setAnalysisReady(true);
+    } catch (e) {
+      setStage("idle");
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+    }
   }
 
   const close = useCallback(() => setStage("idle"), []);
   const showLetter = useCallback(() => setStage("letter"), []);
   const showAnalysis = useCallback(() => setStage("analysis"), []);
 
-  const analysis = useMemo(() => sampleAnalysis(role), [role]);
   const company = useMemo(() => {
     // First "at Company" / "Company is hiring" style mention, if the JD has one.
     const m = jd.match(/\b(?:at|join)\s+([A-Z][\w&.-]*(?:\s+[A-Z][\w&.-]*){0,2})/);
@@ -446,7 +467,12 @@ export function CoverLetterWorkspace() {
         />
       )}
       {stage === "loading-analysis" && (
-        <StepLoader title="Analysing your resume" steps={ANALYSIS_STEPS} onDone={showAnalysis} />
+        <StepLoader
+          title="Analysing your resume"
+          steps={ANALYSIS_STEPS}
+          done={analysisReady}
+          onDone={showAnalysis}
+        />
       )}
       {stage === "letter" && letter && (
         <LetterModal
@@ -458,8 +484,8 @@ export function CoverLetterWorkspace() {
           onRegenerateAll={() => generateLetter(true)}
         />
       )}
-      {stage === "analysis" && (
-        <AnalysisModal data={analysis} onClose={close} onCoverLetter={() => generateLetter()} />
+      {stage === "analysis" && analysis && (
+        <AnalysisModal result={analysis} onClose={close} onCoverLetter={() => generateLetter()} />
       )}
     </section>
   );
