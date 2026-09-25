@@ -41,7 +41,7 @@ export default function CoverLetterPage() {
           <ThreeDrafts />
           <DreamJobBanner />
           <Comparison />
-          <Toolkit />
+          <Toolkit current="/cover-letter" />
           <WhyItMatters />
           <CoverLetterFaq />
           <FinalCta />

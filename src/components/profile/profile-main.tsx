@@ -30,6 +30,7 @@ import {
 } from "@/lib/profile/types";
 import { useEditor } from "./editor-context";
 import { GithubHeatmap } from "./github-heatmap";
+import { ProjectArt } from "./project-art";
 import { AddButton, EntryModal, Panel, RowActions, SmallButton, TextArea, TextInput, moveItem, type Field } from "./ui";
 
 const EXPERIENCE_FIELDS: Field[] = [
@@ -559,13 +560,8 @@ export function ProfileMain() {
         {profile.projects.length ? (
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {profile.projects.map((p, i) => (
-              <div key={p.id} className="flex flex-col overflow-hidden rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-canvas)]">
-                <div
-                  className="relative flex h-20 items-center justify-center"
-                  style={{ background: `linear-gradient(135deg, ${skillColor(p.name)}55, ${skillColor(p.name + "x")}22)` }}
-                >
-                  <FolderGit2 className="h-7 w-7 text-white/85" />
-                </div>
+              <div key={p.id} className="group flex flex-col overflow-hidden rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-canvas)]">
+                <ProjectArt project={p} className="h-24" />
                 <div className="flex flex-1 flex-col p-3">
                   <div className="mb-1.5 flex items-center justify-between gap-2">
                     <p className="truncate text-[12px] font-bold text-[var(--color-c-text)]">{p.name}</p>

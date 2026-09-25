@@ -26,7 +26,7 @@ const TOOLS = [
     icon: Target,
     name: "Resume Analysis",
     body: "Get your ATS score, missing keywords, and a fix-it checklist instantly.",
-    href: "#resume-analysis",
+    href: "/resume-analysis",
     tint: "text-[var(--color-c-amber)]",
     chip: "bg-[var(--color-c-amber)]/15",
     wash: "from-[var(--color-c-amber)]/[0.10]",

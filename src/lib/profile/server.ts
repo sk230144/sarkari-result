@@ -279,10 +279,10 @@ export async function validatePatch(
 /* -------------------------------------------------------- resume import */
 
 /**
- * Reads the saved resume and turns it into profile sections (no AI).
- * Sections found in the resume replace the current ones; one-line fields
- * (headline, location, links) are only filled where still empty, so a
- * re-import never wipes something the user typed by hand.
+ * Reads the saved resume and turns it into profile content (no AI).
+ * Everything the resume provides replaces the current value, so a new
+ * resume really does refresh the profile; anything the resume lacks keeps
+ * what the user entered by hand. The account name is only filled if empty.
  */
 export async function importFromResume(db: SupabaseClient, row: ProfileRow): Promise<Record<string, unknown>> {
   if (!row.resume_path) throw new ProfileError("Upload a resume first.", 404);
@@ -307,16 +307,16 @@ export async function importFromResume(db: SupabaseClient, row: ProfileRow): Pro
   if (parsed.skills.length) update.skills = parsed.skills;
 
   if (!p.fullName && parsed.name) update.full_name = parsed.name;
-  if (!p.headline && parsed.headline) update.headline = parsed.headline.slice(0, 120);
-  if (!p.location && parsed.location) update.location = parsed.location.slice(0, 80);
-  if (!p.summary && parsed.summary) update.summary = parsed.summary.slice(0, 1200);
-  if (!p.githubUsername && parsed.githubUsername) update.github_username = parsed.githubUsername;
-  update.socials = { ...parsed.socials, ...p.socials };
+  if (parsed.headline) update.headline = parsed.headline.slice(0, 120);
+  if (parsed.location) update.location = parsed.location.slice(0, 80);
+  if (parsed.summary) update.summary = parsed.summary.slice(0, 1200);
+  if (parsed.githubUsername) update.github_username = parsed.githubUsername;
+  update.socials = { ...p.socials, ...parsed.socials };
 
   const apply = { ...p.applyDetails };
-  if (!apply.phone && parsed.phone) apply.phone = parsed.phone.slice(0, 60);
-  if (!apply.linkedin && parsed.socials.linkedin) apply.linkedin = parsed.socials.linkedin;
-  if (!apply.portfolio && parsed.socials.website) apply.portfolio = parsed.socials.website;
+  if (parsed.phone) apply.phone = parsed.phone.slice(0, 60);
+  if (parsed.socials.linkedin) apply.linkedin = parsed.socials.linkedin;
+  if (parsed.socials.website) apply.portfolio = parsed.socials.website;
   update.apply_details = apply;
 
   return update;

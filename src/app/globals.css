@@ -1197,6 +1197,82 @@ h3 {
   }
 }
 
+/* ── Project banner art ────────────────────────────────────────── */
+/* SVG children animate around their own centre. */
+.pa svg * {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+.pa-pulse {
+  animation: paPulse 2.4s ease-in-out infinite;
+}
+.pa-flow {
+  stroke-dasharray: 4 6;
+  animation: paFlow 1.6s linear infinite;
+}
+.pa-float {
+  animation: paFloat 3.2s ease-in-out infinite;
+}
+.pa-grow {
+  animation: paGrow 3.6s ease-in-out infinite;
+  transform-origin: left center !important;
+}
+.pa-spin {
+  animation: paSpin 9s linear infinite;
+}
+.pa-blink {
+  animation: blink 1s steps(2, start) infinite;
+}
+.pa-rise {
+  animation: paRise 2.8s ease-in infinite;
+}
+.pa-slide {
+  animation: paSlide 4s ease-in-out infinite;
+}
+/* Whole illustration drifts a touch on hover. */
+.pa svg {
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.group:hover .pa svg {
+  transform: scale(1.06);
+}
+@keyframes paPulse {
+  0%, 100% { transform: scale(1); opacity: 0.85; }
+  50% { transform: scale(1.35); opacity: 1; }
+}
+@keyframes paFlow {
+  to { stroke-dashoffset: -20; }
+}
+@keyframes paFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes paGrow {
+  0% { transform: scaleX(0); opacity: 0.4; }
+  35%, 80% { transform: scaleX(1); opacity: 1; }
+  100% { transform: scaleX(1); opacity: 0; }
+}
+@keyframes paSpin {
+  to { transform: rotate(360deg); }
+}
+@keyframes paRise {
+  0% { transform: translateY(0); opacity: 0; }
+  20% { opacity: 1; }
+  100% { transform: translateY(-46px); opacity: 0; }
+}
+@keyframes paSlide {
+  0%, 100% { transform: translateX(0); }
+  50% { transform: translateX(10px); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pa-pulse, .pa-flow, .pa-float, .pa-grow, .pa-spin, .pa-blink, .pa-rise, .pa-slide {
+    animation: none;
+  }
+  .group:hover .pa svg {
+    transform: none;
+  }
+}
+
 /* Modal entrance: backdrop fades, panel rises and settles */
 .cl-overlay-in {
   animation: clFade 0.25s ease-out both;

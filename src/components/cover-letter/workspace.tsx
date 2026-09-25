@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Target,
   FileText,
@@ -55,8 +56,10 @@ type Saved = {
 
 type Stage = "idle" | "loading-letter" | "loading-analysis" | "letter" | "analysis";
 
-export function CoverLetterWorkspace() {
+/** `primary` decides which action leads (and the heading): the page's own tool. */
+export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter" | "analysis" } = {}) {
   const { user, loading: authLoading } = useAuth();
+  const pathname = usePathname();
   const supabase = supabaseBrowser();
 
   const [role, setRole] = useState(ROLES[0]);
@@ -235,7 +238,15 @@ export function CoverLetterWorkspace() {
         <Reveal className="mb-8 text-center">
           <Kicker>Start here</Kicker>
           <h2 className="mt-5 text-[clamp(1.8rem,4vw,2.6rem)] font-extrabold tracking-[-0.045em] text-[var(--color-c-text)]">
-            Tailor it to your <span className="text-[var(--color-c-lime)]">next role</span>
+            {primary === "letter" ? (
+              <>
+                Tailor it to your <span className="text-[var(--color-c-lime)]">next role</span>
+              </>
+            ) : (
+              <>
+                Score your resume <span className="text-[var(--color-c-lime)]">against the job</span>
+              </>
+            )}
           </h2>
         </Reveal>
 
@@ -341,7 +352,7 @@ export function CoverLetterWorkspace() {
                     />
                   ) : !user ? (
                     <Link
-                      href="/login?next=/cover-letter"
+                      href={`/login?next=${pathname}`}
                       className="flex items-center gap-4 rounded-2xl border border-dashed border-white/10 bg-white/[0.02] p-4 transition-colors hover:border-[var(--color-c-lime)]/40"
                     >
                       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--color-c-lime)]/10">
@@ -411,7 +422,7 @@ export function CoverLetterWorkspace() {
                   {error === NEED_LOGIN ? (
                     <>
                       Please{" "}
-                      <Link href="/login?next=/cover-letter" className="font-bold underline underline-offset-2">
+                      <Link href={`/login?next=${pathname}`} className="font-bold underline underline-offset-2">
                         sign in
                       </Link>{" "}
                       to generate your cover letter.
@@ -424,22 +435,25 @@ export function CoverLetterWorkspace() {
 
               {/* Actions */}
               <div className="grid gap-2.5 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
-                <button
-                  type="button"
-                  onClick={() => generateLetter()}
-                  className="cl-glow group flex items-center justify-center gap-2 rounded-xl bg-[var(--color-c-lime)] px-4 py-3.5 text-[14px] font-bold text-black transition-transform hover:-translate-y-0.5"
-                >
-                  <FileText className="h-4 w-4" />
-                  Cover Letter
-                </button>
-                <button
-                  type="button"
-                  onClick={startAnalysis}
-                  className="flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#171a15] px-4 py-3.5 text-[14px] font-bold text-[var(--color-c-text-4)] transition-all hover:-translate-y-0.5 hover:border-[var(--color-c-lime)]/40 hover:text-[var(--color-c-text)]"
-                >
-                  <Zap className="h-4 w-4 text-[var(--color-c-lime)]" />
-                  Analyse CV
-                </button>
+                {(primary === "letter" ? (["letter", "analysis"] as const) : (["analysis", "letter"] as const)).map((kind) => {
+                  const isPrimary = kind === primary;
+                  const Icon = kind === "letter" ? FileText : Zap;
+                  return (
+                    <button
+                      key={kind}
+                      type="button"
+                      onClick={() => (kind === "letter" ? generateLetter() : startAnalysis())}
+                      className={
+                        isPrimary
+                          ? "cl-glow group flex items-center justify-center gap-2 rounded-xl bg-[var(--color-c-lime)] px-4 py-3.5 text-[14px] font-bold text-black transition-transform hover:-translate-y-0.5"
+                          : "flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#171a15] px-4 py-3.5 text-[14px] font-bold text-[var(--color-c-text-4)] transition-all hover:-translate-y-0.5 hover:border-[var(--color-c-lime)]/40 hover:text-[var(--color-c-text)]"
+                      }
+                    >
+                      <Icon className={`h-4 w-4 ${isPrimary ? "" : "text-[var(--color-c-lime)]"}`} />
+                      {kind === "letter" ? "Cover Letter" : "Analyse CV"}
+                    </button>
+                  );
+                })}
                 <button
                   type="button"
                   disabled

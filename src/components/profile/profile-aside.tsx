@@ -393,7 +393,8 @@ export function ProfileAside() {
             </button>
           )}
           <p className="mt-1.5 text-[9px] leading-relaxed text-[var(--color-c-dim)]">
-            Refreshing replaces experience, education, projects and skills with what&apos;s in the resume.
+            Uploading or refreshing replaces your headline, about, experience, education, projects and skills with
+            what&apos;s in the resume. Anything the resume doesn&apos;t include stays as you set it.
           </p>
         </div>
       </Card>

@@ -19,6 +19,7 @@ import { getSessionUser, serviceDb } from "@/lib/server-auth";
 import { PROFILE_COLUMNS, loadEndorsements, rowToPublic, type ProfileRow } from "@/lib/profile/server";
 import { SOCIALS, bannerBackground, groupSkills, safeUrl, skillColor, type PublicProfile, type SectionKey } from "@/lib/profile/types";
 import { GithubHeatmap } from "@/components/profile/github-heatmap";
+import { ProjectArt } from "@/components/profile/project-art";
 import { PublicActions, ViewBeacon } from "@/components/profile/public-actions";
 import { Logo } from "@/components/ui/logo";
 
@@ -241,13 +242,11 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
             {p.projects.map((pr) => {
               const href = safeUrl(pr.url);
               return (
-                <div key={pr.id} className={`flex flex-col overflow-hidden rounded-xl border ${t.inner}`}>
-                  <div
-                    className="flex h-16 items-center justify-center"
-                    style={{ background: `linear-gradient(135deg, ${skillColor(pr.name)}66, ${skillColor(pr.name + "x")}22)` }}
-                  >
-                    <FolderGit2 className="h-6 w-6 text-white/90" />
-                  </div>
+                <div
+                  key={pr.id}
+                  className={`group flex flex-col overflow-hidden rounded-xl border transition-transform duration-300 hover:-translate-y-1 ${t.inner}`}
+                >
+                  <ProjectArt project={pr} className="h-28" />
                   <div className="flex flex-1 flex-col p-3">
                     <p className={`text-[12px] font-bold ${t.strong}`}>{pr.name}</p>
                     {pr.description && <p className={`mt-1 text-[11px] leading-relaxed ${t.body}`}>{pr.description}</p>}

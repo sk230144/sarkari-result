@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   Check,
+  FileText,
   X,
   Target,
   Monitor,
@@ -122,12 +123,25 @@ export function Comparison() {
   );
 }
 
-const TOOLS = [
+const TOOLS: {
+  icon: React.ComponentType<{ className?: string }>;
+  name: string;
+  body: string;
+  href: string | null;
+  tint: string;
+}[] = [
+  {
+    icon: FileText,
+    name: "Cover Letter",
+    body: "Generate a personalised, ATS-friendly cover letter for any job in seconds.",
+    href: "/cover-letter",
+    tint: "#c084fc",
+  },
   {
     icon: Target,
     name: "Resume Analysis",
     body: "Get your ATS match score, missing keywords, and a fix-it checklist instantly.",
-    href: null,
+    href: "/resume-analysis",
     tint: "#facc15",
   },
   {
@@ -167,7 +181,9 @@ const TOOLS = [
   },
 ];
 
-export function Toolkit() {
+/** `current` is the page's own tool, left out of the grid. */
+export function Toolkit({ current }: { current?: string } = {}) {
+  const tools = TOOLS.filter((t) => t.href !== current).slice(0, 6);
   return (
     <section className="px-6 py-16 lg:px-8">
       <div className="mx-auto max-w-4xl border-t border-white/[0.06] pt-16">
@@ -181,7 +197,7 @@ export function Toolkit() {
         </Reveal>
 
         <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {TOOLS.map((t, i) => {
+          {tools.map((t, i) => {
             const inner = (
               <>
                 <span
@@ -271,7 +287,11 @@ export function WhyItMatters() {
   );
 }
 
-export function FinalCta() {
+export function FinalCta({
+  title = "Ready to write a letter that actually gets read?",
+  body = "Free to start. No credit card required, just your resume and a job description.",
+  cta,
+}: { title?: string; body?: string; cta?: string } = {}) {
   return (
     <section className="px-6 pb-24 pt-8 lg:px-8">
       <Reveal>
@@ -287,14 +307,11 @@ export function FinalCta() {
           />
           <div className="relative">
             <h2 className="mx-auto max-w-md text-[clamp(1.6rem,3.6vw,2.2rem)] font-extrabold leading-[1.1] tracking-[-0.04em] text-[var(--color-c-text)]">
-              Ready to write a letter that actually gets read?
+              {title}
             </h2>
-            <p className="mt-3 text-[13px] text-[var(--color-c-muted)]">
-              Free to start. No credit card required, just your resume and a
-              job description.
-            </p>
+            <p className="mt-3 text-[13px] text-[var(--color-c-muted)]">{body}</p>
             <div className="mt-7 flex justify-center">
-              <GenerateCta size="md" />
+              <GenerateCta size="md" label={cta} />
             </div>
           </div>
         </div>

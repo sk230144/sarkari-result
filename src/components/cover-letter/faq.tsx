@@ -28,6 +28,11 @@ const FAQS = [
 ];
 
 export function CoverLetterFaq() {
+  return <Faq items={FAQS} />;
+}
+
+export function Faq({ items }: { items: { q: string; a: string }[] }) {
+  const FAQS = items;
   const [open, setOpen] = useState<number | null>(0);
 
   return (
