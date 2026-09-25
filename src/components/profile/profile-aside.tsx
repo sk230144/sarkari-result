@@ -21,10 +21,11 @@ import {
   Upload,
   Trash2,
   MailOpen,
+  ExternalLink,
 } from "lucide-react";
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { APPLY_FIELDS, SECTION_LABELS, type ApplyKey, type SectionKey } from "@/lib/profile/types";
-import { useEditor } from "./editor-context";
+import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { Card, SmallButton, TextInput, moveItem } from "./ui";
 
 function useCopy() {
@@ -475,7 +476,7 @@ export function ProfileAside() {
             <button
               key={key}
               type="button"
-              onClick={() => save({ theme: key }, `${label} theme applied`)}
+              onClick={() => save({ theme: key }, `${label} theme applied to your public profile`)}
               aria-pressed={profile.theme === key}
               className={`rounded-xl border p-2 text-left transition-all ${
                 profile.theme === key
@@ -495,6 +496,14 @@ export function ProfileAside() {
           <Info className="mt-0.5 h-3 w-3 shrink-0" />
           This editor always shows the default look. Your chosen theme applies only to your public profile.
         </p>
+        <a
+          href={`/u/${profile.slug}`}
+          target={PUBLIC_TAB}
+          className="mt-2.5 inline-flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-c-lime)] hover:underline"
+        >
+          Preview public profile
+          <ExternalLink className="h-3 w-3" />
+        </a>
       </Card>
     </div>
   );

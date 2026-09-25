@@ -80,9 +80,21 @@ function themeOf(light: boolean) {
 }
 type T = ReturnType<typeof themeOf>;
 
-function Section({ t, icon: Icon, title, children }: { t: T; icon: React.ComponentType<{ className?: string }>; title: string; children: React.ReactNode }) {
+function Section({
+  t,
+  icon: Icon,
+  title,
+  children,
+  className = "",
+}: {
+  t: T;
+  icon: React.ComponentType<{ className?: string }>;
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
   return (
-    <section className={`rounded-2xl border p-5 ${t.card}`}>
+    <section className={`min-w-0 break-words rounded-2xl border p-4 sm:p-6 ${t.card} ${className}`}>
       <h2 className={`mb-3 flex items-center gap-2 text-[15px] font-bold ${t.strong}`}>
         <Icon className={`h-4 w-4 ${t.accent}`} />
         {title}
@@ -137,10 +149,12 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
       );
     case "experience":
       if (!p.experience.length && !p.education.length) return null;
+      // Wide screens: experience takes two thirds, education sits beside it.
+      const both = p.experience.length > 0 && p.education.length > 0;
       return (
-        <div className="flex flex-col gap-4" key={key}>
+        <div className={`grid grid-cols-1 gap-4 ${both ? "lg:grid-cols-3" : ""}`} key={key}>
           {p.experience.length > 0 && (
-            <Section t={t} icon={Building2} title="Experience">
+            <Section t={t} icon={Building2} title="Experience" className={both ? "lg:col-span-2" : ""}>
               <ol className="relative space-y-5 border-l pl-5" style={{ borderColor: light ? "#e2e8f0" : "var(--color-c-border)" }}>
                 {p.experience.map((e) => (
                   <li key={e.id} className="relative">
@@ -166,7 +180,7 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
             </Section>
           )}
           {p.education.length > 0 && (
-            <Section t={t} icon={GraduationCap} title="Education">
+            <Section t={t} icon={GraduationCap} title="Education" className="self-start">
               <div className="space-y-2">
                 {p.education.map((ed) => (
                   <div key={ed.id} className={`rounded-xl border p-3 ${t.inner}`}>
@@ -223,7 +237,7 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
       if (!p.projects.length) return null;
       return (
         <Section t={t} icon={FolderGit2} title="Projects" key={key}>
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {p.projects.map((pr) => {
               const href = safeUrl(pr.url);
               return (
@@ -271,9 +285,25 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const sections = p.layout.order.filter((k) => !p.layout.hidden.includes(k));
 
   return (
-    <main className={`min-h-screen w-full ${t.page}`}>
+    <main
+      className={`min-h-screen w-full overflow-x-hidden ${t.page}`}
+      // Daylight: remap the site's colour variables inside this page, so shared
+      // components (logo, heatmap, modals) read correctly on the light ground.
+      style={
+        light
+          ? ({
+              "--color-c-text": "#0f172a",
+              "--color-c-text-4": "#334155",
+              "--color-c-muted": "#475569",
+              "--color-c-dim": "#64748b",
+              "--color-c-lime": "#4d7c0f",
+              colorScheme: "light",
+            } as React.CSSProperties)
+          : undefined
+      }
+    >
       {isPublic && !isOwner && <ViewBeacon slug={p.slug} />}
-      <div className="mx-auto w-full max-w-4xl px-4 py-6 lg:px-6">
+      <div className="mx-auto w-full max-w-6xl px-3 py-4 sm:px-5 sm:py-6 lg:px-8">
         {!isPublic && (
           <p className="mb-4 flex items-center gap-2 rounded-xl border border-amber-400/30 bg-amber-400/10 px-4 py-2.5 text-[12px] text-amber-300">
             <Lock className="h-3.5 w-3.5" />
@@ -283,9 +313,11 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
         {/* Identity */}
         <div className={`overflow-hidden rounded-2xl border ${t.card}`}>
-          <div className="h-32 sm:h-44" style={bannerBackground(p)} />
-          <div className="relative px-5 pb-5">
-            <div className={`absolute -top-12 left-5 h-24 w-24 overflow-hidden rounded-2xl border-4 bg-[#1f3a14] ${t.ring}`}>
+          <div className="h-28 sm:h-44 lg:h-60" style={bannerBackground(p)} />
+          <div className="relative px-4 pb-5 sm:px-6 lg:px-8">
+            <div
+              className={`absolute -top-10 left-4 h-20 w-20 overflow-hidden rounded-2xl border-4 bg-[#1f3a14] sm:-top-12 sm:left-6 sm:h-24 sm:w-24 lg:-top-14 lg:left-8 lg:h-28 lg:w-28 ${t.ring}`}
+            >
               {p.avatarUrl ? (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img src={p.avatarUrl} alt={p.fullName} className="h-full w-full object-cover" />
@@ -295,10 +327,12 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                 </span>
               )}
             </div>
-            <div className="flex flex-wrap items-start justify-between gap-3 pt-14">
+            <div className="flex flex-col gap-4 pt-12 sm:flex-row sm:items-start sm:justify-between sm:pt-14 lg:pt-16">
               <div className="min-w-0">
-                <h1 className={`text-[26px] font-extrabold tracking-tight ${t.strong}`}>{p.fullName}</h1>
-                {p.headline && <p className={`mt-0.5 text-[14px] font-semibold ${t.accent}`}>{p.headline}</p>}
+                <h1 className={`break-words text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px] ${t.strong}`}>
+                  {p.fullName}
+                </h1>
+                {p.headline && <p className={`mt-1 break-words text-[14px] font-semibold sm:text-[15px] ${t.accent}`}>{p.headline}</p>}
                 <div className={`mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] ${t.body}`}>
                   {p.location && (
                     <span className="inline-flex items-center gap-1">
@@ -314,9 +348,15 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                   )}
                 </div>
               </div>
-              <PublicActions slug={p.slug} name={p.fullName.split(" ")[0]} ownerId={p.id} light={light} />
+              <div className="shrink-0">
+                <PublicActions slug={p.slug} name={p.fullName.split(" ")[0]} ownerId={p.id} light={light} />
+              </div>
             </div>
-            {p.summary && <p className={`mt-4 whitespace-pre-line text-[13px] leading-relaxed ${t.body}`}>{p.summary}</p>}
+            {p.summary && (
+              <p className={`mt-4 max-w-4xl whitespace-pre-line break-words text-[13px] leading-relaxed sm:text-[14px] ${t.body}`}>
+                {p.summary}
+              </p>
+            )}
           </div>
         </div>
 
@@ -325,7 +365,7 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
           <Section t={t} icon={Star} title="Endorsements">
             {p.endorsements.length ? (
-              <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
                 {p.endorsements.map((e) => (
                   <figure key={e.id} className={`rounded-xl border p-3 ${t.inner}`}>
                     <blockquote className={`text-[12px] leading-relaxed ${t.body}`}>&ldquo;{e.body}&rdquo;</blockquote>

@@ -5,6 +5,13 @@ import type { ProfileData, ProfileExtras } from "@/lib/profile/types";
 
 type Toast = { kind: "ok" | "error"; text: string } | null;
 
+/**
+ * Named window for the public profile. Every "View" link targets it, so a
+ * second click reloads that tab with the latest changes instead of leaving
+ * an old copy open.
+ */
+export const PUBLIC_TAB = "ja24-public-profile";
+
 type EditorApi = {
   profile: ProfileData;
   extras: ProfileExtras;

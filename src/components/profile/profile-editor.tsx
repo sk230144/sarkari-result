@@ -8,7 +8,7 @@ import { useAuth } from "@/components/auth/auth-provider";
 import { BrandLoader } from "@/components/ui/brand-loader";
 import { BackButton } from "@/components/dashboard/back-button";
 import type { ProfileResponse } from "@/lib/profile/types";
-import { ProfileEditorProvider } from "./editor-context";
+import { ProfileEditorProvider, PUBLIC_TAB } from "./editor-context";
 import { ProfileHeader } from "./profile-header";
 import { ProfileMain } from "./profile-main";
 import { ProfileAside } from "./profile-aside";
@@ -54,7 +54,7 @@ export function ProfileEditor() {
         <BackButton fallback="/" />
         <Link
           href={`/u/${data.profile.slug}`}
-          target="_blank"
+          target={PUBLIC_TAB}
           className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-c-lime)] hover:underline"
         >
           View public profile

@@ -19,7 +19,7 @@ import {
   Upload,
 } from "lucide-react";
 import { BANNERS, bannerBackground } from "@/lib/profile/types";
-import { useEditor } from "./editor-context";
+import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { InlineText, SmallButton, TextInput, Toggle } from "./ui";
 
 export function ProfileHeader() {
@@ -351,7 +351,7 @@ export function ProfileHeader() {
                   </SmallButton>
                   <Link
                     href={`/u/${profile.slug}`}
-                    target="_blank"
+                    target={PUBLIC_TAB}
                     className="inline-flex items-center gap-1.5 rounded-lg border border-[var(--color-c-neutral-6)] bg-[var(--color-c-surface-5b)] px-3 py-1.5 text-[11px] font-medium text-[var(--color-c-text-4)] transition-colors hover:border-[var(--color-c-border-strong)] hover:text-[var(--color-c-text)]"
                   >
                     <ExternalLink className="h-3 w-3" />
