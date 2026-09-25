@@ -39,6 +39,16 @@ export function ProfileEditor() {
     };
   }, [user, loading, router]);
 
+  // Deep links from notifications (/profile#inbox): the sections only exist
+  // once the profile has loaded, so scroll after the first render with data.
+  useEffect(() => {
+    if (!data || !window.location.hash) return;
+    const id = setTimeout(() => {
+      document.getElementById(window.location.hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 150);
+    return () => clearTimeout(id);
+  }, [data]);
+
   if (error) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">

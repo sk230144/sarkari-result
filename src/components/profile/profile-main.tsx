@@ -281,7 +281,7 @@ export function ProfileMain() {
       </Panel>
 
       {/* Endorsements */}
-      <Panel icon={Star} tint="text-[var(--color-c-amber)]" title="Endorsements">
+      <Panel id="endorsements" icon={Star} tint="text-[var(--color-c-amber)]" title="Endorsements">
         {extras.endorsements.length ? (
           <div className="space-y-2.5">
             {extras.endorsements.map((e) => (

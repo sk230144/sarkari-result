@@ -1,5 +1,7 @@
-import { Zap, Bell, Settings, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { AccountMenu } from "@/components/auth/account-menu";
+import { HeaderNav } from "@/components/header/header-nav";
+import { NotificationBell } from "@/components/header/notification-bell";
 
 export function Topbar({
   collapsed,
@@ -17,8 +19,8 @@ export function Topbar({
         fullWidth ? "" : collapsed ? "lg:left-20" : "lg:left-72"
       }`}
     >
-      <div className="flex h-16 w-full items-center justify-between px-6">
-        <div className="flex items-center gap-3">
+      <div className="flex h-16 w-full items-center justify-between gap-3 px-4 sm:px-6">
+        <div className="flex min-w-0 items-center gap-4">
           {!fullWidth && (
             <button
               type="button"
@@ -29,27 +31,11 @@ export function Topbar({
               <Menu className="h-5 w-5" />
             </button>
           )}
-          <div className="flex items-center gap-1 text-[13px] text-[var(--color-c-muted)]">
-            <Zap className="h-[18px] w-[18px] text-[var(--color-c-accent)]" />
-            <span className="font-medium">Sprint 24 Daily Challenge</span>
-          </div>
+          <HeaderNav />
         </div>
 
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="p-2 text-[var(--color-c-muted)] transition-colors hover:text-[var(--color-c-text)]"
-          >
-            <Bell className="h-5 w-5" />
-          </button>
-          <button
-            type="button"
-            aria-label="Settings"
-            className="p-2 text-[var(--color-c-muted)] transition-colors hover:text-[var(--color-c-text)]"
-          >
-            <Settings className="h-5 w-5" />
-          </button>
+        <div className="flex items-center gap-2">
+          <NotificationBell />
           <AccountMenu />
         </div>
       </div>

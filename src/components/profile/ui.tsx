@@ -10,15 +10,17 @@ export function Panel({
   title,
   action,
   children,
+  id,
 }: {
   icon: React.ComponentType<{ className?: string }>;
   tint: string;
   title: string;
   action?: React.ReactNode;
   children: React.ReactNode;
+  id?: string;
 }) {
   return (
-    <section className="rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-5">
+    <section id={id} className="scroll-mt-20 rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-[15px] font-bold text-[var(--color-c-text)]">
           <Icon className={`h-4 w-4 ${tint}`} />
@@ -31,9 +33,9 @@ export function Panel({
   );
 }
 
-export function Card({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+export function Card({ children, className = "", id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <section className={`rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] ${className}`}>
+    <section id={id} className={`scroll-mt-20 rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] ${className}`}>
       {children}
     </section>
   );

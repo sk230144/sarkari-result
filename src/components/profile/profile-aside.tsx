@@ -174,7 +174,7 @@ export function ProfileAside() {
       </Card>
 
       {/* Inbox */}
-      <Card className="p-4">
+      <Card id="inbox" className="p-4">
         <h2 className="mb-2 flex items-center gap-2 text-[12px] font-bold text-[var(--color-c-text)]">
           <Mail className="h-3.5 w-3.5 text-[var(--color-c-muted)]" />
           Inbox

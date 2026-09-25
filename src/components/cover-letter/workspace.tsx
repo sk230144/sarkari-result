@@ -228,7 +228,7 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
 
   const company = useMemo(() => {
     // First "at Company" / "Company is hiring" style mention, if the JD has one.
-    const m = jd.match(/\b(?:at|join)\s+([A-Z][\w&.-]*(?:\s+[A-Z][\w&.-]*){0,2})/);
+    const m = jd.match(/\b(?:[Aa]t|[Jj]oin)\s+([A-Z][\w&.-]*(?:\s+[A-Z][\w&.-]*){0,2})/);
     return m?.[1] ?? "";
   }, [jd]);
 

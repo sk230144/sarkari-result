@@ -95,6 +95,7 @@ const SECTION_LABELS: Record<string, string> = {
   "portfolio-builder": "Portfolio Builder",
   "cover-letter": "Cover Letter",
   "resume-analysis": "Resume Analysis",
+  "ai-copilot": "AI Copilot",
   u: "Public Profiles",
   profile: "Profile",
   login: "Login",
