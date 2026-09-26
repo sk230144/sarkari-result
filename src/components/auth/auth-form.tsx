@@ -171,7 +171,8 @@ export function AuthForm({ mode }: { mode: "login" | "signup" }) {
         }).catch(() => {});
       }
 
-      router.push(next);
+      // New accounts go through onboarding first, then on to where they were headed.
+      router.push(`/onboarding?next=${encodeURIComponent(next)}`);
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "That code did not work.");

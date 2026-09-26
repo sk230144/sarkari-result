@@ -96,6 +96,8 @@ const SECTION_LABELS: Record<string, string> = {
   "cover-letter": "Cover Letter",
   "resume-analysis": "Resume Analysis",
   "ai-copilot": "AI Copilot",
+  "mock-interview": "Mock Interview",
+  onboarding: "Onboarding",
   u: "Public Profiles",
   profile: "Profile",
   login: "Login",

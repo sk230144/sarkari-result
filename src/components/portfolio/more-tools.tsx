@@ -16,7 +16,7 @@ const TOOLS = [
     icon: Monitor,
     name: "Mock Interview",
     body: "Practice technical & HR rounds with AI-generated, role-specific questions.",
-    href: "#mock-interview",
+    href: "/mock-interview",
     tint: "text-[var(--color-c-blue)]",
     chip: "bg-[var(--color-c-blue)]/15",
     wash: "from-[var(--color-c-blue)]/[0.10]",

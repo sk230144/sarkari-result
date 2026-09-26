@@ -56,8 +56,8 @@ const TOOLS = [
   {
     title: "Mock Interview",
     body: "Practise role-specific AI interviews and get detailed feedback on your answers.",
-    cta: "Coming soon",
-    href: null,
+    cta: "Start session",
+    href: "/mock-interview#generate",
     icon: Sparkles,
     watermark: Monitor,
     tint: "#34d399",

@@ -57,7 +57,8 @@ type Saved = {
 type Stage = "idle" | "loading-letter" | "loading-analysis" | "letter" | "analysis";
 
 /** `primary` decides which action leads (and the heading): the page's own tool. */
-export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter" | "analysis" } = {}) {
+export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter" | "analysis" | "interview" } = {}) {
+  const [notice, setNotice] = useState<string | null>(null);
   const { user, loading: authLoading } = useAuth();
   const pathname = usePathname();
   const supabase = supabaseBrowser();
@@ -241,6 +242,10 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
             {primary === "letter" ? (
               <>
                 Tailor it to your <span className="text-[var(--color-c-lime)]">next role</span>
+              </>
+            ) : primary === "interview" ? (
+              <>
+                Set up your <span className="text-[var(--color-c-lime)]">mock interview</span>
               </>
             ) : (
               <>
@@ -434,15 +439,47 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
               )}
 
               {/* Actions */}
+              {notice && (
+                <p role="status" className="cl-fade rounded-xl border border-[var(--color-c-lime)]/25 bg-[var(--color-c-lime)]/[0.06] px-4 py-2.5 text-[12px] text-[var(--color-c-lime)]">
+                  {notice}
+                </p>
+              )}
+
+              {/* Actions: the page's own tool leads */}
               <div className="grid gap-2.5 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
-                {(primary === "letter" ? (["letter", "analysis"] as const) : (["analysis", "letter"] as const)).map((kind) => {
+                {([primary, ...(["letter", "analysis", "interview"] as const).filter((k) => k !== primary)] as const).map((kind) => {
                   const isPrimary = kind === primary;
-                  const Icon = kind === "letter" ? FileText : Zap;
+                  const soon = kind === "interview";
+                  const Icon = kind === "letter" ? FileText : kind === "analysis" ? Zap : Monitor;
+                  const label = kind === "letter" ? "Cover Letter" : kind === "analysis" ? "Analyse CV" : "Mock Interview";
+                  if (soon && !isPrimary) {
+                    return (
+                      <button
+                        key={kind}
+                        type="button"
+                        disabled
+                        title="Coming soon"
+                        className="flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-[#141712] px-4 py-3.5 text-[14px] font-bold text-[var(--color-c-dim)]"
+                      >
+                        <Icon className="h-4 w-4" />
+                        {label}
+                        <span className="rounded-full border border-white/10 px-1.5 py-px font-mono text-[8px] uppercase tracking-wider">Soon</span>
+                      </button>
+                    );
+                  }
                   return (
                     <button
                       key={kind}
                       type="button"
-                      onClick={() => (kind === "letter" ? generateLetter() : startAnalysis())}
+                      onClick={() => {
+                        setNotice(null);
+                        if (kind === "letter") generateLetter();
+                        else if (kind === "analysis") startAnalysis();
+                        else
+                          setNotice(
+                            "Mock interviews are launching soon. Your role, job description and resume here are exactly what they'll use.",
+                          );
+                      }}
                       className={
                         isPrimary
                           ? "cl-glow group flex items-center justify-center gap-2 rounded-xl bg-[var(--color-c-lime)] px-4 py-3.5 text-[14px] font-bold text-black transition-transform hover:-translate-y-0.5"
@@ -450,22 +487,10 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
                       }
                     >
                       <Icon className={`h-4 w-4 ${isPrimary ? "" : "text-[var(--color-c-lime)]"}`} />
-                      {kind === "letter" ? "Cover Letter" : "Analyse CV"}
+                      {label}
                     </button>
                   );
                 })}
-                <button
-                  type="button"
-                  disabled
-                  title="Coming soon"
-                  className="flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-[#141712] px-4 py-3.5 text-[14px] font-bold text-[var(--color-c-dim)]"
-                >
-                  <Monitor className="h-4 w-4" />
-                  Mock Interview
-                  <span className="rounded-full border border-white/10 px-1.5 py-px font-mono text-[8px] uppercase tracking-wider">
-                    Soon
-                  </span>
-                </button>
               </div>
             </div>
           </div>

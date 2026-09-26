@@ -454,7 +454,7 @@ export function DsaSheets() {
                     </a>{" "}
                     and{" "}
                     <a
-                      href="#mock-interview"
+                      href="/mock-interview"
                       className="font-medium text-[var(--color-c-emerald)] underline-offset-4 hover:underline"
                     >
                       Mock Interview

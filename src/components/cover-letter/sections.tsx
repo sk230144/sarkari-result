@@ -148,7 +148,7 @@ const TOOLS: {
     icon: Monitor,
     name: "Mock Interview",
     body: "Practise technical and HR rounds with AI-generated, role-specific questions.",
-    href: null,
+    href: "/mock-interview",
     tint: "#60a5fa",
   },
   {

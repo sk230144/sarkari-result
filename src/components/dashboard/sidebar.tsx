@@ -68,7 +68,7 @@ const SECTIONS: NavSection[] = [
     items: [
       { label: "Portfolio Builder", icon: BadgeCheck, href: "/portfolio-builder" },
       { label: "Cover Letter", icon: FileText, href: "/cover-letter" },
-      { label: "Mock Interview", icon: Monitor, href: "#mock-interview" },
+      { label: "Mock Interview", icon: Monitor, href: "/mock-interview" },
       { label: "Resume Analysis", icon: Target, href: "/resume-analysis" },
     ],
   },
