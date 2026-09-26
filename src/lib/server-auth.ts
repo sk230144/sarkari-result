@@ -50,6 +50,20 @@ export async function remainingAiCalls(db: SupabaseClient, user: User): Promise<
   return Math.max(0, DAILY_AI_LIMIT - (count ?? 0));
 }
 
+/** New mock interviews per user per rolling 24 h. */
+export const DAILY_INTERVIEW_LIMIT = Number(process.env.AI_DAILY_INTERVIEWS_PER_USER) || 3;
+
+/** Remaining new mock interviews for this user, or null when unlimited. */
+export async function remainingInterviews(db: SupabaseClient, user: User): Promise<number | null> {
+  if (isAdminEmail(user.email)) return null;
+  const { count } = await db
+    .from("mock_interviews")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id)
+    .gte("created_at", dayAgo());
+  return Math.max(0, DAILY_INTERVIEW_LIMIT - (count ?? 0));
+}
+
 /** Remaining new analyses for this user, or null when unlimited. */
 export async function remainingAnalyses(db: SupabaseClient, user: User): Promise<number | null> {
   if (isAdminEmail(user.email)) return null;

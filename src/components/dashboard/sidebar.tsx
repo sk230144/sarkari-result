@@ -50,7 +50,7 @@ const SECTIONS: NavSection[] = [
         children: [
           { label: "Striver SDE Sheet", href: "/dsa-sheets/striver-a2z" },
           { label: "Love Babbar Sheet", href: "/dsa-sheets/love-babbar" },
-          { label: "NeetCode 150", href: "/dsa-sheets#neetcode-150" },
+          { label: "NeetCode 150", href: "/dsa-sheets/neetcode-150" },
           { label: "Rohit Negi Sheet", href: "/dsa-sheets/rohit-negi" },
         ],
       },

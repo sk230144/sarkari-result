@@ -10,6 +10,7 @@ import {
 import { LETTER_COLUMNS, toLetterResult, type LetterRow } from "@/lib/cover-letter-server";
 import type { AnalysisReport } from "@/lib/analyzer/config";
 import type { CopilotData } from "@/lib/copilot-types";
+import type { InterviewListItem } from "@/lib/interview/types";
 
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
 
   const db = serviceDb();
-  const [letters, reports, profile, referrals, lettersLeft, analysesLeft] = await Promise.all([
+  const [letters, reports, profile, referrals, lettersLeft, analysesLeft, interviews] = await Promise.all([
     db
       .from("cover_letters")
       .select(`${LETTER_COLUMNS}, jd_clean`)
@@ -42,6 +43,12 @@ export async function GET() {
     db.from("profiles").select("id", { count: "exact", head: true }).eq("referred_by", user.id),
     remainingAiCalls(db, user),
     remainingAnalyses(db, user),
+    db
+      .from("mock_interviews")
+      .select("id, role, level, status, overall_score, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(5),
   ]);
 
   const letterResults = await Promise.all(
@@ -60,6 +67,14 @@ export async function GET() {
       cached: true,
       createdAt: r.created_at as string,
       remaining: analysesLeft,
+    })),
+    interviews: (interviews.data ?? []).map((r) => ({
+      id: r.id as string,
+      role: r.role as string,
+      level: r.level as InterviewListItem["level"],
+      status: r.status as InterviewListItem["status"],
+      overallScore: (r.overall_score as number) ?? null,
+      createdAt: r.created_at as string,
     })),
     usage: {
       letters: lettersLeft === null ? null : { used: DAILY_AI_LIMIT - lettersLeft, limit: DAILY_AI_LIMIT },

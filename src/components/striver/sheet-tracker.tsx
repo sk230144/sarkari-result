@@ -14,6 +14,7 @@ import {
   ListChecks,
   Trophy,
   BookOpen,
+  PlayCircle,
   Loader2,
   Cloud,
   CloudOff,
@@ -439,6 +440,17 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
                               >
                                 <BookOpen className="h-2.5 w-2.5" />
                                 Article
+                              </a>
+                            )}
+                            {p.video && (
+                              <a
+                                href={p.video}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="ml-2 inline-flex items-center gap-1 rounded border border-[var(--color-c-border)] bg-[var(--color-c-canvas)] px-1.5 py-px align-middle text-[9px] font-medium text-[var(--color-c-muted)] transition-colors hover:border-[var(--color-c-olive)] hover:text-[var(--color-c-lime)]"
+                              >
+                                <PlayCircle className="h-2.5 w-2.5" />
+                                Video
                               </a>
                             )}
                             {note && (

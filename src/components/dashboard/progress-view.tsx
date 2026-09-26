@@ -5,7 +5,7 @@ import Link from "next/link";
 import { LogIn, RefreshCw } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { supabaseBrowser } from "@/lib/supabase-browser";
-import { countByDay, streaks } from "@/lib/progress/days";
+import { countByDay, detailsByDay, streaks } from "@/lib/progress/days";
 import type { ProgressData } from "@/lib/progress/types";
 import { MetricCards } from "./metric-cards";
 import { ActivityChart } from "./activity-chart";
@@ -65,6 +65,7 @@ export function ProgressView() {
 
   const byDay = useMemo(() => countByDay(data?.events ?? []), [data]);
   const streak = useMemo(() => streaks(byDay), [byDay]);
+  const details = useMemo(() => detailsByDay(data?.events ?? []), [data]);
 
   const axes: SkillAxis[] = useMemo(() => {
     const c = data?.counts;
@@ -73,7 +74,11 @@ export function ProgressView() {
       { label: "DSA", score: pct(c.problemsSolved, TARGETS.dsa), detail: `${c.problemsSolved} solved, target ${TARGETS.dsa}` },
       { label: "System Design", score: pct(c.designSolved, c.designTotal), detail: `${c.designSolved}/${c.designTotal} questions` },
       { label: "Cover Letters", score: pct(c.coverLetters, TARGETS.letters), detail: `${c.coverLetters} written, target ${TARGETS.letters}` },
-      { label: "Mock Interviews", score: 0, detail: "coming soon" },
+      {
+        label: "Mock Interviews",
+        score: c.interviewAvg ?? 0,
+        detail: c.interviewAvg === null ? "none completed yet" : `avg ${c.interviewAvg}/100 over your last ${Math.min(3, c.interviews)}`,
+      },
       { label: "Resume Analyses", score: pct(c.analyses, TARGETS.analyses), detail: `${c.analyses} run, target ${TARGETS.analyses}` },
     ];
   }, [data]);
@@ -138,7 +143,7 @@ export function ProgressView() {
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
         <ActivityChart byDay={byDay} />
-        <StreakCalendar byDay={byDay} currentStreak={streak.current} />
+        <StreakCalendar byDay={byDay} details={details} currentStreak={streak.current} />
       </div>
 
       <ReadinessChecklist readiness={data.readiness} onMarkApplied={markApplied} />

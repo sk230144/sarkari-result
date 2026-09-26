@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   Target,
   FileText,
@@ -21,6 +21,8 @@ import { Kicker, Reveal } from "./primitives";
 import { StepLoader } from "./modal";
 import { LetterModal } from "./letter-modal";
 import { AnalysisModal } from "./analysis-modal";
+import { LevelPicker } from "@/components/mock-interview/level-picker";
+import type { Level } from "@/lib/interview/types";
 import { ROLES, type LetterResult } from "@/lib/cover-letter-config";
 import type { AnalysisResult } from "@/lib/analyzer/config";
 import { RESUME_MAX_BYTES, JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
@@ -46,6 +48,15 @@ const ANALYSIS_STEPS = [
   "Analyzing ATS-optimization opportunities…",
 ];
 
+const INTERVIEW_STEPS = [
+  "Reading your resume and projects…",
+  "Mapping the role's core skills…",
+  "Writing technical questions…",
+  "Preparing your coding round…",
+  "Writing culture-fit questions…",
+  "Setting the interview clock…",
+];
+
 type Saved = {
   uid: string;
   path: string | null;
@@ -54,13 +65,13 @@ type Saved = {
   fullName: string | null;
 };
 
-type Stage = "idle" | "loading-letter" | "loading-analysis" | "letter" | "analysis";
+type Stage = "idle" | "loading-letter" | "loading-analysis" | "letter" | "analysis" | "pick-level" | "loading-interview";
 
 /** `primary` decides which action leads (and the heading): the page's own tool. */
 export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter" | "analysis" | "interview" } = {}) {
-  const [notice, setNotice] = useState<string | null>(null);
   const { user, loading: authLoading } = useAuth();
   const pathname = usePathname();
+  const router = useRouter();
   const supabase = supabaseBrowser();
 
   const [role, setRole] = useState(ROLES[0]);
@@ -76,6 +87,8 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
   const [letterReady, setLetterReady] = useState(false);
   const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
   const [analysisReady, setAnalysisReady] = useState(false);
+  const [interviewId, setInterviewId] = useState<string | null>(null);
+  const [interviewsLeft, setInterviewsLeft] = useState<number | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   // Resume key -> cvId, so the same file is only sent to /api/cv once.
   const cvIds = useRef(new Map<string, string>());
@@ -223,7 +236,49 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
     }
   }
 
+  async function pickLevel() {
+    if (!user) {
+      setError(NEED_LOGIN);
+      return;
+    }
+    if (!active) {
+      setError("Choose a resume first — your saved one, or upload a PDF.");
+      return;
+    }
+    setError(null);
+    setStage("pick-level");
+    try {
+      const res = await fetch("/api/mock-interview");
+      const json = await res.json();
+      if (res.ok) setInterviewsLeft(json.remaining ?? null);
+    } catch {
+      /* the server enforces the limit anyway */
+    }
+  }
+
+  async function startInterview(level: Level) {
+    setInterviewId(null);
+    setStage("loading-interview");
+    try {
+      const cvId = await ensureCvId();
+      const res = await fetch("/api/mock-interview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cvId, role, jd, level }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error ?? "Could not prepare your interview.");
+      setInterviewId(json.id as string);
+    } catch (e) {
+      setStage("idle");
+      setError(e instanceof Error ? e.message : "Something went wrong.");
+    }
+  }
+
   const close = useCallback(() => setStage("idle"), []);
+  const openInterview = useCallback(() => {
+    if (interviewId) router.push(`/mock-interview/${interviewId}`);
+  }, [interviewId, router]);
   const showLetter = useCallback(() => setStage("letter"), []);
   const showAnalysis = useCallback(() => setStage("analysis"), []);
 
@@ -430,7 +485,7 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
                       <Link href={`/login?next=${pathname}`} className="font-bold underline underline-offset-2">
                         sign in
                       </Link>{" "}
-                      to generate your cover letter.
+                      to {primary === "interview" ? "start your mock interview" : primary === "analysis" ? "analyse your resume" : "generate your cover letter"}.
                     </>
                   ) : (
                     error
@@ -438,47 +493,20 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
                 </p>
               )}
 
-              {/* Actions */}
-              {notice && (
-                <p role="status" className="cl-fade rounded-xl border border-[var(--color-c-lime)]/25 bg-[var(--color-c-lime)]/[0.06] px-4 py-2.5 text-[12px] text-[var(--color-c-lime)]">
-                  {notice}
-                </p>
-              )}
-
               {/* Actions: the page's own tool leads */}
               <div className="grid gap-2.5 border-t border-white/[0.06] pt-6 sm:grid-cols-3">
                 {([primary, ...(["letter", "analysis", "interview"] as const).filter((k) => k !== primary)] as const).map((kind) => {
                   const isPrimary = kind === primary;
-                  const soon = kind === "interview";
                   const Icon = kind === "letter" ? FileText : kind === "analysis" ? Zap : Monitor;
                   const label = kind === "letter" ? "Cover Letter" : kind === "analysis" ? "Analyse CV" : "Mock Interview";
-                  if (soon && !isPrimary) {
-                    return (
-                      <button
-                        key={kind}
-                        type="button"
-                        disabled
-                        title="Coming soon"
-                        className="flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-white/[0.06] bg-[#141712] px-4 py-3.5 text-[14px] font-bold text-[var(--color-c-dim)]"
-                      >
-                        <Icon className="h-4 w-4" />
-                        {label}
-                        <span className="rounded-full border border-white/10 px-1.5 py-px font-mono text-[8px] uppercase tracking-wider">Soon</span>
-                      </button>
-                    );
-                  }
                   return (
                     <button
                       key={kind}
                       type="button"
                       onClick={() => {
-                        setNotice(null);
                         if (kind === "letter") generateLetter();
                         else if (kind === "analysis") startAnalysis();
-                        else
-                          setNotice(
-                            "Mock interviews are launching soon. Your role, job description and resume here are exactly what they'll use.",
-                          );
+                        else pickLevel();
                       }}
                       className={
                         isPrimary
@@ -511,6 +539,17 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
           steps={ANALYSIS_STEPS}
           done={analysisReady}
           onDone={showAnalysis}
+        />
+      )}
+      {stage === "pick-level" && (
+        <LevelPicker role={role} remaining={interviewsLeft} onClose={close} onStart={startInterview} />
+      )}
+      {stage === "loading-interview" && (
+        <StepLoader
+          title="Preparing your mock interview"
+          steps={INTERVIEW_STEPS}
+          done={interviewId !== null}
+          onDone={openInterview}
         />
       )}
       {stage === "letter" && letter && (

@@ -2,6 +2,7 @@ import "server-only";
 import { DAYS } from "@/components/striver/striver-data";
 import { BABBAR_TOTAL } from "@/components/striver/babbar-data";
 import { NEGI_TOTAL } from "@/components/striver/negi-data";
+import { NEETCODE_TOTAL } from "@/components/striver/neetcode-data";
 import { PATTERN_TOTAL } from "@/components/striver/patterns-data";
 import { QUESTIONS as SYSTEM_DESIGN } from "@/components/dashboard/system-design-data";
 import { AIRBNB_TOTAL } from "@/components/faang/airbnb-data";
@@ -49,6 +50,7 @@ export const SHEETS: SheetInfo[] = [
     kind: "dsa",
   },
   { key: "babbar-450", label: "Love Babbar Sheet", href: "/dsa-sheets/love-babbar", total: BABBAR_TOTAL, kind: "dsa" },
+  { key: "neetcode-150", label: "NeetCode 150", href: "/dsa-sheets/neetcode-150", total: NEETCODE_TOTAL, kind: "dsa" },
   { key: "negi-725", label: "Rohit Negi Sheet", href: "/dsa-sheets/rohit-negi", total: NEGI_TOTAL, kind: "dsa" },
   { key: "dsa-patterns", label: "20 DSA Patterns", href: "/dsa-patterns", total: PATTERN_TOTAL, kind: "dsa" },
   faang("google", "Google", GOOGLE_TOTAL),

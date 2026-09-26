@@ -3,6 +3,7 @@ import { Logo } from "@/components/ui/logo";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { HeaderNav } from "@/components/header/header-nav";
 import { NotificationBell } from "@/components/header/notification-bell";
+import { InterviewHistoryButton } from "@/components/header/interview-history-button";
 
 export function Navbar() {
   return (
@@ -18,6 +19,7 @@ export function Navbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
+          <InterviewHistoryButton />
           <NotificationBell />
           <AccountMenu />
         </div>

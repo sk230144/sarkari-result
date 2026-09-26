@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import {
@@ -56,6 +57,7 @@ const SHEETS = [
     curator: "Navdeep Singh (NeetCode)",
     problems: 150,
     sections: 18,
+    route: "/dsa-sheets/neetcode-150",
     blurb:
       "A clean, beginner-friendly list of the most important interview problems for fast revision.",
     best: "Fast revision, FAANG-pattern focus",
@@ -446,19 +448,19 @@ export function DsaSheets() {
                     It doesn&apos;t cover system design, resume quality, or
                     interview communication on its own, pair it with Job Alert
                     24&apos;s{" "}
-                    <a
+                    <Link
                       href="/system-design"
                       className="font-medium text-[var(--color-c-emerald)] underline-offset-4 hover:underline"
                     >
                       System Design Sheet
-                    </a>{" "}
+                    </Link>{" "}
                     and{" "}
-                    <a
+                    <Link
                       href="/mock-interview"
                       className="font-medium text-[var(--color-c-emerald)] underline-offset-4 hover:underline"
                     >
                       Mock Interview
-                    </a>{" "}
+                    </Link>{" "}
                     for the rest.
                   </>
                 )}

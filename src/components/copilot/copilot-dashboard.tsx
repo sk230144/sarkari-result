@@ -28,6 +28,8 @@ import { StepLoader } from "@/components/cover-letter/modal";
 import type { CopilotData } from "@/lib/copilot-types";
 import type { LetterResult } from "@/lib/cover-letter-config";
 import type { AnalysisResult } from "@/lib/analyzer/config";
+import { LEVELS } from "@/lib/interview/types";
+import { scoreChip } from "@/components/mock-interview/history";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 const fmtDay = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short" });
@@ -384,10 +386,43 @@ export function CopilotDashboard() {
               </Section>
 
               <Section icon={History} title="Recent mock sessions">
-                <div className="flex flex-col items-center gap-1.5 rounded-2xl border border-white/[0.06] bg-[#141713] px-4 py-8 text-center">
-                  <p className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-c-muted)]">No sessions</p>
-                  <p className="text-[11px] text-[var(--color-c-dim)]">Mock interviews are coming soon.</p>
-                </div>
+                {data.interviews.length === 0 ? (
+                  <div className="flex flex-col items-center gap-2 rounded-2xl border border-dashed border-white/10 px-4 py-8 text-center">
+                    <p className="font-mono text-[11px] font-bold uppercase tracking-[0.14em] text-[var(--color-c-muted)]">No sessions yet</p>
+                    <Link href="/mock-interview#generate" className="text-[12px] font-semibold text-[var(--color-c-lime)] hover:underline">
+                      Start your first mock interview →
+                    </Link>
+                  </div>
+                ) : (
+                  <div className="space-y-2.5">
+                    {data.interviews.map((s, i) => {
+                      const done = s.status === "completed";
+                      return (
+                        <motion.div
+                          key={s.id}
+                          {...fade(i + 5)}
+                          className="flex items-center gap-3 rounded-2xl border border-white/[0.06] bg-[#141713] px-4 py-3.5 transition-colors hover:border-white/15"
+                        >
+                          <span className={`flex h-10 w-11 shrink-0 items-center justify-center rounded-xl border font-mono text-[14px] font-bold ${scoreChip(s.overallScore)}`}>
+                            {done ? s.overallScore : "—"}
+                          </span>
+                          <div className="min-w-0 flex-1">
+                            <p className="truncate text-[14px] font-bold tracking-tight text-[var(--color-c-text)]">{s.role}</p>
+                            <p className="font-mono text-[10px] uppercase tracking-[0.12em] text-[var(--color-c-dim)]">
+                              {LEVELS.find((l) => l.key === s.level)?.label} · {fmtDay(s.createdAt)}
+                            </p>
+                          </div>
+                          <Link
+                            href={`/mock-interview/${s.id}`}
+                            className="rounded-lg border border-[var(--color-c-lime)]/40 px-3 py-1.5 font-mono text-[10px] font-bold uppercase text-[var(--color-c-lime)] transition-colors hover:bg-[var(--color-c-lime)]/10"
+                          >
+                            {done ? "Report" : "Resume"}
+                          </Link>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                )}
               </Section>
             </div>
 

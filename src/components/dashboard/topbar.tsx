@@ -2,6 +2,7 @@ import { Menu } from "lucide-react";
 import { AccountMenu } from "@/components/auth/account-menu";
 import { HeaderNav } from "@/components/header/header-nav";
 import { NotificationBell } from "@/components/header/notification-bell";
+import { InterviewHistoryButton } from "@/components/header/interview-history-button";
 
 export function Topbar({
   collapsed,
@@ -35,6 +36,7 @@ export function Topbar({
         </div>
 
         <div className="flex items-center gap-2">
+          <InterviewHistoryButton />
           <NotificationBell />
           <AccountMenu />
         </div>

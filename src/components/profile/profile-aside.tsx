@@ -26,6 +26,7 @@ import {
 import { supabaseBrowser } from "@/lib/supabase-browser";
 import { APPLY_FIELDS, SECTION_LABELS, type ApplyKey, type SectionKey } from "@/lib/profile/types";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
+import { AccessKeyCard } from "./access-key-card";
 import { Card, SmallButton, TextInput, moveItem } from "./ui";
 
 function useCopy() {
@@ -126,6 +127,8 @@ export function ProfileAside() {
 
   return (
     <div className="flex flex-col gap-4">
+      <AccessKeyCard />
+
       {/* Referrals */}
       <Card>
         <div className="border-b border-[var(--color-c-border)] px-4 py-3">

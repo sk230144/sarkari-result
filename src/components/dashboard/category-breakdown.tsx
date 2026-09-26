@@ -17,7 +17,7 @@ export function CategoryBreakdown({
     { label: "DSA problems", count: counts.problemsSolved, href: "/dsa-sheets" },
     { label: "System Design", count: counts.designSolved, href: "/system-design" },
     { label: "Cover Letters", count: counts.coverLetters, href: "/cover-letter" },
-    { label: "Mock Interviews", count: 0, href: null, soon: true },
+    { label: "Mock Interviews", count: counts.interviews, href: "/mock-interview/history" },
     { label: "Resume Analyses", count: counts.analyses, href: "/resume-analysis" },
     { label: "Tasks completed", count: counts.tasksDone, href: "/task-board" },
   ];
@@ -34,24 +34,14 @@ export function CategoryBreakdown({
       </div>
 
       <div className="flex flex-1 flex-col justify-center gap-4">
-        {rows.map(({ label, count, href, soon }) => {
+        {rows.map(({ label, count, href }) => {
           const lead = count > 0 && count === leadCount;
-          const labelEl = (
-            <span className={lead ? "text-[var(--color-c-text)]" : "text-[var(--color-c-muted)]"}>
-              {label}
-              {soon && <span className="ml-1.5 font-mono text-[9px] uppercase tracking-wider text-[var(--color-c-dim-2)]">soon</span>}
-            </span>
-          );
           return (
             <div key={label} className="flex flex-col gap-1.5">
               <div className="flex justify-between text-xs font-medium">
-                {href ? (
-                  <Link href={href} className="hover:underline">
-                    {labelEl}
-                  </Link>
-                ) : (
-                  labelEl
-                )}
+                <Link href={href} className="hover:underline">
+                  <span className={lead ? "text-[var(--color-c-text)]" : "text-[var(--color-c-muted)]"}>{label}</span>
+                </Link>
                 <span className={lead ? "font-bold text-[var(--color-c-accent)]" : "text-[var(--color-c-dim-2)]"}>{count}</span>
               </div>
               <div className={`w-full overflow-hidden rounded-full bg-[var(--color-c-surface-9b)] ${lead ? "h-2.5" : "h-2"}`}>

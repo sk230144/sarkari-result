@@ -1,4 +1,4 @@
-import type { ProgressData } from "./types";
+import type { ActivityKind, ProgressData } from "./types";
 
 /** Local calendar day key, e.g. "2026-09-26". */
 export function ymd(d: Date) {
@@ -40,4 +40,25 @@ export function streaks(days: Map<string, number>) {
     prev = day;
   }
   return { current, longest: Math.max(longest, current) };
+}
+
+export type DayDetail = {
+  total: number;
+  kinds: Partial<Record<ActivityKind, number>>;
+  /** Named items worth listing (interviews, letters, analyses, tasks). */
+  notes: { k: ActivityKind; d: string }[];
+};
+
+/** What happened on each local day, for the calendar's hover card. */
+export function detailsByDay(events: ProgressData["events"]): Map<string, DayDetail> {
+  const m = new Map<string, DayDetail>();
+  for (const e of events) {
+    const key = ymd(new Date(e.t));
+    const day = m.get(key) ?? { total: 0, kinds: {}, notes: [] };
+    day.total++;
+    day.kinds[e.k] = (day.kinds[e.k] ?? 0) + 1;
+    if (e.d) day.notes.push({ k: e.k, d: e.d });
+    m.set(key, day);
+  }
+  return m;
 }

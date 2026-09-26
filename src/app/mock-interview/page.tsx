@@ -4,6 +4,7 @@ import { CoverLetterWorkspace } from "@/components/cover-letter/workspace";
 import { Faq } from "@/components/cover-letter/faq";
 import { FinalCta, Toolkit } from "@/components/cover-letter/sections";
 import { MockInterviewHero } from "@/components/mock-interview/hero";
+import { InterviewHistory, OngoingInterviews } from "@/components/mock-interview/history";
 import {
   FirstRepBanner,
   InterviewComparison,
@@ -52,7 +53,9 @@ export default function MockInterviewPage() {
         />
         <div className="relative">
           <MockInterviewHero />
+          <OngoingInterviews />
           <CoverLetterWorkspace primary="interview" />
+          <InterviewHistory />
           <InterviewHowItWorks />
           <InterviewWhatYouGet />
           <FirstRepBanner />

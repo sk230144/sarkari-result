@@ -10,6 +10,8 @@ export type Problem = {
   search?: boolean;
   /** Write-up explaining the problem, shown alongside the practice link. */
   article?: string;
+  /** Video walkthrough, where the sheet has one. */
+  video?: string;
   /** Curator's difficulty rating, where the sheet provides one. */
   difficulty?: Difficulty;
 };

@@ -45,6 +45,9 @@ const KIND_LABELS: Record<string, string> = {
   analysis_jd: "Resume analysis · JD profile (once per job, shared)",
   analysis_judgment: "Resume analysis · judgment",
   analysis_risk: "Resume analysis · AI risk (once per role)",
+  interview_generate: "Mock interview · generate questions",
+  interview_evaluate: "Mock interview · grade answers (per batch of 5)",
+  interview_summary: "Mock interview · overall debrief",
 };
 
 export const metadata: Metadata = {

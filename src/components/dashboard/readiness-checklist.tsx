@@ -52,10 +52,9 @@ export function ReadinessChecklist({
       id: "mock",
       title: "Mock interview practiced",
       body: "Real questions for your role, before the real thing.",
-      cta: "Coming soon",
-      href: "",
-      done: false,
-      soon: true,
+      cta: readiness.mockInterview ? "Practise again" : "Start a mock interview",
+      href: "/mock-interview",
+      done: readiness.mockInterview,
     },
   ];
 
