@@ -7,6 +7,7 @@ import {
 } from "@/components/theme/theme-provider";
 import { AuthProvider } from "@/components/auth/auth-provider";
 import { PageTracker } from "@/components/analytics/page-tracker";
+import { FeedbackButton } from "@/components/feedback/feedback-button";
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
@@ -40,6 +41,7 @@ export default function RootLayout({
           <AuthProvider>
             {/* Records page views for the admin view. Renders nothing. */}
             <PageTracker />
+            <FeedbackButton />
             {children}
           </AuthProvider>
         </ThemeProvider>

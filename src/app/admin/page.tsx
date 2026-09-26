@@ -10,7 +10,8 @@ import {
   Sparkles,
 } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
-import { isAdmin, getAdminData } from "@/lib/admin";
+import { isAdmin, getAdminData, adminDb } from "@/lib/admin";
+import { AdminFeedback, type FeedbackItem } from "@/components/admin/admin-feedback";
 import { USD_TO_INR } from "@/lib/ai-pricing";
 
 /** "₹1.24" with the USD figure alongside; tiny amounts keep enough decimals to read. */
@@ -110,7 +111,14 @@ export default async function AdminPage() {
   // existence is not disclosed to anyone who is not an admin.
   if (!(await isAdmin())) notFound();
 
-  const { users, sections, totals, ai } = await getAdminData();
+  const [{ users, sections, totals, ai }, feedback] = await Promise.all([
+    getAdminData(),
+    adminDb()
+      .from("feedback")
+      .select("id, name, email, category, rating, message, page, resolved_at, created_at")
+      .order("created_at", { ascending: false })
+      .limit(500),
+  ]);
   const maxViews = sections[0]?.views ?? 1;
   const aiUsers = users.filter((u) => u.ai.calls > 0).sort((a, b) => b.ai.costUsd - a.ai.costUsd);
 
@@ -182,6 +190,8 @@ export default async function AdminPage() {
             </div>
           )}
         </section>
+
+        <AdminFeedback initial={(feedback.data ?? []) as FeedbackItem[]} ready={!feedback.error} />
 
         {/* AI usage and cost */}
         <section className="rounded-2xl border border-[var(--color-c-border)] bg-[var(--color-c-surface-1)] p-5">
