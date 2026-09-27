@@ -2,11 +2,17 @@
  * Downloads for the desktop AI Interview Assistant ("Job 24 Alert Tool").
  *
  * The installers are ~300 MB each, too big for the repo or a Vercel deploy,
- * so they're served from GitHub Releases. `latest/download/<file>` always
- * points at the newest release, so publishing a new version only means
- * uploading files with these names (or updating the names here).
+ * so they're served from a public GitHub repo's Releases (the app's source
+ * repo is private, and private releases can't be downloaded publicly).
+ * `latest/download/<file>` always points at the newest release, so a new
+ * version only means uploading files with these names (or updating them here).
+ *
+ * Set NEXT_PUBLIC_DESKTOP_DOWNLOAD_BASE to host them somewhere else
+ * (e.g. a Cloudflare R2 bucket URL) without a code change.
  */
-const RELEASES = "https://github.com/sk230144/interview-ai/releases/latest/download";
+const RELEASES = (
+  process.env.NEXT_PUBLIC_DESKTOP_DOWNLOAD_BASE || "https://github.com/sk230144/job24-alert-tool-releases/releases/latest/download"
+).replace(/\/+$/, "");
 
 export const APP_NAME = "Job 24 Alert Tool";
 export const APP_VERSION = "1.0.0";
