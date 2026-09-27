@@ -6,6 +6,25 @@ import { usePathname, useRouter } from "next/navigation";
 import { User, LogOut, FileText, Loader2, Shield, Crown } from "lucide-react";
 import { useAuth } from "./auth-provider";
 import { isAdminEmail } from "@/lib/admin-emails";
+import { CrownOrbit } from "@/components/premium/crown-orbit";
+
+type Premium = { isPremium: boolean; premiumUntil: string | null };
+let premiumCache: { uid: string; at: number; p: Promise<Premium | null> } | null = null;
+
+/** The signed-in user's PRO+ status, shared across pages for two minutes. */
+function premiumFor(uid: string) {
+  if (!premiumCache || premiumCache.uid !== uid || Date.now() - premiumCache.at > 120_000) {
+    premiumCache = {
+      uid,
+      at: Date.now(),
+      p: fetch("/api/payments/status", { cache: "no-store" })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => (j ? { isPremium: Boolean(j.isPremium), premiumUntil: j.premiumUntil ?? null } : null))
+        .catch(() => null),
+    };
+  }
+  return premiumCache.p;
+}
 
 
 /**
@@ -20,17 +39,19 @@ export function AccountMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
-  const [premium, setPremium] = useState<{ isPremium: boolean; premiumUntil: string | null } | null>(null);
+  const [premium, setPremium] = useState<Premium | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
 
-  // Membership is fetched the first time the menu opens, not on every page.
+  // Membership drives the crown on the avatar. Cached for a couple of
+  // minutes so moving between pages doesn't refetch it every time.
   useEffect(() => {
-    if (!open || premium || !user) return;
-    fetch("/api/payments/status", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => j && setPremium({ isPremium: Boolean(j.isPremium), premiumUntil: j.premiumUntil ?? null }))
-      .catch(() => {});
-  }, [open, premium, user]);
+    if (!user) return;
+    let live = true;
+    premiumFor(user.id).then((p) => live && p && setPremium(p));
+    return () => {
+      live = false;
+    };
+  }, [user]);
 
   // Close on outside click or Escape — a menu that traps you is worse
   // than no menu.
@@ -83,16 +104,21 @@ export function AccountMenu() {
 
   return (
     <div ref={boxRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="menu"
-        aria-expanded={open}
-        aria-label="Account menu"
-        className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-c-lime)] text-[13px] font-bold text-black transition-transform hover:scale-105"
-      >
-        {initial}
-      </button>
+      {(() => {
+        const button = (
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-haspopup="menu"
+            aria-expanded={open}
+            aria-label={premium?.isPremium ? "Account menu (PRO+ member)" : "Account menu"}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-c-lime)] text-[13px] font-bold text-black transition-transform hover:scale-105"
+          >
+            {initial}
+          </button>
+        );
+        return premium?.isPremium ? <CrownOrbit size={36}>{button}</CrownOrbit> : button;
+      })()}
 
       {open && (
         <div

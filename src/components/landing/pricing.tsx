@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Wand2, Crown } from "lucide-react";
+import { PLANS, QUARTERLY_SAVING, inr } from "@/lib/premium";
 
 const FEATURES = [
   { icon: "◎", color: "text-red-400", label: "Fresh job alerts" },
@@ -34,7 +36,7 @@ export function Pricing() {
   const [isQuarterly, setIsQuarterly] = useState(false);
 
   return (
-    <section className="mx-auto max-w-4xl px-6 py-24">
+    <section id="pricing" className="mx-auto max-w-4xl scroll-mt-24 px-6 py-24">
       <div className="mx-auto mb-12 max-w-2xl text-center">
         <h2 className="mb-4 text-3xl font-extrabold tracking-tight text-[var(--color-c-text)] sm:text-5xl">
           Turn applications into{" "}
@@ -74,7 +76,7 @@ export function Pricing() {
               isQuarterly ? "text-[var(--color-c-green)]" : "text-[var(--color-c-text-dim)]"
             }`}
           >
-            Quarterly
+            Quarterly{QUARTERLY_SAVING > 0 ? ` · save ${QUARTERLY_SAVING}%` : ""}
           </span>
         </div>
       </div>
@@ -103,12 +105,12 @@ export function Pricing() {
               ))}
             </ul>
           </div>
-          <button
-            type="button"
-            className="w-full rounded-xl bg-[var(--color-c-surface-14)] px-4 py-3 text-xs font-bold text-[var(--color-c-text)] transition-colors hover:bg-[var(--color-c-forest-18)]"
+          <Link
+            href="/resources"
+            className="block w-full rounded-xl bg-[var(--color-c-surface-14)] px-4 py-3 text-center text-xs font-bold text-[var(--color-c-text)] transition-colors hover:bg-[var(--color-c-forest-18)]"
           >
             Continue Free
-          </button>
+          </Link>
         </div>
 
         {/* PRO+ */}
@@ -125,10 +127,10 @@ export function Pricing() {
             </div>
             <div className="mb-2 flex items-baseline gap-1">
               <span className="text-4xl font-extrabold text-[var(--color-c-green)]">
-                {isQuarterly ? "$2.49" : "$3.29"}
+                {inr(isQuarterly ? PLANS.quarterly.perMonth : PLANS.monthly.perMonth)}
               </span>
               <span className="text-xs text-[var(--color-c-text-muted-2)]">
-                {isQuarterly ? "/ month (billed quarterly)" : "/ month"}
+                {isQuarterly ? `/ month (${inr(PLANS.quarterly.total)} billed quarterly)` : "/ month"}
               </span>
             </div>
             <p className="mb-8 text-xs text-[var(--color-c-text-muted-2)]">
@@ -148,12 +150,12 @@ export function Pricing() {
               ))}
             </ul>
           </div>
-          <button
-            type="button"
-            className="w-full rounded-xl bg-[var(--color-c-green)] px-4 py-3.5 text-xs font-bold text-black shadow-lg transition-all hover:bg-[var(--color-c-green-2)]"
+          <Link
+            href={`/pricing?plan=${isQuarterly ? "quarterly" : "monthly"}`}
+            className="block w-full rounded-xl bg-[var(--color-c-green)] px-4 py-3.5 text-center text-xs font-bold text-black shadow-lg transition-all hover:bg-[var(--color-c-green-2)]"
           >
             Upgrade to PRO+
-          </button>
+          </Link>
         </div>
       </div>
     </section>

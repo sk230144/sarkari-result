@@ -52,13 +52,14 @@ const noop = () => () => {};
 
 export function Pricing() {
   const reduce = useReducedMotion();
+  const params = useSearchParams();
   // False while hydrating (so the markup matches the server), true after.
   // This part of the page hydrates late, when sign-in may already be known.
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   const router = useRouter();
-  const params = useSearchParams();
   const { user, loading } = useAuth();
-  const [plan, setPlan] = useState<PlanKey>("monthly");
+  // Arriving from the home page keeps the plan chosen there (?plan=quarterly).
+  const [plan, setPlan] = useState<PlanKey>(() => (params.get("plan") === "quarterly" ? "quarterly" : "monthly"));
   const [status, setStatus] = useState<(PremiumStatus & { phone: string }) | null>(null);
   const [phone, setPhone] = useState("");
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });

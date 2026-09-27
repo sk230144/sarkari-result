@@ -3,6 +3,7 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { HeaderNav } from "@/components/header/header-nav";
 import { NotificationBell } from "@/components/header/notification-bell";
 import { InterviewHistoryButton } from "@/components/header/interview-history-button";
+import { PaymentsButton } from "@/components/header/payments-button";
 
 export function Topbar({
   collapsed,
@@ -37,6 +38,7 @@ export function Topbar({
 
         <div className="flex items-center gap-2">
           <InterviewHistoryButton />
+          <PaymentsButton />
           <NotificationBell />
           <AccountMenu />
         </div>

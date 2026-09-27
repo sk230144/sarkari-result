@@ -14,7 +14,9 @@ import { isAdmin, getAdminData, adminDb } from "@/lib/admin";
 import { AdminFeedback, type FeedbackItem } from "@/components/admin/admin-feedback";
 import { AdminBlogReview, type PendingPost } from "@/components/admin/admin-blog-review";
 import { AdminBlogPosts, type AdminPost } from "@/components/admin/admin-blog-posts";
-import { AdminPayments, type AdminPayment } from "@/components/admin/admin-payments";
+import { AdminPayments, type AdminMember, type AdminPayment } from "@/components/admin/admin-payments";
+import { CrownOrbit } from "@/components/premium/crown-orbit";
+import { isPremiumActive } from "@/lib/premium";
 import { USD_TO_INR } from "@/lib/ai-pricing";
 
 /** "₹1.24" with the USD figure alongside; tiny amounts keep enough decimals to read. */
@@ -141,10 +143,27 @@ export default async function AdminPage() {
       .select("order_id, user_id, plan, amount, status, payment_method, paid_at, created_at, period_end")
       .order("created_at", { ascending: false })
       .limit(1000),
-    adminDb().from("profiles").select("id", { count: "exact", head: true }).gt("premium_until", new Date().toISOString()),
+    adminDb()
+      .from("profiles")
+      .select("id, full_name, premium_plan, premium_since, premium_until")
+      .not("premium_until", "is", null)
+      .order("premium_until", { ascending: false })
+      .limit(1000),
   ]);
   const emailOf = new Map(users.map((u) => [u.id, u.email]));
   const paymentRows: AdminPayment[] = (payments.data ?? []).map((p) => ({ ...(p as Omit<AdminPayment, "email">), email: emailOf.get(p.user_id as string) ?? null }));
+  // Active PRO+ members, for the crown on their avatar in the users list.
+  const proUntil = new Map(
+    (members.data ?? []).filter((m) => isPremiumActive(m.premium_until as string)).map((m) => [m.id as string, m.premium_until as string]),
+  );
+  const memberRows: AdminMember[] = (members.data ?? []).map((m) => ({
+    id: m.id as string,
+    name: (m.full_name as string) ?? null,
+    email: emailOf.get(m.id as string) ?? null,
+    plan: (m.premium_plan as string) ?? null,
+    since: (m.premium_since as string) ?? null,
+    until: m.premium_until as string,
+  }));
   const maxViews = sections[0]?.views ?? 1;
   const aiUsers = users.filter((u) => u.ai.calls > 0).sort((a, b) => b.ai.costUsd - a.ai.costUsd);
 
@@ -217,7 +236,7 @@ export default async function AdminPage() {
           )}
         </section>
 
-        <AdminPayments payments={paymentRows} activeMembers={members.count ?? 0} ready={!payments.error} />
+        <AdminPayments payments={paymentRows} members={memberRows} ready={!payments.error} />
 
         <AdminBlogReview initial={(pendingPosts.data ?? []) as PendingPost[]} ready={!pendingPosts.error} />
 
@@ -363,12 +382,29 @@ export default async function AdminPage() {
                 {/* Identity and headline numbers */}
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="flex min-w-0 items-center gap-2.5">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-c-lime)] text-[13px] font-bold text-black">
-                      {(u.fullName ?? u.email).charAt(0).toUpperCase()}
-                    </span>
+                    {(() => {
+                      const avatar = (
+                        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[var(--color-c-lime)] text-[13px] font-bold text-black">
+                          {(u.fullName ?? u.email).charAt(0).toUpperCase()}
+                        </span>
+                      );
+                      const until = proUntil.get(u.id);
+                      return until ? (
+                        <CrownOrbit size={36} title={`PRO+ until ${new Date(until).toLocaleDateString("en-IN")}`}>
+                          {avatar}
+                        </CrownOrbit>
+                      ) : (
+                        avatar
+                      );
+                    })()}
                     <div className="min-w-0">
                       <p className="truncate text-[13px] font-bold text-[var(--color-c-text)]">
                         {u.fullName ?? u.email.split("@")[0]}
+                        {proUntil.has(u.id) && (
+                          <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-[var(--color-c-lime)] px-1.5 py-px align-middle text-[9px] font-bold text-black">
+                            PRO+ until {new Date(proUntil.get(u.id)!).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
+                          </span>
+                        )}
                         {u.hasResume && (
                           <span className="ml-2 inline-flex items-center gap-1 align-middle text-[10px] font-normal text-[var(--color-c-lime)]">
                             <FileText className="h-3 w-3" />

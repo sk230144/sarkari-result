@@ -4,6 +4,7 @@ import { AccountMenu } from "@/components/auth/account-menu";
 import { HeaderNav } from "@/components/header/header-nav";
 import { NotificationBell } from "@/components/header/notification-bell";
 import { InterviewHistoryButton } from "@/components/header/interview-history-button";
+import { PaymentsButton } from "@/components/header/payments-button";
 
 export function Navbar() {
   return (
@@ -20,6 +21,7 @@ export function Navbar() {
 
         <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <InterviewHistoryButton />
+          <PaymentsButton />
           <NotificationBell />
           <AccountMenu />
         </div>
