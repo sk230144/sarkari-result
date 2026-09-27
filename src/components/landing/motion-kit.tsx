@@ -266,3 +266,56 @@ export function Sequence({ children, className = "", step = 0.25 }: { children: 
     </MotionConfig>
   );
 }
+
+/**
+ * Types its text out once it scrolls into view. The full text is rendered
+ * first (server HTML, no-JS readers) and reserves the space, so nothing shifts.
+ */
+export function Typewriter({ text, speed = 45, className = "" }: { text: string; speed?: number; className?: string }) {
+  const calm = useCalm();
+  const ref = useRef<HTMLSpanElement>(null);
+  const inView = useInView(ref, { once: true });
+  const [n, setN] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!inView || calm) return;
+    let i = 0;
+    const id = setInterval(() => {
+      i += 1;
+      setN(i);
+      if (i >= text.length) clearInterval(id);
+    }, speed);
+    return () => clearInterval(id);
+  }, [inView, calm, text, speed]);
+
+  const shown = n ?? text.length;
+  return (
+    <span ref={ref} className={`relative inline-block ${className}`}>
+      <span className="invisible" aria-hidden>
+        {text}
+      </span>
+      <span className="absolute inset-0" aria-label={text}>
+        {text.slice(0, shown)}
+        {n !== null && n < text.length && <span className="ml-0.5 inline-block h-[0.9em] w-[3px] translate-y-[0.1em] animate-pulse bg-[var(--color-c-green)]" />}
+      </span>
+    </span>
+  );
+}
+
+/** A soft light that sweeps across its content every few seconds. */
+export function Sweep({ children, className = "" }: { children: React.ReactNode; className?: string }) {
+  const calm = useCalm();
+  return (
+    <div className={`relative overflow-hidden ${className}`}>
+      {children}
+      {!calm && (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-[var(--color-c-green)]/15 to-transparent"
+          animate={{ x: ["0%", "450%"] }}
+          transition={{ duration: 2.4, repeat: Infinity, repeatDelay: 3, ease: "easeInOut" }}
+        />
+      )}
+    </div>
+  );
+}

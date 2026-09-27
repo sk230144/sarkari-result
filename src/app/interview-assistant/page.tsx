@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { Camera, Crown, Download as DownloadIcon, EyeOff, KeyRound, Mic, PlayCircle, ShieldCheck, Sparkles, Zap } from "lucide-react";
 import { Navbar } from "@/components/landing/navbar";
 import { SiteFooter } from "@/components/landing/site-footer";
-import { FlipGroup, FlipItem, Float, Reveal3D, Tilt } from "@/components/landing/motion-kit";
+import { FlipGroup, FlipItem, Float, Reveal3D, Sweep, Tilt, Typewriter } from "@/components/landing/motion-kit";
 import { HudDemo } from "@/components/interview-assistant/hud-demo";
 import { DownloadCards, Faq, HeroDownloads, ProofVideo } from "@/components/interview-assistant/parts";
 import { APP_NAME, APP_VERSION } from "@/lib/desktop-app";
@@ -187,6 +188,38 @@ export default function InterviewAssistantPage() {
               <HudDemo />
             </Tilt>
           </Reveal3D>
+        </section>
+
+        {/* App tour */}
+        <section className="border-y border-[var(--color-c-surface-12b)] bg-[var(--color-c-canvas-alt)]/60 px-6 py-20">
+          <div className="mx-auto grid max-w-6xl grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-14">
+            <Reveal3D from="left" className="lg:col-span-8">
+              <Float distance={6} duration={6}>
+                <Tilt className="rounded-[28px]" max={6}>
+                  <Sweep className="rounded-[28px] border border-[var(--color-c-forest-16)] bg-black shadow-[0_40px_120px_-30px_rgba(16,185,129,0.35)]">
+                    <Image
+                      src="/interview-assistant/app-tour.webp"
+                      alt="Annotated tour of the Job 24 Alert interview assistant controls"
+                      width={1457}
+                      height={1079}
+                      sizes="(min-width: 1024px) 760px, calc(100vw - 48px)"
+                      className="h-auto w-full"
+                    />
+                  </Sweep>
+                </Tilt>
+              </Float>
+            </Reveal3D>
+
+            <Reveal3D from="right" delay={0.1} className="lg:col-span-4">
+              <Eyebrow icon={PlayCircle}>App tour</Eyebrow>
+              <h2 className="text-3xl font-bold tracking-tight text-[var(--color-c-text)] sm:text-4xl">
+                <Typewriter text="This is how our app works" />
+              </h2>
+              <p className="mt-4 text-sm leading-relaxed text-[var(--color-c-text-dim)] sm:text-base">
+                Use the labeled controls to choose when the assistant is visible, capture meeting audio, take a screenshot, and send your question for an answer.
+              </p>
+            </Reveal3D>
+          </div>
         </section>
 
         {/* Features */}
