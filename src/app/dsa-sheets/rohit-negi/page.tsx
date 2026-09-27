@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
@@ -7,11 +8,11 @@ import {
   NEGI_TOTAL,
 } from "@/components/striver/negi-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-sheets/rohit-negi", {
   title: "Rohit Negi DSA Sheet — Job Alert 24",
   description:
     "All 725 problems from Rohit Negi's Coder Army DSA Sheet across 17 topics, each with a difficulty tag and a direct problem link, plus progress tracking and notes.",
-};
+});
 
 export default function RohitNegiSheetPage() {
   return (

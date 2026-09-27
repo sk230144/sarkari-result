@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "@/lib/seo";
 import Link from "next/link";
 import { Lock } from "lucide-react";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
@@ -8,20 +9,21 @@ import { loadShared } from "@/lib/interview/share";
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata({ params }: { params: Promise<{ token: string }> }): Promise<Metadata> {
-  const shared = await loadShared((await params).token);
+  const { token } = await params;
+  const shared = await loadShared(token);
   // Shared by link only: never indexed, even while public.
   const robots = { index: false, follow: false };
   if (!shared) return { title: "Mock interview result — Job Alert 24", robots };
   const who = shared.by ? `${shared.by} scored` : "Scored";
   const title = `${who} ${shared.iv.overallScore}/100 in a ${shared.iv.role} mock interview`;
   const description = shared.iv.summary?.headline ?? "AI mock interview result with feedback on every answer.";
-  return {
+  return pageMetadata(`/mock-interview/shared/${encodeURIComponent(token)}`, {
     title: `${title} — Job Alert 24`,
     description,
     robots,
     openGraph: { title, description, type: "article" },
-    twitter: { card: "summary", title, description },
-  };
+    twitter: { card: "summary_large_image", title, description },
+  });
 }
 
 export default async function SharedInterviewPage({ params }: { params: Promise<{ token: string }> }) {

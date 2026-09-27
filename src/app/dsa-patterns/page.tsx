@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
@@ -6,11 +7,11 @@ import {
   PATTERN_TOTAL,
 } from "@/components/striver/patterns-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-patterns", {
   title: "20 Essential DSA Patterns — Job Alert 24",
   description:
     "The 20 core coding patterns behind most interview problems. 180 hand-picked problems grouped by pattern, each with a difficulty tag and a direct LeetCode link.",
-};
+});
 
 export default function DsaPatternsPage() {
   return (

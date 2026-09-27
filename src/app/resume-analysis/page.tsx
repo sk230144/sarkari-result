@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { CoverLetterWorkspace } from "@/components/cover-letter/workspace";
@@ -11,11 +12,11 @@ import {
   WhyTrust,
 } from "@/components/resume-analysis/sections";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/resume-analysis", {
   title: "AI ATS Resume Checker — Job Alert 24",
   description:
     "Upload your resume and paste a job description to get an honest ATS match score, the exact skills you're missing, and a plan to close the gap. Free to start.",
-};
+});
 
 const FAQS = [
   {

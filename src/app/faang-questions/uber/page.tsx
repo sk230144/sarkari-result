@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { UBER_SECTIONS, UBER_TOTAL } from "@/components/faang/uber-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/uber", {
   title: "Uber Interview Questions — Job Alert 24",
   description:
     "20 real coding interview questions recently asked at Uber, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function UberQuestionsPage() {
   return (

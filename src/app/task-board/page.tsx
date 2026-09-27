@@ -1,12 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { TaskBoard } from "@/components/dashboard/task-board";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/task-board", {
   title: "Task Board — Job Alert 24",
   description:
     "Plan your job search day by day. Track resume edits, cover letters, mock interviews, DSA problems and recruiter follow ups on one board.",
-};
+  robots: { index: false, follow: true },
+});
 
 export default function TaskBoardPage() {
   return (

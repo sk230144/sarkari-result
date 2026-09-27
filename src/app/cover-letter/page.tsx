@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { CoverLetterHero } from "@/components/cover-letter/hero";
@@ -14,11 +15,11 @@ import {
 import { CoverLetterFaq } from "@/components/cover-letter/faq";
 import { CoverLetterWorkspace } from "@/components/cover-letter/workspace";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/cover-letter", {
   title: "AI Cover Letter Generator — Job Alert 24",
   description:
     "Upload your resume and paste a job description to generate a personalised, ATS-friendly cover letter in under 30 seconds. Free to start.",
-};
+});
 
 export default function CoverLetterPage() {
   return (

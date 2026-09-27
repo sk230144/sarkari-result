@@ -53,8 +53,9 @@ export function Hero() {
         </h1>
 
         <p className="mb-10 max-w-2xl text-base leading-relaxed text-[var(--color-c-text-dim)] sm:text-lg">
-          See exactly what&apos;s failing in your resume, apply in one click,
-          and walk into every interview prepared.
+          Find tech jobs in India and remote roles with Job Alert 24. Improve
+          your resume, practice mock interviews, and prepare with DSA sheets
+          and AI career tools.
         </p>
 
         {/* AI prompt bar */}

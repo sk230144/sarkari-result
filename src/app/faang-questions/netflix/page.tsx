@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { NETFLIX_SECTIONS, NETFLIX_TOTAL } from "@/components/faang/netflix-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/netflix", {
   title: "Netflix Interview Questions — Job Alert 24",
   description:
     "30 real coding interview questions recently asked at Netflix, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function NetflixQuestionsPage() {
   return (

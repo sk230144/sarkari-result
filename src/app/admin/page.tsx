@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import {
@@ -56,10 +57,10 @@ const KIND_LABELS: Record<string, string> = {
   desktop_chat: "Desktop app · chat",
 };
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/admin", {
   title: "Admin — Job Alert 24",
   robots: { index: false, follow: false },
-};
+});
 
 // Always read live data; a cached admin dashboard is a misleading one.
 export const dynamic = "force-dynamic";

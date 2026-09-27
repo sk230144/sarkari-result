@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL, SITE_NAME, SITE_TITLE, SITE_DESCRIPTION, SOCIAL_IMAGE } from "@/lib/seo";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import {
@@ -16,9 +17,17 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Job Alert 24 - One place for your entire job search",
-  description:
-    "See exactly what's failing in your resume, apply in one click, and walk into every interview prepared.",
+  metadataBase: new URL(SITE_URL),
+  applicationName: SITE_NAME,
+  title: SITE_TITLE,
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    type: "website", siteName: SITE_NAME, locale: "en_IN",
+    title: SITE_TITLE, description: SITE_DESCRIPTION, images: [SOCIAL_IMAGE],
+  },
+  twitter: { card: "summary_large_image", title: SITE_TITLE, description: SITE_DESCRIPTION, images: [SOCIAL_IMAGE] },
+  robots: { index: true, follow: true, googleBot: { "max-image-preview": "large", "max-snippet": -1, "max-video-preview": -1 } },
+  verification: { google: process.env.GOOGLE_SITE_VERIFICATION },
 };
 
 export default function RootLayout({

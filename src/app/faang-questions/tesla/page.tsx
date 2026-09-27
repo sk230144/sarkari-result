@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { TESLA_SECTIONS, TESLA_TOTAL } from "@/components/faang/tesla-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/tesla", {
   title: "Tesla Interview Questions — Job Alert 24",
   description:
     "37 real coding interview questions recently asked at Tesla, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function TeslaQuestionsPage() {
   return (

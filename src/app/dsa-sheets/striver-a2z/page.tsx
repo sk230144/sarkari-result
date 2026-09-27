@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { DAYS, SHEET_URL, PDF_URL } from "@/components/striver/striver-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-sheets/striver-a2z", {
   title: "Striver SDE Sheet — Job Alert 24",
   description:
     "All 191 problems from Striver's SDE Sheet across 27 days, with progress tracking, personal notes, direct problem links and a downloadable PDF.",
-};
+});
 
 export default function StriverSheetPage() {
   return (

@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { AMAZON_SECTIONS, AMAZON_TOTAL } from "@/components/faang/amazon-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/amazon", {
   title: "Amazon Interview Questions — Job Alert 24",
   description:
     "58 real coding interview questions recently asked at Amazon, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function AmazonQuestionsPage() {
   return (

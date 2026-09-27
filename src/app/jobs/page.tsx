@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
@@ -9,11 +10,24 @@ import { BackButton } from "@/components/dashboard/back-button";
 import { getJobs, getJobFacets } from "@/lib/jobs";
 import { PAGE_SIZE } from "@/lib/jobs-shared";
 
-export const metadata: Metadata = {
-  title: "Jobs — Job Alert 24",
-  description:
-    "India tech jobs and India-eligible remote roles, pulled automatically from company career pages and refreshed through the day.",
-};
+export async function generateMetadata({ searchParams }: { searchParams: SearchParams }): Promise<Metadata> {
+  const sp = await searchParams;
+  const query = new URLSearchParams();
+  for (const key of ["q", "category", "city", "remote", "experience"]) {
+    const value = one(sp[key]);
+    if (value) query.set(key, value);
+  }
+  const filtered = query.size > 0;
+  const page = Number(one(sp.page));
+  if (Number.isSafeInteger(page) && page > 1) query.set("page", String(page));
+  const suffix = query.size ? `?${query.toString()}` : "";
+  return pageMetadata(`/jobs${suffix}`, {
+    title: `Tech Jobs in India & Remote Roles${page > 1 && Number.isSafeInteger(page) ? ` - Page ${page}` : ""} | Job Alert 24`,
+    description: "Browse tech jobs in India and India-eligible remote roles from company career pages. Filter by role, city and experience to find your next opportunity.",
+    // Filter combinations are useful to visitors but create duplicate search pages.
+    robots: filtered ? { index: false, follow: true } : { index: true, follow: true },
+  });
+}
 
 // Listings change through the day; revalidate rather than caching the build.
 export const revalidate = 300;

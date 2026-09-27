@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
@@ -8,11 +9,11 @@ import {
   BABBAR_TOTAL,
 } from "@/components/striver/babbar-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-sheets/love-babbar", {
   title: "Love Babbar DSA Sheet — Job Alert 24",
   description:
     "All 445 questions from Love Babbar's DSA Cracker Sheet across 15 topics, each with an article and a practice link, plus progress tracking and personal notes.",
-};
+});
 
 export default function LoveBabbarSheetPage() {
   return (

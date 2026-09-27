@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { DOORDASH_SECTIONS, DOORDASH_TOTAL } from "@/components/faang/doordash-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/doordash", {
   title: "DoorDash Interview Questions — Job Alert 24",
   description:
     "17 real coding interview questions recently asked at DoorDash, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function DoordashQuestionsPage() {
   return (

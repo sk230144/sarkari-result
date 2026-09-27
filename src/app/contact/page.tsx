@@ -1,12 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { CONTACT_EMAIL, InfoPage } from "@/components/info/info-page";
 import { ContactForm } from "@/components/info/contact-form";
 import { TOPICS, type Topic } from "@/components/info/topics";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/contact", {
   title: "Contact — Job Alert 24",
   description: "Get in touch with the Job Alert 24 team.",
-};
+});
 
 export default async function ContactPage({ searchParams }: { searchParams: Promise<{ topic?: string }> }) {
   const { topic } = await searchParams;

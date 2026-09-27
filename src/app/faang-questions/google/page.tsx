@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { GOOGLE_SECTIONS, GOOGLE_TOTAL } from "@/components/faang/google-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/google", {
   title: "Google Interview Questions — Job Alert 24",
   description:
     "59 real coding interview questions recently asked at Google, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function GoogleQuestionsPage() {
   return (

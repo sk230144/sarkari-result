@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, SOCIAL_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -56,12 +57,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const p = data.profile;
   const title = `${p.fullName}${p.headline ? ` — ${p.headline}` : ""} | Job Alert 24`;
   const description = (p.summary || `${p.fullName}'s developer profile: experience, projects and skills.`).slice(0, 160);
-  return {
+  return pageMetadata(`/u/${encodeURIComponent(slug)}`, {
     title,
     description,
     robots: { index: data.isPublic, follow: data.isPublic },
-    openGraph: { title, description, type: "profile", images: p.avatarUrl ? [p.avatarUrl] : undefined },
-  };
+    openGraph: { title, description, type: "profile", images: p.avatarUrl ? [p.avatarUrl] : [SOCIAL_IMAGE] },
+    twitter: { card: p.avatarUrl ? "summary" : "summary_large_image", images: p.avatarUrl ? [p.avatarUrl] : [SOCIAL_IMAGE] },
+  });
 }
 
 /* ------------------------------------------------------------ theme */

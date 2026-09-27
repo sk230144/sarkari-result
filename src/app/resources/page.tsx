@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { ProgressView } from "@/components/dashboard/progress-view";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/resources", {
   title: "Your Progress — Job Alert 24",
   description:
     "Your interview prep at a glance: problems solved, streaks, activity, job-readiness checklist and skill breakdown.",
   robots: { index: false, follow: false },
-};
+});
 
 export default function ProgressPage() {
   return (

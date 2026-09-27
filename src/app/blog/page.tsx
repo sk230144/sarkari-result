@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
@@ -7,10 +8,10 @@ import { CARD_COLUMNS, rowToCard } from "@/lib/blog/server";
 
 export const revalidate = 60;
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/blog", {
   title: "Blog — Job Alert 24",
   description: "Interview experiences, resume tips, system design and career advice, written by developers for developers.",
-};
+});
 
 export default async function BlogPage() {
   const { data } = await serviceDb()

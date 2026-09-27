@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { PortfolioHero } from "@/components/portfolio/hero";
@@ -7,11 +8,11 @@ import { PortfolioHowItWorks } from "@/components/portfolio/how-it-works";
 import { PortfolioFaq } from "@/components/portfolio/faq";
 import { MoreTools } from "@/components/portfolio/more-tools";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/portfolio-builder", {
   title: "Portfolio Builder — Job Alert 24",
   description:
     "Upload your resume PDF. Our AI extracts skills, experience and projects, and deploys your developer portfolio in 60 seconds. Free forever.",
-};
+});
 
 export default function PortfolioBuilderPage() {
   return (

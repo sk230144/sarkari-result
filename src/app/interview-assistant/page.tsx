@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -9,11 +10,11 @@ import { HudDemo } from "@/components/interview-assistant/hud-demo";
 import { DownloadCards, Faq, HeroDownloads, ProofVideo } from "@/components/interview-assistant/parts";
 import { APP_NAME, APP_VERSION } from "@/lib/desktop-app";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/interview-assistant", {
   title: "AI Interview Assistant — Job Alert 24",
   description:
     "A desktop AI assistant for Windows and Mac that stays hidden from screen share, listens to interview questions and answers them, and solves coding questions from a screenshot.",
-};
+});
 
 const FEATURES = [
   {

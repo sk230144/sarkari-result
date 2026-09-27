@@ -1,8 +1,11 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { AuthForm } from "@/components/auth/auth-form";
 
-export const metadata: Metadata = { title: "Create account — Job Alert 24" };
+export const metadata: Metadata = pageMetadata("/signup", { title: "Create account — Job Alert 24",
+  robots: { index: false, follow: true },
+});
 
 export default function SignupPage() {
   return (

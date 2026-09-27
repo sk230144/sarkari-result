@@ -1,12 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { ProfileEditor } from "@/components/profile/profile-editor";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/profile", {
   title: "Your Profile — Job Alert 24",
   description:
     "Edit your developer profile: skills, experience, education, projects, social links and your public profile page.",
   robots: { index: false, follow: false },
-};
+});
 
 export default function ProfilePage() {
   return (

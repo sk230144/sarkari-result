@@ -1,12 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { InterviewInsights } from "@/components/mock-interview/insights/insights-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/mock-interview/history", {
   title: "Mock Interview History — Job Alert 24",
   description: "Your mock interview scores, strengths, weak points and progress over time.",
   robots: { index: false, follow: false },
-};
+});
 
 export default function MockInterviewHistoryPage() {
   return (

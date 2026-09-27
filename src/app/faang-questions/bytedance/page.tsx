@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { BYTEDANCE_SECTIONS, BYTEDANCE_TOTAL } from "@/components/faang/bytedance-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/bytedance", {
   title: "ByteDance Interview Questions — Job Alert 24",
   description:
     "33 real coding interview questions recently asked at ByteDance, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function BytedanceQuestionsPage() {
   return (

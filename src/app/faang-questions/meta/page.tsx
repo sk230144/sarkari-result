@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { META_SECTIONS, META_TOTAL } from "@/components/faang/meta-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/meta", {
   title: "Meta Interview Questions — Job Alert 24",
   description:
     "69 real coding interview questions recently asked at Meta, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function MetaQuestionsPage() {
   return (

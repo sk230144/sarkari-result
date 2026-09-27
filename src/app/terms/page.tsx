@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage } from "@/components/info/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/terms", {
   title: "Terms of Service — Job Alert 24",
   description: "The terms that apply when you use Job Alert 24.",
-};
+});
 
 export default function TermsPage() {
   return (

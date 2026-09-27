@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { CoverLetterWorkspace } from "@/components/cover-letter/workspace";
@@ -13,11 +14,11 @@ import {
   WhyPracticeMatters,
 } from "@/components/mock-interview/sections";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/mock-interview", {
   title: "AI Mock Interview — Job Alert 24",
   description:
     "Practise technical and HR interview rounds generated from the job description you're targeting and your resume, with a score and feedback on every answer.",
-};
+});
 
 const FAQS = [
   {

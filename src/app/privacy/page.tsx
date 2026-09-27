@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CONTACT_EMAIL, InfoPage } from "@/components/info/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/privacy", {
   title: "Privacy Policy — Job Alert 24",
   description: "How Job Alert 24 collects, uses and protects your information.",
-};
+});
 
 export default function PrivacyPage() {
   return (

@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Crown, FileText, LogIn, Receipt } from "lucide-react";
@@ -7,7 +8,7 @@ import { getPremiumStatus } from "@/lib/payments/server";
 import { PLANS, daysLeft, inr, isPlan } from "@/lib/premium";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Payments & invoices — Job Alert 24", robots: { index: false } };
+export const metadata: Metadata = pageMetadata("/payments", { title: "Payments & invoices — Job Alert 24", robots: { index: false } });
 
 const STATUS: Record<string, { label: string; cls: string }> = {
   paid: { label: "Paid", cls: "bg-[var(--color-c-lime)]/15 text-[var(--color-c-lime)]" },

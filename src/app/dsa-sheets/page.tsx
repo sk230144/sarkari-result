@@ -1,12 +1,13 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheets } from "@/components/dashboard/dsa-sheets";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-sheets", {
   title: "DSA Sheets — Job Alert 24",
   description:
     "Track Striver's A2Z Sheet, Love Babbar's DSA Sheet, NeetCode 150 and Rohit Negi's Sheet with per-problem progress, LeetCode links and video solutions.",
-};
+});
 
 export default function DsaSheetsPage() {
   return (

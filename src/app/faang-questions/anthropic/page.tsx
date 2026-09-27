@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { ANTHROPIC_SECTIONS, ANTHROPIC_TOTAL } from "@/components/faang/anthropic-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/anthropic", {
   title: "Anthropic Interview Questions — Job Alert 24",
   description:
     "11 real coding interview questions recently asked at Anthropic, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function AnthropicQuestionsPage() {
   return (

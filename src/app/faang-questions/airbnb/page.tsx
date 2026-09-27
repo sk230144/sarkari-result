@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { AIRBNB_SECTIONS, AIRBNB_TOTAL } from "@/components/faang/airbnb-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/airbnb", {
   title: "Airbnb Interview Questions — Job Alert 24",
   description:
     "19 real coding interview questions recently asked at Airbnb, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function AirbnbQuestionsPage() {
   return (

@@ -1,10 +1,11 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { OnboardingFlow } from "@/components/onboarding/onboarding-flow";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/onboarding", {
   title: "Welcome — Job Alert 24",
   robots: { index: false, follow: false },
-};
+});
 
 export default async function OnboardingPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
   const { next } = await searchParams;

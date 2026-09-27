@@ -1,3 +1,4 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
@@ -7,11 +8,11 @@ import {
   NEETCODE_TOTAL,
 } from "@/components/striver/neetcode-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/dsa-sheets/neetcode-150", {
   title: "NeetCode 150 DSA Sheet — Job Alert 24",
   description:
     "All 150 NeetCode problems across 18 patterns, each with a LeetCode link, difficulty and NeetCode's video solution, plus progress tracking and personal notes.",
-};
+});
 
 export default function NeetCode150Page() {
   return (

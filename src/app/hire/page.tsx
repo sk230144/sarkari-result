@@ -1,11 +1,12 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { InfoPage } from "@/components/info/info-page";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/hire", {
   title: "Hire with us — Job Alert 24",
   description: "Reach developers who are actively looking for their next role.",
-};
+});
 
 export default function HirePage() {
   return (

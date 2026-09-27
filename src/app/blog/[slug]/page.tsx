@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { pageMetadata, jsonLd, SITE_URL, SITE_NAME, SOCIAL_IMAGE } from "@/lib/seo";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -29,15 +30,14 @@ const load = cache(async (slug: string) => {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const post = (await load((await params).slug))?.post;
   if (!post) return { title: "Post not found — Job Alert 24", robots: { index: false } };
-  const site = process.env.NEXT_PUBLIC_SITE_URL?.replace(/\/$/, "") ?? "";
-  const image = post.coverUrl ? (post.coverUrl.startsWith("/") ? `${site}${post.coverUrl}` : post.coverUrl) : undefined;
-  return {
+  const image = post.coverUrl ? new URL(post.coverUrl, SITE_URL).href : SOCIAL_IMAGE.url;
+  return pageMetadata(`/blog/${post.slug}`, {
     title: `${post.title} — Job Alert 24 Blog`,
     description: post.excerpt,
     robots: post.status === "published" ? undefined : { index: false, follow: false },
-    openGraph: { title: post.title, description: post.excerpt, type: "article", images: image ? [image] : undefined, publishedTime: post.publishedAt ?? undefined, authors: [post.authorName] },
-    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt, images: image ? [image] : undefined },
-  };
+    openGraph: { title: post.title, description: post.excerpt, type: "article", images: [{ url: image, alt: post.title }], publishedTime: post.publishedAt ?? undefined, modifiedTime: post.updatedAt, authors: [post.authorName] },
+    twitter: { card: "summary_large_image", title: post.title, description: post.excerpt, images: [{ url: image, alt: post.title }] },
+  });
 }
 
 const STATUS_NOTE: Record<string, string> = {
@@ -62,6 +62,18 @@ export default async function BlogPostPage({ params }: { params: Promise<{ slug:
 
   return (
     <DashboardShell canvas="obsidian" backTo="/blog">
+      {published && <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd({
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        headline: post.title,
+        description: post.excerpt,
+        image: post.coverUrl ? new URL(post.coverUrl, SITE_URL).href : SOCIAL_IMAGE.url,
+        datePublished: post.publishedAt ?? undefined,
+        dateModified: post.updatedAt,
+        author: { "@type": "Person", name: post.authorName },
+        publisher: { "@type": "Organization", name: SITE_NAME, url: SITE_URL, logo: { "@type": "ImageObject", url: `${SITE_URL}/icon.svg` } },
+        mainEntityOfPage: `${SITE_URL}/blog/${post.slug}`,
+      }) }} />}
       <ReadingProgress />
       {published && <ViewBeacon slug={post.slug} />}
       <article className="mx-auto w-full max-w-6xl px-4 pb-24 pt-4 sm:px-6 lg:px-8">

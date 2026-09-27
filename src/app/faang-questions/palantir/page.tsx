@@ -1,13 +1,14 @@
+import { pageMetadata } from "@/lib/seo";
 import type { Metadata } from "next";
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { DsaSheetTracker } from "@/components/striver/sheet-tracker";
 import { PALANTIR_SECTIONS, PALANTIR_TOTAL } from "@/components/faang/palantir-data";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata("/faang-questions/palantir", {
   title: "Palantir Interview Questions — Job Alert 24",
   description:
     "20 real coding interview questions recently asked at Palantir, grouped by topic with a difficulty tag and a direct LeetCode link for every question.",
-};
+});
 
 export default function PalantirQuestionsPage() {
   return (
