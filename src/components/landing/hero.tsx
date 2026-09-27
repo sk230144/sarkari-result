@@ -1,4 +1,5 @@
-import { Sparkles, ArrowUp, Search, Chrome } from "lucide-react";
+import { Search, Chrome } from "lucide-react";
+import { HeroPrompt } from "./hero-prompt";
 import { ShaderBackground } from "./shader-background";
 
 export function Hero() {
@@ -57,22 +58,7 @@ export function Hero() {
 
         {/* AI prompt bar */}
         <div className="mx-auto mb-9 w-full max-w-2xl">
-          <div className="flex items-center justify-between gap-3 rounded-full border border-[var(--color-c-forest-12)] bg-[var(--color-c-surface-4b)]/95 px-5 py-3 shadow-2xl backdrop-blur-md transition-colors focus-within:border-[var(--color-c-green)]">
-            <div className="flex flex-1 items-center gap-3 overflow-hidden text-left">
-              <Sparkles className="h-5 w-5 shrink-0 text-[var(--color-c-green)]" />
-              <span className="truncate text-sm text-[var(--color-c-text-4)]">
-                Why did my resume score 62/100 for this JD?
-                <span className="ml-1 inline-block h-4 w-0.5 animate-pulse bg-[var(--color-c-green)] align-middle" />
-              </span>
-            </div>
-            <button
-              type="button"
-              aria-label="Submit search"
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-c-green)] text-black transition-transform hover:scale-105 hover:bg-[var(--color-c-accent)]"
-            >
-              <ArrowUp className="h-4 w-4" strokeWidth={2.5} />
-            </button>
-          </div>
+          <HeroPrompt />
         </div>
 
         <div className="flex flex-wrap items-center justify-center gap-4">
