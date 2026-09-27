@@ -1419,3 +1419,22 @@ h3 {
 .info-prose li + li { margin-top: 0.4em; }
 .info-prose strong { color: var(--color-c-text); font-weight: 600; }
 .info-prose a { color: var(--color-c-green); text-decoration: underline; text-underline-offset: 3px; }
+
+/* Home hero: highlighted link to the AI Interview Assistant */
+@property --ia-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+.ia-cta {
+  background: conic-gradient(from var(--ia-angle), transparent 0deg, var(--color-c-green) 60deg, var(--color-c-lime-2) 110deg, transparent 170deg, transparent 360deg), var(--color-c-forest-20);
+  box-shadow: 0 0 28px rgba(74, 222, 128, 0.35);
+  animation: ia-spin 3.2s linear infinite;
+}
+.ia-cta:hover { box-shadow: 0 0 42px rgba(74, 222, 128, 0.55); }
+.ia-cta-shine { animation: ia-shine 3.2s ease-in-out infinite; }
+@keyframes ia-spin { to { --ia-angle: 360deg; } }
+@keyframes ia-shine { 0%, 55% { transform: translateX(0) skewX(-12deg); } 100% { transform: translateX(400%) skewX(-12deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .ia-cta, .ia-cta-shine { animation: none; }
+}

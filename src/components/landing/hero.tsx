@@ -1,4 +1,5 @@
-import { Search, Chrome } from "lucide-react";
+import Link from "next/link";
+import { Search, Sparkles } from "lucide-react";
 import { HeroPrompt } from "./hero-prompt";
 import { ShaderBackground } from "./shader-background";
 
@@ -69,15 +70,19 @@ export function Hero() {
             <Search className="h-4 w-4" strokeWidth={2.5} />
             <span>Search Jobs</span>
           </a>
-          <a
-            href="https://chromewebstore.google.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2.5 rounded-full border border-[var(--color-c-forest-20)] bg-[var(--color-c-surface-7)]/95 px-6 py-3.5 text-sm font-semibold text-[var(--color-c-text)] backdrop-blur-sm transition-all hover:-translate-y-0.5 hover:bg-[var(--color-c-surface-15b)]"
+          <Link
+            href="/interview-assistant"
+            className="ia-cta group relative inline-flex rounded-full p-[2px] transition-transform hover:-translate-y-0.5"
           >
-            <Chrome className="h-4 w-4 text-[var(--color-c-green)]" />
-            <span>Download Auto-Apply Extension</span>
-          </a>
+            <span className="relative inline-flex items-center gap-2.5 overflow-hidden rounded-full bg-[var(--color-c-surface-7)] px-6 py-3.5 text-sm font-semibold text-[var(--color-c-text)]">
+              <span aria-hidden className="ia-cta-shine pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-12 bg-gradient-to-r from-transparent via-white/15 to-transparent" />
+              <span className="rounded-full bg-[var(--color-c-lime-2)] px-2 py-0.5 text-[10px] font-extrabold uppercase text-black">New</span>
+              <Sparkles className="h-4 w-4 text-[var(--color-c-green)]" />
+              <span>
+                Try our best product: <strong className="font-bold text-[var(--color-c-green)]">AI Interview Assistant</strong>
+              </span>
+            </span>
+          </Link>
         </div>
       </div>
     </section>
