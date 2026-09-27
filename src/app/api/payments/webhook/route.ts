@@ -6,6 +6,28 @@ import { settleOrder } from "@/lib/payments/server";
 export const dynamic = "force-dynamic";
 
 /**
+ * Our order id from any webhook version: data.order.order_id (2023/2025
+ * versions), with a shallow search as a fallback in case a newer version
+ * moves it. Only ids we issued (ja24_…) are accepted.
+ */
+function findOrderId(body: unknown): string | null {
+  const ours = (v: unknown) => (typeof v === "string" && /^ja24_[a-z0-9]+_[0-9a-f]{8}$/.test(v) ? v : null);
+  const b = body as { data?: { order?: { order_id?: unknown }; order_id?: unknown } };
+  const direct = ours(b?.data?.order?.order_id) ?? ours(b?.data?.order_id);
+  if (direct) return direct;
+  const walk = (v: unknown, depth: number): string | null => {
+    if (!v || typeof v !== "object" || depth > 4) return null;
+    for (const [k, val] of Object.entries(v as Record<string, unknown>)) {
+      if (k === "order_id" && ours(val)) return val as string;
+      const found = walk(val, depth + 1);
+      if (found) return found;
+    }
+    return null;
+  };
+  return walk(body, 0);
+}
+
+/**
  * Cashfree webhook. Only signed requests are accepted, and even then the
  * order is re-read from Cashfree before premium is granted, so the body is
  * never trusted on its own. This is what activates premium when the buyer
@@ -17,13 +39,19 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: false }, { status: 401 });
   }
   let orderId = "";
+  let type = "";
   try {
-    const body = JSON.parse(raw) as { type?: string; data?: { order?: { order_id?: string } } };
-    orderId = body.data?.order?.order_id ?? "";
+    const body = JSON.parse(raw) as { type?: string };
+    type = String(body.type ?? "");
+    orderId = findOrderId(body) ?? "";
   } catch {
     return NextResponse.json({ ok: true });
   }
-  if (!orderId.startsWith("ja24_")) return NextResponse.json({ ok: true });
+  if (!orderId) {
+    // Test pings and events for other orders; log the type only, never the body.
+    console.warn("payments webhook: no ja24 order id in", type || "event");
+    return NextResponse.json({ ok: true });
+  }
 
   try {
     await settleOrder(serviceDb(), orderId);

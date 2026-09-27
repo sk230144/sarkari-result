@@ -220,7 +220,7 @@ export function Pricing() {
                     on ? "border-[var(--color-c-lime)]/70 bg-[var(--color-c-lime)]/[0.09]" : "border-white/10 bg-black/10 hover:border-white/25"
                   }`}
                 >
-                  {k === "quarterly" && (
+                  {k === "quarterly" && QUARTERLY_SAVING > 0 && (
                     <span className="absolute -top-2.5 left-4 rounded-full bg-[var(--color-c-lime)] px-2 py-0.5 font-mono text-[9px] font-bold uppercase tracking-wide text-black">
                       Best value · Save {QUARTERLY_SAVING}%
                     </span>

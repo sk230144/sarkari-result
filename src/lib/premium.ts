@@ -2,13 +2,19 @@
 
 export type PlanKey = "monthly" | "quarterly";
 
+/**
+ * TEMPORARY: monthly is ₹1 while live payments are being tested.
+ * Set back to 499 to restore the real price (the rest follows from it).
+ */
+const MONTHLY_PRICE = 1;
+
 export const PLANS: Record<PlanKey, { key: PlanKey; label: string; months: number; total: number; perMonth: number; billed: string }> = {
   quarterly: { key: "quarterly", label: "Quarterly", months: 3, total: 1197, perMonth: 399, billed: "Billed ₹1,197 every 3 months" },
-  monthly: { key: "monthly", label: "Monthly", months: 1, total: 499, perMonth: 499, billed: "Billed every month" },
+  monthly: { key: "monthly", label: "Monthly", months: 1, total: MONTHLY_PRICE, perMonth: MONTHLY_PRICE, billed: "Billed every month" },
 };
 
 /** How much cheaper quarterly is than paying monthly, in whole percent. */
-export const QUARTERLY_SAVING = Math.round((1 - PLANS.quarterly.perMonth / PLANS.monthly.perMonth) * 100);
+export const QUARTERLY_SAVING = Math.max(0, Math.round((1 - PLANS.quarterly.perMonth / PLANS.monthly.perMonth) * 100));
 
 export const isPlan = (v: unknown): v is PlanKey => v === "monthly" || v === "quarterly";
 

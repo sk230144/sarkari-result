@@ -19,8 +19,10 @@ import {
   Upload,
   Clock,
   ChevronDown,
+  Crown,
 } from "lucide-react";
 import { BANNERS, NOTICE_PERIODS, bannerBackground, noticeLabel, type ProfileData } from "@/lib/profile/types";
+import { isPremiumActive } from "@/lib/premium";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { InlineText, SmallButton, TextInput, Toggle } from "./ui";
 
@@ -243,13 +245,22 @@ export function ProfileHeader() {
           </div>
 
           <div className="pt-12">
-            <h1 className="text-[22px] font-bold tracking-tight text-[var(--color-c-text)]">
+            <h1 className="flex flex-wrap items-center gap-2 text-[22px] font-bold tracking-tight text-[var(--color-c-text)]">
               <InlineText
                 value={profile.fullName}
                 placeholder="Add your name"
                 maxLength={80}
                 onSave={(v) => (v ? save({ fullName: v }) : (toast("error", "Name cannot be empty."), false))}
               />
+              {isPremiumActive(profile.premiumUntil) && (
+                <Link
+                  href="/pricing"
+                  title={`PRO+ until ${new Date(profile.premiumUntil!).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}`}
+                  className="inline-flex items-center gap-1 rounded-full bg-[var(--color-c-lime)] px-2 py-0.5 text-[11px] font-bold tracking-normal text-black shadow-[0_0_14px_rgba(163,230,53,0.35)]"
+                >
+                  <Crown className="h-3 w-3" /> PRO+
+                </Link>
+              )}
             </h1>
             <p className="mt-0.5 text-[12px] font-semibold text-[var(--color-c-lime)]">
               <InlineText
