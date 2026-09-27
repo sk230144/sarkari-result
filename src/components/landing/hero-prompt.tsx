@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
+import { useCalm } from "./motion-kit";
 import { ArrowUp, Sparkles } from "lucide-react";
 
 /** What AI Copilot can actually do, phrased the way people would ask. */
@@ -24,7 +25,7 @@ const GAP_MS = 350;
  * AI Copilot when clicked anywhere (box or arrow).
  */
 export function HeroPrompt() {
-  const reduce = useReducedMotion();
+  const reduce = useCalm();
   const [i, setI] = useState(0);
   const [n, setN] = useState(0);
   const [erasing, setErasing] = useState(false);

@@ -13,7 +13,7 @@ export default function Home() {
   return (
     <>
       <Navbar />
-      <main className="w-full pt-20">
+      <main className="w-full overflow-x-clip pt-20">
         <Hero />
         <StatsDeck />
         <SocialProof />

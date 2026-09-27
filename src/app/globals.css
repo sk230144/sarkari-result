@@ -1410,3 +1410,12 @@ h3 {
 }
 .blog-editor .ProseMirror td, .blog-editor .ProseMirror th { position: relative; }
 .blog-editor .ProseMirror img.ProseMirror-selectednode { outline: 2px solid var(--color-c-lime); }
+
+/* Footer company pages (privacy, terms, about, hire) */
+.info-prose { color: var(--color-c-text-dim); font-size: 0.95rem; line-height: 1.75; }
+.info-prose > * + * { margin-top: 1em; }
+.info-prose h2 { margin-top: 2.2em; font-size: 1.35rem; font-weight: 700; color: var(--color-c-text); }
+.info-prose ul { list-style: disc; padding-left: 1.4em; }
+.info-prose li + li { margin-top: 0.4em; }
+.info-prose strong { color: var(--color-c-text); font-weight: 600; }
+.info-prose a { color: var(--color-c-green); text-decoration: underline; text-underline-offset: 3px; }

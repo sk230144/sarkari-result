@@ -1,18 +1,19 @@
 import { Moon, Phone } from "lucide-react";
+import Link from "next/link";
 import { Logo } from "@/components/ui/logo";
 
 const PLATFORM = [
   ["Find Jobs", "/jobs"],
   ["Resources", "/resources"],
-  ["AI Copilot", "#copilot"],
-  ["Contact", "#contact"],
+  ["AI Copilot", "/ai-copilot"],
+  ["Contact", "/contact"],
 ];
 
 const COMPANY = [
-  ["Privacy Policy", "#privacy"],
-  ["Terms of Service", "#terms"],
-  ["About Us", "#about"],
-  ["Hire with us", "#hire"],
+  ["Privacy Policy", "/privacy"],
+  ["Terms of Service", "/terms"],
+  ["About Us", "/about"],
+  ["Hire with us", "/hire"],
 ];
 
 export function SiteFooter() {
@@ -29,9 +30,9 @@ export function SiteFooter() {
             <ul className="space-y-2.5 text-[var(--color-c-text-dim)]">
               {PLATFORM.map(([label, href]) => (
                 <li key={label}>
-                  <a href={href} className="transition-colors hover:text-[var(--color-c-text)]">
+                  <Link href={href} className="transition-colors hover:text-[var(--color-c-text)]">
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -43,9 +44,9 @@ export function SiteFooter() {
             <ul className="space-y-2.5 text-[var(--color-c-text-dim)]">
               {COMPANY.map(([label, href]) => (
                 <li key={label}>
-                  <a href={href} className="transition-colors hover:text-[var(--color-c-text)]">
+                  <Link href={href} className="transition-colors hover:text-[var(--color-c-text)]">
                     {label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

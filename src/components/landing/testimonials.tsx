@@ -1,3 +1,5 @@
+import { Reveal3D, Tilt } from "./motion-kit";
+
 type Testimonial = {
   quote: string;
   name: string;
@@ -107,40 +109,43 @@ export function Testimonials() {
       </div>
 
       <div className="mx-auto grid w-full max-w-6xl grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        {TESTIMONIALS.map((t) => {
+        {TESTIMONIALS.map((t, i) => {
           const s = THEMES[t.theme];
           return (
-            <div
-              key={t.name}
-              className={`flex min-h-[380px] flex-col justify-between rounded-2xl p-6 shadow-xl transition-transform duration-300 hover:-translate-y-2 ${s.card}`}
-            >
-              <div>
-                <span
-                  className={`mb-3 block font-serif text-2xl ${s.quote}`}
-                  aria-hidden
-                >
-                  &#10077;
-                </span>
-                <p className={`text-xs leading-relaxed sm:text-sm ${s.body}`}>
-                  {t.quote}
-                </p>
-              </div>
-              <div
-                className={`mt-4 flex items-center gap-3 border-t pt-6 ${s.divider}`}
-              >
+            <Reveal3D key={t.name} className="h-full" delay={i * 0.1}>
+              <Tilt className="h-full rounded-2xl" max={12}>
                 <div
-                  className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${s.avatar}`}
+                  className={`flex h-full min-h-[380px] flex-col justify-between rounded-2xl p-6 shadow-xl transition-transform duration-300 hover:-translate-y-2 ${s.card}`}
                 >
-                  {t.initials}
+                  <div>
+                    <span
+                      className={`mb-3 block font-serif text-2xl ${s.quote}`}
+                      aria-hidden
+                    >
+                      &#10077;
+                    </span>
+                    <p className={`text-xs leading-relaxed sm:text-sm ${s.body}`}>
+                      {t.quote}
+                    </p>
+                  </div>
+                  <div
+                    className={`mt-4 flex items-center gap-3 border-t pt-6 ${s.divider}`}
+                  >
+                    <div
+                      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold ${s.avatar}`}
+                    >
+                      {t.initials}
+                    </div>
+                    <div>
+                      <span className={`block text-xs font-bold ${s.name}`}>
+                        {t.name}
+                      </span>
+                      <span className={`text-[10px] ${s.role}`}>{t.role}</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <span className={`block text-xs font-bold ${s.name}`}>
-                    {t.name}
-                  </span>
-                  <span className={`text-[10px] ${s.role}`}>{t.role}</span>
-                </div>
-              </div>
-            </div>
+              </Tilt>
+            </Reveal3D>
           );
         })}
       </div>

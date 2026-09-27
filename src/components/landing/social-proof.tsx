@@ -1,4 +1,5 @@
 import { Mail, Mic, Briefcase, Home, AudioLines } from "lucide-react";
+import { FlipGroup, FlipItem } from "./motion-kit";
 
 const TICKER = [
   {
@@ -33,36 +34,50 @@ export function SocialProof() {
 
       {/* Company badges */}
       <div className="mx-auto max-w-7xl overflow-x-auto px-6 pb-4">
-        <div className="flex min-w-max items-center justify-center gap-3">
-          <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-lg font-semibold text-black shadow-md">
-            <span className="text-xl font-black text-[#0668E1]">∞</span>
-            <span>Meta</span>
-          </div>
-          <div className="flex items-center rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-xl font-black tracking-wider text-[#E50914] shadow-md">
-            NETFLIX
-          </div>
-          <div className="flex items-center gap-1 rounded-2xl bg-white px-6 py-3 text-lg font-bold text-black shadow-md">
-            <span className="font-extrabold tracking-tight">amazon</span>
-            <span className="text-xs font-black text-[#FF9900]">⌣</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold text-[#FF5A5F] shadow-md">
-            <Home className="h-5 w-5" />
-            <span>airbnb</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold text-[#1ED760] shadow-md">
-            <AudioLines className="h-5 w-5" />
-            <span>Spotify</span>
-          </div>
-          <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold tracking-widest text-[#E82127] shadow-md">
-            <span>T E S L A</span>
-          </div>
-          <div className="flex items-center gap-1 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-extrabold shadow-md">
-            <span className="rounded bg-[#003580] px-2 py-0.5 text-xs text-[var(--color-c-text)]">
-              B.
-            </span>
-            <span className="text-[var(--color-c-text)]">Booking.com</span>
-          </div>
-        </div>
+        <FlipGroup className="flex min-w-max items-center justify-center gap-3 py-2">
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-2 rounded-2xl bg-white px-5 py-3 text-lg font-semibold text-black shadow-md">
+              <span className="text-xl font-black text-[#0668E1]">∞</span>
+              <span>Meta</span>
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-xl font-black tracking-wider text-[#E50914] shadow-md">
+              NETFLIX
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-1 rounded-2xl bg-white px-6 py-3 text-lg font-bold text-black shadow-md">
+              <span className="font-extrabold tracking-tight">amazon</span>
+              <span className="text-xs font-black text-[#FF9900]">⌣</span>
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold text-[#FF5A5F] shadow-md">
+              <Home className="h-5 w-5" />
+              <span>airbnb</span>
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold text-[#1ED760] shadow-md">
+              <AudioLines className="h-5 w-5" />
+              <span>Spotify</span>
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-2 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-bold tracking-widest text-[#E82127] shadow-md">
+              <span>T E S L A</span>
+            </div>
+          </FlipItem>
+          <FlipItem className="transition-transform duration-300 hover:-translate-y-1.5">
+            <div className="flex items-center gap-1 rounded-2xl border border-[var(--color-c-forest-14)] bg-[var(--color-c-surface-5)] px-5 py-3 text-lg font-extrabold shadow-md">
+              <span className="rounded bg-[#003580] px-2 py-0.5 text-xs text-[var(--color-c-text)]">
+                B.
+              </span>
+              <span className="text-[var(--color-c-text)]">Booking.com</span>
+            </div>
+          </FlipItem>
+        </FlipGroup>
       </div>
 
       {/* Marquee ticker — track duplicated for a seamless loop */}
