@@ -5,6 +5,7 @@ import { JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
 import { cleanJobDescription } from "@/lib/jd-clean";
 import { generateJson, GeminiError } from "@/lib/gemini";
 import { getSessionUser, serviceDb, remainingAiCalls, logAiUsage } from "@/lib/server-auth";
+import { getQuota, quotaExceeded } from "@/lib/quota";
 import {
   LETTER_SYSTEM_PROMPT,
   LETTER_COLUMNS,
@@ -73,10 +74,17 @@ export async function POST(request: Request) {
     .limit(1)
     .maybeSingle<LetterRow>();
 
-  const remaining = await remainingAiCalls(db, user);
+  const [remaining, quota] = await Promise.all([remainingAiCalls(db, user), getQuota(db, user, "letter")]);
 
   if (existing && !regenerate && !style) {
-    return NextResponse.json(await toLetterResult(db, user, existing, true, remaining));
+    return NextResponse.json({ ...(await toLetterResult(db, user, existing, true, remaining)), quota });
+  }
+
+  // A brand-new letter (or "regenerate all") uses one of the month's letters;
+  // rewriting a single style of an existing letter doesn't.
+  const newLetter = !(style && existing);
+  if (newLetter && quota.remaining === 0) {
+    return NextResponse.json(quotaExceeded("letter", quota), { status: 429 });
   }
 
   if (remaining === 0) {
@@ -144,7 +152,11 @@ export async function POST(request: Request) {
 
   if (!row) return NextResponse.json({ error: "Could not save the letter." }, { status: 500 });
 
-  return NextResponse.json(
-    await toLetterResult(db, user, row, false, remaining === null ? null : remaining - 1),
-  );
+  const after = newLetter
+    ? { ...quota, used: quota.used + 1, remaining: quota.remaining === null ? null : Math.max(0, quota.remaining - 1) }
+    : quota;
+  return NextResponse.json({
+    ...(await toLetterResult(db, user, row, false, remaining === null ? null : remaining - 1)),
+    quota: after,
+  });
 }

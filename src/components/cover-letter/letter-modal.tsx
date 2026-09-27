@@ -54,6 +54,8 @@ export function LetterModal({
     year: "numeric",
   });
   const outOfCalls = result.remaining === 0;
+  // "Regenerate all" makes a new letter, so it also needs one left this month.
+  const outOfLetters = result.quota?.remaining === 0;
 
   async function call(url: string, body: object, label: string) {
     setBusy(label);
@@ -177,15 +179,28 @@ export function LetterModal({
           </div>
 
           <div className="mt-auto hidden flex-col gap-2 pt-3 md:flex">
-            {result.remaining !== null && (
+            {result.quota && result.quota.remaining !== null && (
               <p className="text-center font-mono text-[10px] text-[var(--color-c-dim)]">
-                {result.remaining} AI generation{result.remaining === 1 ? "" : "s"} left today
+                {result.quota.remaining} new letter{result.quota.remaining === 1 ? "" : "s"} left this month
+                {outOfLetters && result.quota.plan === "free" && (
+                  <>
+                    {" · "}
+                    <a href="/pricing" className="font-bold text-[var(--color-c-lime)] hover:underline">
+                      Upgrade
+                    </a>
+                  </>
+                )}
+              </p>
+            )}
+            {result.remaining !== null && result.remaining <= 5 && (
+              <p className="text-center font-mono text-[10px] text-[var(--color-c-dim)]">
+                {result.remaining} AI edit{result.remaining === 1 ? "" : "s"} left today
               </p>
             )}
             <button
               type="button"
               onClick={onRegenerateAll}
-              disabled={!!busy || outOfCalls}
+              disabled={!!busy || outOfCalls || outOfLetters}
               className="flex items-center justify-center gap-2 rounded-xl border border-white/10 px-4 py-2.5 text-[12px] font-semibold text-[var(--color-c-text-4)] transition-colors hover:bg-white/[0.05] hover:text-[var(--color-c-text)] disabled:cursor-not-allowed disabled:opacity-40"
             >
               <RefreshCw className="h-3.5 w-3.5" />

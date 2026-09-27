@@ -1,12 +1,13 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { Check, Copy, Eye, EyeOff, KeyRound, Loader2, RefreshCw } from "lucide-react";
+import { Check, Copy, Eye, EyeOff, KeyRound, Loader2, Lock, RefreshCw } from "lucide-react";
 import { Card, SmallButton } from "./ui";
 
 type KeyState =
   | { state: "loading" }
   | { state: "error"; message: string }
+  | { state: "locked" }
   | { state: "ready"; key: string; expiresAt: string };
 
 function left(ms: number) {
@@ -28,6 +29,7 @@ export function AccessKeyCard() {
       const r = await fetch("/api/access-key", { cache: "no-store" });
       const j = await r.json();
       if (!r.ok) setK({ state: "error", message: j.error ?? "Couldn't load your key." });
+      else if (j.locked) setK({ state: "locked" });
       else setK({ state: "ready", key: j.key, expiresAt: j.expiresAt });
     } catch {
       setK({ state: "error", message: "Network error." });
@@ -69,6 +71,32 @@ export function AccessKeyCard() {
           <div className="flex justify-center py-3">
             <Loader2 className="h-4 w-4 animate-spin text-[var(--color-c-lime)]" />
           </div>
+        ) : k.state === "locked" ? (
+          <>
+            <div className="rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-canvas)] p-3 opacity-60">
+              <p className="mb-2 select-none break-all font-mono text-[12px] text-[var(--color-c-text)]" aria-label="Access key, locked">
+                ja24_{"•".repeat(24)}
+              </p>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <SmallButton onClick={() => {}} disabled>
+                  <Eye className="h-3 w-3" /> Show
+                </SmallButton>
+                <SmallButton onClick={() => {}} disabled>
+                  <Copy className="h-3 w-3" /> Copy
+                </SmallButton>
+              </div>
+            </div>
+            <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-[var(--color-c-muted)]">
+              <Lock className="mt-0.5 h-3 w-3 shrink-0 text-[var(--color-c-lime)]" />
+              <span>
+                Your access key is a PRO+ feature.{" "}
+                <a href="/pricing" className="font-semibold text-[var(--color-c-lime)] hover:underline">
+                  Upgrade to PRO+
+                </a>{" "}
+                to use it.
+              </span>
+            </p>
+          </>
         ) : k.state === "error" ? (
           <div className="space-y-2">
             <p className="text-[11px] text-amber-300">{k.message}</p>

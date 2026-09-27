@@ -6,6 +6,7 @@ import { Check, Clock, Code2, Monitor, X } from "lucide-react";
 import { Modal } from "@/components/cover-letter/modal";
 import { EASE } from "@/components/resume-analysis/motion";
 import { CODING_COUNT, HR_COUNT, LEVELS, MINUTES, TECH_COUNT, type Level } from "@/lib/interview/types";
+import { QUOTAS } from "@/lib/premium";
 
 export function estimateMinutes(level: Level) {
   const m = MINUTES[level];
@@ -22,7 +23,7 @@ export function LevelPicker({
   onStart,
 }: {
   role: string;
-  /** Interviews left today; null = unlimited or unknown. */
+  /** Interviews left this month; null = unlimited or unknown. */
   remaining: number | null;
   onClose: () => void;
   onStart: (level: Level) => void;
@@ -97,7 +98,16 @@ export function LevelPicker({
 
         <p className="mt-4 text-[12px] leading-relaxed text-[var(--color-c-dim)]">
           Questions come from your resume, the role and the job description, and never repeat ones from your earlier sessions.
-          {remaining !== null && ` You have ${remaining} interview${remaining === 1 ? "" : "s"} left today.`}
+          {remaining !== null && ` You have ${remaining} interview${remaining === 1 ? "" : "s"} left this month.`}
+          {remaining === 0 && (
+            <>
+              {" "}
+              <a href="/pricing" className="font-semibold text-[var(--color-c-lime)] hover:underline">
+                Upgrade to PRO+ for {QUOTAS.pro.interview} a month
+              </a>
+              .
+            </>
+          )}
         </p>
       </div>
 
@@ -115,7 +125,7 @@ export function LevelPicker({
           disabled={remaining === 0}
           className="cl-glow flex-1 rounded-xl bg-[var(--color-c-lime)] px-4 py-3 text-[14px] font-bold text-black transition-transform hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {remaining === 0 ? "Daily limit reached" : `Generate ${LEVELS.find((l) => l.key === level)!.label.toLowerCase()} interview`}
+          {remaining === 0 ? "Monthly limit reached" : `Generate ${LEVELS.find((l) => l.key === level)!.label.toLowerCase()} interview`}
         </button>
       </div>
     </Modal>

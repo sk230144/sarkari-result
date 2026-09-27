@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Wand2, Crown } from "lucide-react";
-import { PLANS, QUARTERLY_SAVING, inr } from "@/lib/premium";
+import { PLANS, QUARTERLY_SAVING, QUOTAS, inr } from "@/lib/premium";
 
 const FEATURES = [
   { icon: "◎", color: "text-red-400", label: "Fresh job alerts" },
@@ -17,18 +17,18 @@ const FEATURES = [
 const FREE_VALUES = [
   "Limited",
   "Limited",
-  "Limited",
-  "Limited",
-  "Limited",
+  `${QUOTAS.free.analysis} / month`,
+  `${QUOTAS.free.letter} / month`,
+  `${QUOTAS.free.interview} / month`,
   "Basic",
 ];
 
 const PRO_VALUES = [
   "25x more jobs",
   "One-click autofill",
-  "Unlimited",
-  "Unlimited",
-  "Unlimited",
+  `${QUOTAS.pro.analysis} / month`,
+  `${QUOTAS.pro.letter} / month`,
+  `${QUOTAS.pro.interview} / month`,
   "Fully customisable",
 ];
 
@@ -134,8 +134,8 @@ export function Pricing() {
               </span>
             </div>
             <p className="mb-8 text-xs text-[var(--color-c-text-muted-2)]">
-              The full AI toolkit, unlimited, so a monthly cap never stops you
-              mid-search.
+              10x the AI toolkit every month, so a free-plan cap never stops
+              you mid-search.
             </p>
             <ul className="space-y-4 pb-8 text-xs">
               {FEATURES.map((f, i) => (

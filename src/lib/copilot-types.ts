@@ -6,10 +6,13 @@ export type CopilotData = {
   letters: (LetterResult & { company: string | null; jd: string })[];
   analyses: AnalysisResult[];
   interviews: InterviewListItem[];
-  /** null = unlimited (admin). Counted over the last 24 hours. */
+  /** This calendar month (IST). Each count is null when unlimited (admin). */
   usage: {
+    plan: "free" | "pro" | "admin";
+    resetsAt: string;
     letters: { used: number; limit: number } | null;
     analyses: { used: number; limit: number } | null;
+    interviews: { used: number; limit: number } | null;
   };
   invite: { slug: string | null; referrals: number };
 };

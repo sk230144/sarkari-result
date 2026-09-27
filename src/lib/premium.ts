@@ -6,7 +6,7 @@ export type PlanKey = "monthly" | "quarterly";
  * TEMPORARY: monthly is ₹1 while live payments are being tested.
  * Set back to 499 to restore the real price (the rest follows from it).
  */
-const MONTHLY_PRICE = 1;
+const MONTHLY_PRICE = 499;
 
 export const PLANS: Record<PlanKey, { key: PlanKey; label: string; months: number; total: number; perMonth: number; billed: string }> = {
   quarterly: { key: "quarterly", label: "Quarterly", months: 3, total: 1197, perMonth: 399, billed: "Billed ₹1,197 every 3 months" },
@@ -35,3 +35,31 @@ export function daysLeft(until: string | null, now = Date.now()) {
   if (!until) return 0;
   return Math.max(0, Math.ceil((new Date(until).getTime() - now) / 86_400_000));
 }
+
+/* ------------------------------------------------------------ monthly quotas */
+
+export type QuotaFeature = "letter" | "analysis" | "interview";
+
+/** New items per calendar month (India time). Cached re-opens don't count. */
+export const QUOTAS: Record<"free" | "pro", Record<QuotaFeature, number>> = {
+  free: { letter: 2, analysis: 2, interview: 1 },
+  pro: { letter: 20, analysis: 20, interview: 17 },
+};
+
+export const QUOTA_LABEL: Record<QuotaFeature, { one: string; many: string }> = {
+  letter: { one: "cover letter", many: "cover letters" },
+  analysis: { one: "resume analysis", many: "resume analyses" },
+  interview: { one: "mock interview", many: "mock interviews" },
+};
+
+/** A user's allowance for one feature this month. `limit`/`remaining` are null when unlimited (admin). */
+export type Quota = {
+  plan: "free" | "pro" | "admin";
+  limit: number | null;
+  used: number;
+  remaining: number | null;
+  /** When the count goes back to zero: the 1st of next month, midnight IST. */
+  resetsAt: string;
+};
+
+export const fmtReset = (iso: string) => new Date(iso).toLocaleDateString("en-IN", { day: "numeric", month: "short", timeZone: "Asia/Kolkata" });

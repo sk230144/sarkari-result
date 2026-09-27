@@ -4,6 +4,7 @@ import { JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
 import { cleanJobDescription } from "@/lib/jd-clean";
 import { GeminiError } from "@/lib/gemini";
 import { getSessionUser, serviceDb, remainingAnalyses } from "@/lib/server-auth";
+import { getQuota, quotaExceeded } from "@/lib/quota";
 import { buildReport, jdHashFor } from "@/lib/analyzer/server";
 import type { AnalysisReport, AnalysisResult } from "@/lib/analyzer/config";
 
@@ -49,7 +50,8 @@ export async function POST(request: Request) {
   const jdClean = cleanJobDescription(jdRaw);
   const jdHash = jdHashFor(jdClean, role);
 
-  const remaining = await remainingAnalyses(db, user);
+  const [dailyLeft, quota] = await Promise.all([remainingAnalyses(db, user), getQuota(db, user, "analysis")]);
+  const remaining = quota.remaining;
 
   const { data: existing } = await db
     .from("resume_reports")
@@ -64,11 +66,13 @@ export async function POST(request: Request) {
       cached: true,
       createdAt: existing.created_at,
       remaining,
+      quota,
     };
     return NextResponse.json(result);
   }
 
-  if (remaining === 0) {
+  if (quota.remaining === 0) return NextResponse.json(quotaExceeded("analysis", quota), { status: 429 });
+  if (dailyLeft === 0) {
     return NextResponse.json(
       { error: "You've reached today's analysis limit. It resets within 24 hours." },
       { status: 429 },
@@ -102,7 +106,8 @@ export async function POST(request: Request) {
     report,
     cached: false,
     createdAt: saved.created_at,
-    remaining: remaining === null ? null : remaining - 1,
+    remaining: remaining === null ? null : Math.max(0, remaining - 1),
+    quota: { ...quota, used: quota.used + 1, remaining: remaining === null ? null : Math.max(0, remaining - 1) },
   };
   return NextResponse.json(result);
 }

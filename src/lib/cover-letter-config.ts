@@ -1,5 +1,7 @@
 /** Shared by the browser and the API routes. No secrets or server imports. */
 
+import type { Quota } from "./premium";
+
 export const LETTER_STYLES = ["operator", "believer", "short"] as const;
 export type LetterStyle = (typeof LETTER_STYLES)[number];
 
@@ -58,8 +60,10 @@ export type LetterResult = {
   contact: CvContact;
   cached: boolean;
   updatedAt: string;
-  /** Paid generations left in the current 24 h window; null when unlimited. */
+  /** AI calls (edits, rewrites) left in the current 24 h window; null when unlimited. */
   remaining: number | null;
+  /** New letters left this month on the user's plan. */
+  quota?: Quota;
 };
 
 /** Greeting, sign-off and contact are added here, never by the model. */

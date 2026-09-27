@@ -4,6 +4,7 @@ import { JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
 import { cleanJobDescription } from "@/lib/jd-clean";
 import { GeminiError } from "@/lib/gemini";
 import { getSessionUser, serviceDb, remainingInterviews } from "@/lib/server-auth";
+import { getQuota, quotaExceeded } from "@/lib/quota";
 import { generateQuestions, previousQuestions, INTERVIEW_COLUMNS, rowToInterview } from "@/lib/interview/server";
 import {
   LEVELS,
@@ -63,7 +64,8 @@ export async function GET() {
     createdAt: r.created_at,
     ...progress.get(r.id),
   }));
-  return NextResponse.json({ items, remaining: await remainingInterviews(db, user) });
+  const quota = await getQuota(db, user, "interview");
+  return NextResponse.json({ items, remaining: quota.remaining, quota });
 }
 
 /** Creates a new interview. Body: { cvId, role, jd?, level } */
@@ -85,8 +87,9 @@ export async function POST(request: Request) {
   if (jdRaw.length > JOB_DESCRIPTION_MAX_CHARS) return NextResponse.json({ error: "Job description is too long." }, { status: 413 });
 
   const db = serviceDb();
-  const remaining = await remainingInterviews(db, user);
-  if (remaining === 0) {
+  const [dailyLeft, quota] = await Promise.all([remainingInterviews(db, user), getQuota(db, user, "interview")]);
+  if (quota.remaining === 0) return NextResponse.json(quotaExceeded("interview", quota), { status: 429 });
+  if (dailyLeft === 0) {
     return NextResponse.json({ error: "You've reached today's mock interview limit. It resets within 24 hours." }, { status: 429 });
   }
 

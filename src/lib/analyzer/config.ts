@@ -1,3 +1,5 @@
+import type { Quota } from "@/lib/premium";
+
 /**
  * Everything in the report that never goes through AI: skill synonyms,
  * verdict text, templates and resource cards. Shared by server and browser.
@@ -51,8 +53,9 @@ export type AnalysisResult = {
   report: AnalysisReport;
   cached: boolean;
   createdAt: string;
-  /** New analyses left in the current 24 h window; null when unlimited. */
+  /** New analyses left this month on the user's plan; null when unlimited. */
   remaining: number | null;
+  quota?: Quota;
 };
 
 /**

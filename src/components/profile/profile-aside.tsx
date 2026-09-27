@@ -13,6 +13,7 @@ import {
   FileText,
   ClipboardList,
   Palette,
+  Lock,
   Info,
   ArrowUp,
   ArrowDown,
@@ -27,6 +28,8 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { APPLY_FIELDS, SECTION_LABELS, type ApplyKey, type SectionKey } from "@/lib/profile/types";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { AccessKeyCard } from "./access-key-card";
+import { isPremiumActive } from "@/lib/premium";
+import { isAdminEmail } from "@/lib/admin-emails";
 import { PremiumCard } from "./premium-card";
 import { Card, SmallButton, TextInput, Toggle, moveItem } from "./ui";
 
@@ -55,6 +58,8 @@ function ago(iso: string) {
 
 export function ProfileAside() {
   const { profile, extras, setExtras, save, send, toast } = useEditor();
+  // Themes (and the access key) are for PRO+ members and admins; the server checks too.
+  const proAccess = isPremiumActive(profile.premiumUntil) || isAdminEmail(profile.email);
   const { copied, copy } = useCopy();
   const [applyEdit, setApplyEdit] = useState<ApplyKey | null>(null);
   const [applyDraft, setApplyDraft] = useState("");
@@ -489,6 +494,11 @@ export function ProfileAside() {
         <h2 className="mb-1 flex items-center gap-2 text-[12px] font-bold text-[var(--color-c-text)]">
           <Palette className="h-3.5 w-3.5 text-[var(--color-c-lime)]" />
           Profile Themes
+          {!proAccess && (
+            <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-[var(--color-c-lime)] px-1.5 py-px text-[9px] font-bold text-black">
+              <Lock className="h-2.5 w-2.5" /> PRO+
+            </span>
+          )}
         </h2>
         <p className="mb-3 text-[11px] text-[var(--color-c-muted)]">Choose how others see your public profile.</p>
         <div className="mb-3 grid grid-cols-2 gap-2">
@@ -503,7 +513,8 @@ export function ProfileAside() {
               type="button"
               onClick={() => save({ theme: key }, `${label} theme applied to your public profile`)}
               aria-pressed={profile.theme === key}
-              className={`rounded-xl border p-2 text-left transition-all ${
+              disabled={!proAccess}
+              className={`rounded-xl border p-2 text-left transition-all disabled:cursor-not-allowed disabled:opacity-50 ${
                 profile.theme === key
                   ? "border-[var(--color-c-lime)] bg-[var(--color-c-canvas)]"
                   : "border-[var(--color-c-border)] bg-[var(--color-c-canvas)] hover:border-[var(--color-c-border-strong)]"
@@ -517,10 +528,19 @@ export function ProfileAside() {
             </button>
           ))}
         </div>
-        <p className="flex gap-1.5 text-[10px] leading-relaxed text-[var(--color-c-dim)]">
-          <Info className="mt-0.5 h-3 w-3 shrink-0" />
-          This editor always shows the default look. Your chosen theme applies only to your public profile.
-        </p>
+        {proAccess ? (
+          <p className="flex gap-1.5 text-[10px] leading-relaxed text-[var(--color-c-dim)]">
+            <Info className="mt-0.5 h-3 w-3 shrink-0" />
+            This editor always shows the default look. Your chosen theme applies only to your public profile.
+          </p>
+        ) : (
+          <p className="text-[11px] leading-relaxed text-[var(--color-c-muted)]">
+            Changing your profile theme is a PRO+ feature.{" "}
+            <a href="/pricing" className="font-semibold text-[var(--color-c-lime)] hover:underline">
+              Upgrade to PRO+
+            </a>
+          </p>
+        )}
         <a
           href={`/u/${profile.slug}`}
           target={PUBLIC_TAB}

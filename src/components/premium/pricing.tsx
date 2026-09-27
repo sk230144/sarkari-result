@@ -7,14 +7,14 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { BarChart3, CheckCircle2, Crown, Globe2, Loader2, Lock, Mail, Mic, ShieldCheck, Sparkles, Target, X, XCircle, Zap } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { EASE } from "@/components/resume-analysis/motion";
-import { PLANS, QUARTERLY_SAVING, daysLeft, inr, type PlanKey, type PremiumStatus } from "@/lib/premium";
+import { PLANS, QUARTERLY_SAVING, QUOTAS, daysLeft, inr, type PlanKey, type PremiumStatus } from "@/lib/premium";
 
 const FEATURES = [
   { icon: Target, tint: "text-red-400", label: "Fresh job alerts", free: "Limited", pro: "25x more jobs" },
   { icon: Zap, tint: "text-amber-300", label: "AI Apply Extension", free: "Limited", pro: "One-click autofill" },
-  { icon: BarChart3, tint: "text-sky-400", label: "Resume match score", free: "Limited", pro: "Unlimited" },
-  { icon: Mail, tint: "text-[var(--color-c-muted)]", label: "AI cover letters", free: "Limited", pro: "Unlimited" },
-  { icon: Mic, tint: "text-[var(--color-c-muted)]", label: "Mock interviews", free: "Limited", pro: "Unlimited" },
+  { icon: BarChart3, tint: "text-sky-400", label: "Resume match score", free: `${QUOTAS.free.analysis} / month`, pro: `${QUOTAS.pro.analysis} / month` },
+  { icon: Mail, tint: "text-[var(--color-c-muted)]", label: "AI cover letters", free: `${QUOTAS.free.letter} / month`, pro: `${QUOTAS.pro.letter} / month` },
+  { icon: Mic, tint: "text-[var(--color-c-muted)]", label: "Mock interviews", free: `${QUOTAS.free.interview} / month`, pro: `${QUOTAS.pro.interview} / month` },
   { icon: Globe2, tint: "text-teal-300", label: "Developer portfolio", free: "Basic", pro: "Fully customisable" },
 ];
 
@@ -182,7 +182,7 @@ export function Pricing() {
             <Sparkles className="h-5 w-5 text-[var(--color-c-muted)]" /> Starter
           </p>
           <p className="mt-5 text-[44px] font-extrabold leading-none tracking-tight text-[var(--color-c-text)]">Free</p>
-          <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-c-muted)]">Every tool included, with a few free uses each month. No card required.</p>
+          <p className="mt-3 text-[13px] leading-relaxed text-[var(--color-c-muted)]">Every tool included, with a few free uses each month. No card required. Limits reset on the 1st.</p>
           <ul className="mt-6 space-y-4 border-t border-white/[0.07] pt-6">
             {FEATURES.map((f) => (
               <li key={f.label} className="flex items-center gap-3 text-[13px]">
@@ -241,7 +241,7 @@ export function Pricing() {
               );
             })}
           </div>
-          <p className="mt-4 text-[13px] leading-relaxed text-[var(--color-c-text-4)]">The full AI toolkit, unlimited, so a monthly cap never stops you mid-search.</p>
+          <p className="mt-4 text-[13px] leading-relaxed text-[var(--color-c-text-4)]">10x the AI toolkit every month, so a free-plan cap never stops you mid-search.</p>
           <ul className="mt-5 space-y-4 border-t border-white/10 pt-5">
             {FEATURES.map((f) => (
               <li key={f.label} className="flex items-center gap-3 text-[13px]">

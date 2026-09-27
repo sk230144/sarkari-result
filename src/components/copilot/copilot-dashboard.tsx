@@ -26,6 +26,7 @@ import { LetterModal } from "@/components/cover-letter/letter-modal";
 import { AnalysisModal } from "@/components/cover-letter/analysis-modal";
 import { StepLoader } from "@/components/cover-letter/modal";
 import type { CopilotData } from "@/lib/copilot-types";
+import { QUOTAS, fmtReset } from "@/lib/premium";
 import type { LetterResult } from "@/lib/cover-letter-config";
 import type { AnalysisResult } from "@/lib/analyzer/config";
 import { LEVELS } from "@/lib/interview/types";
@@ -271,18 +272,31 @@ export function CopilotDashboard() {
                 <p className="flex items-center gap-2 text-[15px] font-bold text-[var(--color-c-text)]">
                   <History className="h-4 w-4 text-[var(--color-c-lime)]" />
                   Usage Limits
-                  <span className="text-[11px] font-normal text-[var(--color-c-dim)]">(today)</span>
+                  <span className="text-[11px] font-normal text-[var(--color-c-dim)]">(this month)</span>
                 </p>
-                <span className="rounded-full border border-white/10 px-2 py-0.5 font-mono text-[9px] font-bold uppercase text-[var(--color-c-muted)]">
-                  Free
+                <span
+                  className={`rounded-full px-2 py-0.5 font-mono text-[9px] font-bold uppercase ${
+                    data.usage.plan === "free" ? "border border-white/10 text-[var(--color-c-muted)]" : "bg-[var(--color-c-lime)] text-black"
+                  }`}
+                >
+                  {data.usage.plan === "pro" ? "PRO+" : data.usage.plan === "admin" ? "Admin" : "Free"}
                 </span>
               </div>
               <div className="space-y-4 px-5 py-5">
-                <UsageBar label="Cover letter AI calls" value={data.usage.letters} color="#a855f7" />
+                <UsageBar label="Cover letters" value={data.usage.letters} color="#a855f7" />
                 <UsageBar label="Resume analyses" value={data.usage.analyses} color="#3b82f6" />
+                <UsageBar label="Mock interviews" value={data.usage.interviews} color="#f59e0b" />
                 <p className="text-[11px] leading-relaxed text-[var(--color-c-dim)]">
-                  Limits reset on a rolling 24-hour window. Opening a letter or report you already made is always free.
+                  Resets on {fmtReset(data.usage.resetsAt)}. Opening a letter, report or interview you already made is always free.
                 </p>
+                {data.usage.plan === "free" && (
+                  <Link
+                    href="/pricing"
+                    className="flex items-center justify-center gap-1.5 rounded-xl bg-[var(--color-c-lime)] px-3 py-2 text-[12px] font-bold text-black"
+                  >
+                    Get {QUOTAS.pro.letter} letters, {QUOTAS.pro.analysis} analyses &amp; {QUOTAS.pro.interview} interviews with PRO+
+                  </Link>
+                )}
               </div>
             </motion.div>
 

@@ -28,6 +28,11 @@ import type { AnalysisResult } from "@/lib/analyzer/config";
 import { RESUME_MAX_BYTES, JOB_DESCRIPTION_MAX_CHARS } from "@/lib/resume-text-limits";
 
 const MAX_PDF_BYTES = RESUME_MAX_BYTES;
+
+/** A monthly plan limit was hit: shown with an upgrade button. */
+class QuotaError extends Error {}
+const failed = (json: { error?: string; upgrade?: boolean }, fallback: string) =>
+  json.upgrade ? new QuotaError(json.error ?? fallback) : new Error(json.error ?? fallback);
 const NEED_LOGIN = "__need_login__";
 
 const LETTER_STEPS = [
@@ -81,6 +86,12 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
   const [choice, setChoice] = useState<"saved" | "upload" | null>(null);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [upgradeHint, setUpgradeHint] = useState(false);
+  // Every error goes through here, so the upgrade button only ever shows for a plan limit.
+  const showError = useCallback((msg: string | null, quota = false) => {
+    setError(msg);
+    setUpgradeHint(quota);
+  }, []);
   const [stage, setStage] = useState<Stage>("idle");
   const [opening, setOpening] = useState(false);
   const [letter, setLetter] = useState<LetterResult | null>(null);
@@ -135,14 +146,14 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
   function takeFile(file: File | undefined) {
     if (!file) return;
     if (file.type !== "application/pdf") {
-      setError("Please choose a PDF file.");
+      showError("Please choose a PDF file.");
       return;
     }
     if (file.size > MAX_PDF_BYTES) {
-      setError("That PDF is over 5 MB. Please choose a smaller file.");
+      showError("That PDF is over 5 MB. Please choose a smaller file.");
       return;
     }
-    setError(null);
+    showError(null);
     setUpload(file);
     setChoice("upload");
   }
@@ -180,14 +191,14 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
 
   async function generateLetter(regenerate = false) {
     if (!user) {
-      setError(NEED_LOGIN);
+      showError(NEED_LOGIN);
       return;
     }
     if (!active) {
-      setError("Choose a resume first — your saved one, or upload a PDF.");
+      showError("Choose a resume first — your saved one, or upload a PDF.");
       return;
     }
-    setError(null);
+    showError(null);
     setLetterReady(false);
     setStage("loading-letter");
     try {
@@ -198,25 +209,25 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
         body: JSON.stringify({ cvId, role, jd, regenerate }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Could not generate your cover letter.");
+      if (!res.ok) throw failed(json, "Could not generate your cover letter.");
       setLetter(json as LetterResult);
       setLetterReady(true);
     } catch (e) {
       setStage("idle");
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      showError(e instanceof Error ? e.message : "Something went wrong.", e instanceof QuotaError);
     }
   }
 
   async function startAnalysis() {
     if (!user) {
-      setError(NEED_LOGIN);
+      showError(NEED_LOGIN);
       return;
     }
     if (!active) {
-      setError("Choose a resume first — your saved one, or upload a PDF.");
+      showError("Choose a resume first — your saved one, or upload a PDF.");
       return;
     }
-    setError(null);
+    showError(null);
     setAnalysisReady(false);
     setStage("loading-analysis");
     try {
@@ -227,25 +238,25 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
         body: JSON.stringify({ cvId, role, jd }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Could not analyse your resume.");
+      if (!res.ok) throw failed(json, "Could not analyse your resume.");
       setAnalysis(json as AnalysisResult);
       setAnalysisReady(true);
     } catch (e) {
       setStage("idle");
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      showError(e instanceof Error ? e.message : "Something went wrong.", e instanceof QuotaError);
     }
   }
 
   async function pickLevel() {
     if (!user) {
-      setError(NEED_LOGIN);
+      showError(NEED_LOGIN);
       return;
     }
     if (!active) {
-      setError("Choose a resume first — your saved one, or upload a PDF.");
+      showError("Choose a resume first — your saved one, or upload a PDF.");
       return;
     }
-    setError(null);
+    showError(null);
     setStage("pick-level");
     try {
       const res = await fetch("/api/mock-interview");
@@ -267,11 +278,11 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
         body: JSON.stringify({ cvId, role, jd, level }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error ?? "Could not prepare your interview.");
+      if (!res.ok) throw failed(json, "Could not prepare your interview.");
       setInterviewId(json.id as string);
     } catch (e) {
       setStage("idle");
-      setError(e instanceof Error ? e.message : "Something went wrong.");
+      showError(e instanceof Error ? e.message : "Something went wrong.", e instanceof QuotaError);
     }
   }
 
@@ -489,6 +500,14 @@ export function CoverLetterWorkspace({ primary = "letter" }: { primary?: "letter
                     </>
                   ) : (
                     error
+                  )}
+                  {upgradeHint && (
+                    <Link
+                      href="/pricing"
+                      className="mt-2 flex w-fit items-center gap-1.5 rounded-lg bg-[var(--color-c-lime)] px-3 py-1.5 text-[12px] font-bold text-black no-underline"
+                    >
+                      Upgrade to PRO+
+                    </Link>
                   )}
                 </p>
               )}

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { hasProAccess } from "@/lib/payments/server";
 import { getSessionUser, serviceDb } from "@/lib/server-auth";
 import {
   PROFILE_COLUMNS,
@@ -57,6 +58,9 @@ export async function PATCH(request: Request) {
   }
 
   const db = serviceDb();
+  if (body && "theme" in body && !(await hasProAccess(db, user))) {
+    return NextResponse.json({ error: "Profile themes are a PRO+ feature. Upgrade to change your theme." }, { status: 403 });
+  }
   try {
     const update = await validatePatch(db, user.id, body ?? {});
     if (!Object.keys(update).length) return NextResponse.json({ error: "Nothing to update." }, { status: 400 });

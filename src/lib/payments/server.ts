@@ -1,6 +1,7 @@
 import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { isPlan, isPremiumActive, type PremiumStatus } from "@/lib/premium";
+import { isAdminEmail } from "@/lib/admin-emails";
 import { fetchOrder, successfulPayment } from "./cashfree";
 
 export async function getPremiumStatus(db: SupabaseClient, userId: string): Promise<PremiumStatus> {
@@ -49,4 +50,10 @@ export async function settleOrder(db: SupabaseClient, orderId: string, expectUse
     return "failed";
   }
   return "pending";
+}
+
+/** PRO+ features: active members and admins. */
+export async function hasProAccess(db: SupabaseClient, user: { id: string; email?: string | null }) {
+  if (isAdminEmail(user.email)) return true;
+  return (await getPremiumStatus(db, user.id)).isPremium;
 }

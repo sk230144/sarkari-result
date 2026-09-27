@@ -3,10 +3,9 @@ import {
   getSessionUser,
   serviceDb,
   remainingAiCalls,
-  remainingAnalyses,
-  DAILY_AI_LIMIT,
-  DAILY_ANALYSIS_LIMIT,
 } from "@/lib/server-auth";
+import { getQuota } from "@/lib/quota";
+import type { Quota } from "@/lib/premium";
 import { LETTER_COLUMNS, toLetterResult, type LetterRow } from "@/lib/cover-letter-server";
 import type { AnalysisReport } from "@/lib/analyzer/config";
 import type { CopilotData } from "@/lib/copilot-types";
@@ -26,7 +25,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
 
   const db = serviceDb();
-  const [letters, reports, profile, referrals, lettersLeft, analysesLeft, interviews] = await Promise.all([
+  const [letters, reports, profile, referrals, lettersLeft, interviews, qLetters, qAnalyses, qInterviews] = await Promise.all([
     db
       .from("cover_letters")
       .select(`${LETTER_COLUMNS}, jd_clean`)
@@ -42,18 +41,22 @@ export async function GET() {
     db.from("profiles").select("slug").eq("id", user.id).maybeSingle(),
     db.from("profiles").select("id", { count: "exact", head: true }).eq("referred_by", user.id),
     remainingAiCalls(db, user),
-    remainingAnalyses(db, user),
     db
       .from("mock_interviews")
       .select("id, role, level, status, overall_score, created_at")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(5),
+    getQuota(db, user, "letter"),
+    getQuota(db, user, "analysis"),
+    getQuota(db, user, "interview"),
   ]);
+  const count = (q: Quota) => (q.limit === null ? null : { used: q.used, limit: q.limit });
 
   const letterResults = await Promise.all(
     ((letters.data ?? []) as (LetterRow & { jd_clean: string | null })[]).map(async (row) => ({
       ...(await toLetterResult(db, user, row, true, lettersLeft)),
+      quota: qLetters,
       company: companyFrom(row.jd_clean),
       jd: row.jd_clean ?? "",
     })),
@@ -66,7 +69,7 @@ export async function GET() {
       report: r.report as AnalysisReport,
       cached: true,
       createdAt: r.created_at as string,
-      remaining: analysesLeft,
+      remaining: qAnalyses.remaining,
     })),
     interviews: (interviews.data ?? []).map((r) => ({
       id: r.id as string,
@@ -77,8 +80,11 @@ export async function GET() {
       createdAt: r.created_at as string,
     })),
     usage: {
-      letters: lettersLeft === null ? null : { used: DAILY_AI_LIMIT - lettersLeft, limit: DAILY_AI_LIMIT },
-      analyses: analysesLeft === null ? null : { used: DAILY_ANALYSIS_LIMIT - analysesLeft, limit: DAILY_ANALYSIS_LIMIT },
+      plan: qLetters.plan,
+      resetsAt: qLetters.resetsAt,
+      letters: count(qLetters),
+      analyses: count(qAnalyses),
+      interviews: count(qInterviews),
     },
     invite: { slug: (profile.data?.slug as string) ?? null, referrals: referrals.count ?? 0 },
   };

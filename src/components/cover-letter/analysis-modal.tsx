@@ -121,7 +121,7 @@ export function AnalysisModal({
           <p className="truncate text-[14px] font-bold text-[var(--color-c-text)]">{data.jdTitle}</p>
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-[var(--color-c-dim)]">
             AI match report
-            {result.remaining !== null && ` · ${result.remaining} left today`}
+            {result.remaining !== null && ` · ${result.remaining} left this month`}
           </p>
         </div>
         {result.cached && (
