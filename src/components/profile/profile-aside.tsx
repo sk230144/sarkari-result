@@ -27,7 +27,7 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { APPLY_FIELDS, SECTION_LABELS, type ApplyKey, type SectionKey } from "@/lib/profile/types";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { AccessKeyCard } from "./access-key-card";
-import { Card, SmallButton, TextInput, moveItem } from "./ui";
+import { Card, SmallButton, TextInput, Toggle, moveItem } from "./ui";
 
 function useCopy() {
   const [copied, setCopied] = useState<string | null>(null);
@@ -400,6 +400,25 @@ export function ProfileAside() {
             what&apos;s in the resume. Anything the resume doesn&apos;t include stays as you set it.
           </p>
         </div>
+        {profile.resume.path && (
+          <div className="mt-3 flex items-start gap-3 rounded-xl border border-[var(--color-c-border)] bg-[var(--color-c-canvas)] p-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[11px] font-semibold text-[var(--color-c-text)]">Show on public profile</p>
+              <p className="mt-0.5 text-[9px] leading-relaxed text-[var(--color-c-dim)]">
+                {!profile.isPublic
+                  ? "Your profile is private, so nobody else can see it yet."
+                  : profile.showResume
+                    ? "Visitors can view and download your resume. It includes your contact details."
+                    : "Your resume is hidden from visitors."}
+              </p>
+            </div>
+            <Toggle
+              on={profile.showResume}
+              label="Show resume on public profile"
+              onChange={(v) => save({ showResume: v }, v ? "Resume shown on your profile" : "Resume hidden from your profile")}
+            />
+          </div>
+        )}
       </Card>
 
       {/* Application details */}

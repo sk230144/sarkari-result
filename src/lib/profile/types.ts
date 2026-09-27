@@ -81,6 +81,18 @@ export const BANNERS: Record<string, string> = {
 
 export type Theme = "midnight" | "daylight";
 
+/** How soon the candidate can join. Shown at the top of the public profile. */
+export const NOTICE_PERIODS = [
+  { key: "immediate", label: "Immediate joiner" },
+  { key: "15", label: "Less than 15 days" },
+  { key: "30", label: "Less than 30 days" },
+  { key: "45", label: "Less than 45 days" },
+  { key: "60", label: "Less than 60 days" },
+  { key: "60plus", label: "60+ days" },
+] as const;
+export type NoticePeriod = (typeof NOTICE_PERIODS)[number]["key"];
+export const noticeLabel = (k: NoticePeriod | null) => NOTICE_PERIODS.find((n) => n.key === k)?.label ?? null;
+
 /** Everything the owner edits. */
 export type ProfileData = {
   slug: string;
@@ -106,6 +118,9 @@ export type ProfileData = {
   theme: Theme;
   applyDetails: Partial<Record<ApplyKey, string>>;
   resume: { path: string | null; filename: string | null; uploadedAt: string | null; importedAt: string | null };
+  noticePeriod: NoticePeriod | null;
+  /** Whether the resume is viewable and downloadable on the public profile. */
+  showResume: boolean;
 };
 
 export type Endorsement = {
@@ -145,10 +160,12 @@ export type ProfileExtras = {
 
 export type ProfileResponse = { profile: ProfileData; extras: ProfileExtras };
 
-/** Public page payload: never includes email, apply details or resume. */
-export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic"> & {
+/** Public page payload: never includes email, apply details or the resume's storage path. */
+export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic" | "showResume"> & {
   id: string;
   endorsements: Endorsement[];
+  /** Set when the owner has a resume and shows it publicly. */
+  publicResume: { filename: string; uploadedAt: string | null } | null;
 };
 
 export const DEFAULT_LAYOUT: Layout = { order: [...SECTION_KEYS], hidden: [] };

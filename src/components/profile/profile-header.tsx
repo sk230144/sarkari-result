@@ -17,8 +17,10 @@ import {
   Loader2,
   Link2,
   Upload,
+  Clock,
+  ChevronDown,
 } from "lucide-react";
-import { BANNERS, bannerBackground } from "@/lib/profile/types";
+import { BANNERS, NOTICE_PERIODS, bannerBackground, noticeLabel, type ProfileData } from "@/lib/profile/types";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { InlineText, SmallButton, TextInput, Toggle } from "./ui";
 
@@ -287,6 +289,34 @@ export function ProfileHeader() {
                 <span className={`h-1.5 w-1.5 rounded-full ${profile.openToWork ? "blink bg-[var(--color-c-lime)]" : "bg-[var(--color-c-dim)]"}`} />
                 {profile.openToWork ? "Open to Work" : "Mark as Open to Work"}
               </button>
+              <label
+                className={`relative inline-flex items-center gap-1.5 rounded-full border py-1 pl-2.5 pr-7 text-[11px] font-medium transition-colors ${
+                  profile.noticePeriod
+                    ? "border-[var(--color-c-lime)]/50 bg-[var(--color-c-lime)]/10 text-[var(--color-c-lime)]"
+                    : "border-[var(--color-c-neutral-6)] bg-[var(--color-c-surface-5b)] text-[var(--color-c-text-4)] hover:text-[var(--color-c-text)]"
+                }`}
+              >
+                <Clock className="h-3 w-3" />
+                <span className="sr-only">Notice period</span>
+                <select
+                  value={profile.noticePeriod ?? ""}
+                  onChange={(e) => {
+                    const v = (e.target.value || null) as ProfileData["noticePeriod"];
+                    save({ noticePeriod: v }, v ? `Notice period: ${noticeLabel(v)}` : "Notice period removed");
+                  }}
+                  className="cursor-pointer appearance-none bg-transparent text-[11px] font-medium outline-none"
+                >
+                  <option value="" className="bg-[#1a1d18] text-white">
+                    Set notice period
+                  </option>
+                  {NOTICE_PERIODS.map((n) => (
+                    <option key={n.key} value={n.key} className="bg-[#1a1d18] text-white">
+                      {n.label}
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown className="pointer-events-none absolute right-2 h-3 w-3" />
+              </label>
             </div>
 
             {/* Visibility toggle */}

@@ -6,6 +6,7 @@ import { parseResume, pdfLinks } from "./resume-parse";
 import {
   APPLY_FIELDS,
   BANNERS,
+  NOTICE_PERIODS,
   DEFAULT_LAYOUT,
   SECTION_KEYS,
   SOCIALS,
@@ -15,6 +16,7 @@ import {
   type Endorsement,
   type Experience,
   type Layout,
+  type NoticePeriod,
   type ProfileData,
   type ProfileExtras,
   type Project,
@@ -22,8 +24,12 @@ import {
   type SectionKey,
 } from "./types";
 
-export const PROFILE_COLUMNS =
-  "id, email, full_name, avatar_url, resume_path, resume_filename, resume_uploaded_at, slug, headline, location, summary, open_to_work, is_public, banner, banner_url, github_username, socials, skills, experience, education, projects, certifications, layout, theme, apply_details, resume_imported_at";
+/**
+ * Every column. Reads go through the service role and are mapped field by
+ * field below, so nothing extra reaches a page; selecting "*" means a column
+ * added by a newer migration never breaks profile loading before it's applied.
+ */
+export const PROFILE_COLUMNS = "*";
 
 export type ProfileRow = Record<string, unknown> & { id: string; slug: string };
 
@@ -76,6 +82,9 @@ export function rowToProfile(row: ProfileRow): ProfileData {
       uploadedAt: (row.resume_uploaded_at as string) ?? null,
       importedAt: (row.resume_imported_at as string) ?? null,
     },
+    noticePeriod: NOTICE_PERIODS.some((n) => n.key === row.notice_period) ? (row.notice_period as NoticePeriod) : null,
+    // Shown unless the owner turned it off (also true before the column exists).
+    showResume: row.show_resume !== false,
   };
 }
 
@@ -101,6 +110,9 @@ export function rowToPublic(row: ProfileRow, endorsements: Endorsement[]): Publi
     certifications: p.certifications,
     layout: p.layout,
     theme: p.theme,
+    noticePeriod: p.noticePeriod,
+    publicResume:
+      p.showResume && p.resume.path ? { filename: p.resume.filename || "resume.pdf", uploadedAt: p.resume.uploadedAt } : null,
     endorsements,
   };
 }
@@ -181,6 +193,12 @@ export async function validatePatch(
   if ("summary" in input) out.summary = multiline(input.summary, 1200, "Summary");
   if ("openToWork" in input) out.open_to_work = input.openToWork === true;
   if ("isPublic" in input) out.is_public = input.isPublic === true;
+  if ("showResume" in input) out.show_resume = input.showResume === true;
+  if ("noticePeriod" in input) {
+    const v = input.noticePeriod;
+    if (v !== null && !NOTICE_PERIODS.some((n) => n.key === v)) throw new ProfileError("Unknown notice period.");
+    out.notice_period = v;
+  }
   if ("banner" in input) {
     if (typeof input.banner !== "string" || !BANNERS[input.banner]) throw new ProfileError("Unknown banner.");
     out.banner = input.banner;

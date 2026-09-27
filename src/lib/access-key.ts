@@ -60,6 +60,24 @@ export async function issueKey(db: SupabaseClient, userId: string, anchorIso: st
   return { key, issuedAt: issuedAt.toISOString(), expiresAt: expiresAt.toISOString() };
 }
 
+/**
+ * Like verifyKey, but tells expired apart from unknown: a key that is still
+ * the user's latest but past its window comes back with `expired: true`.
+ * (Once the user's next key has been issued, the old one is simply unknown.)
+ */
+export async function lookupKey(db: SupabaseClient, key: string) {
+  if (!ACCESS_KEY.test(key)) return null;
+  const { data, error } = await db
+    .from("user_access_keys")
+    .select("user_id, expires_at")
+    .eq("key_hash", hashKey(key))
+    .maybeSingle();
+  if (error) throw error;
+  if (!data) return null;
+  const expiresAt = data.expires_at as string;
+  return { userId: data.user_id as string, expiresAt, expired: new Date(expiresAt).getTime() <= Date.now() };
+}
+
 /** The owner of a key, if the key is well-formed, current and unexpired. */
 export async function verifyKey(db: SupabaseClient, key: string) {
   if (!ACCESS_KEY.test(key)) return null;

@@ -48,6 +48,7 @@ const KIND_LABELS: Record<string, string> = {
   interview_generate: "Mock interview · generate questions",
   interview_evaluate: "Mock interview · grade answers (per batch of 5)",
   interview_summary: "Mock interview · overall debrief",
+  desktop_chat: "Desktop app · chat",
 };
 
 export const metadata: Metadata = {

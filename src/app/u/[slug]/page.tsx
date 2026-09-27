@@ -14,10 +14,14 @@ import {
   Star,
   Lock,
   Github,
+  Clock,
+  Download,
+  FileText,
+  Eye,
 } from "lucide-react";
 import { getSessionUser, serviceDb } from "@/lib/server-auth";
 import { PROFILE_COLUMNS, loadEndorsements, rowToPublic, type ProfileRow } from "@/lib/profile/server";
-import { SOCIALS, bannerBackground, groupSkills, safeUrl, skillColor, type PublicProfile, type SectionKey } from "@/lib/profile/types";
+import { SOCIALS, bannerBackground, groupSkills, noticeLabel, safeUrl, skillColor, type PublicProfile, type SectionKey } from "@/lib/profile/types";
 import { GithubHeatmap } from "@/components/profile/github-heatmap";
 import { ProjectArt } from "@/components/profile/project-art";
 import { PublicActions, ViewBeacon } from "@/components/profile/public-actions";
@@ -34,7 +38,14 @@ const load = cache(async (slug: string) => {
   const isOwner = user?.id === row.id;
   // Private profiles are invisible to everyone but their owner.
   if (!row.is_public && !isOwner) return null;
-  return { profile: rowToPublic(row, await loadEndorsements(db, row.id)), isPublic: Boolean(row.is_public), isOwner };
+  const profile = rowToPublic(row, await loadEndorsements(db, row.id));
+  // A short-lived link for the embedded preview; the page is rendered per request.
+  let resumeEmbed: string | null = null;
+  if (profile.publicResume && row.resume_path) {
+    const { data: signed } = await db.storage.from("user-documents").createSignedUrl(row.resume_path as string, 600);
+    resumeEmbed = signed?.signedUrl ?? null;
+  }
+  return { profile, isPublic: Boolean(row.is_public), isOwner, resumeEmbed };
 });
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -278,7 +289,9 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
   const { slug } = await params;
   const data = await load(slug);
   if (!data) notFound();
-  const { profile: p, isPublic, isOwner } = data;
+  const { profile: p, isPublic, isOwner, resumeEmbed } = data;
+  const notice = noticeLabel(p.noticePeriod);
+  const resumeHref = `/api/profile/public-resume/${p.slug}`;
   const light = p.theme === "daylight";
   const t = themeOf(light);
   const sections = p.layout.order.filter((k) => !p.layout.hidden.includes(k));
@@ -345,9 +358,35 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
                       Open to Work
                     </span>
                   )}
+                  {notice && (
+                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${t.chip}`}>
+                      <Clock className="h-3 w-3" />
+                      Notice period: <span className={t.strong}>{notice}</span>
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="shrink-0">
+              <div className="flex shrink-0 flex-col items-start gap-2 sm:items-end">
+                {p.publicResume && (
+                  <div className="flex flex-wrap gap-2">
+                    <a
+                      href={`${resumeHref}?download=1`}
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#a3e635] px-3.5 py-2 text-[12px] font-bold text-black transition-transform hover:-translate-y-0.5"
+                    >
+                      <Download className="h-3.5 w-3.5" />
+                      Download resume
+                    </a>
+                    <a
+                      href={resumeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-2 text-[12px] font-semibold transition-opacity hover:opacity-80 ${t.chip}`}
+                    >
+                      <Eye className="h-3.5 w-3.5" />
+                      View
+                    </a>
+                  </div>
+                )}
                 <PublicActions slug={p.slug} name={p.fullName.split(" ")[0]} ownerId={p.id} light={light} />
               </div>
             </div>
@@ -361,6 +400,46 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
 
         <div className="mt-4 flex flex-col gap-4">
           {sections.map((k) => sectionContent(k, p, t, light))}
+
+          {p.publicResume && (
+            <Section t={t} icon={FileText} title="Resume">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <p className={`truncate text-[12px] ${t.body}`}>
+                  {p.publicResume.filename}
+                  {p.publicResume.uploadedAt &&
+                    ` · updated ${new Date(p.publicResume.uploadedAt).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`}
+                </p>
+                <a href={`${resumeHref}?download=1`} className={`inline-flex items-center gap-1 text-[12px] font-semibold ${t.accent} hover:underline`}>
+                  <Download className="h-3.5 w-3.5" /> Download PDF
+                </a>
+              </div>
+              {resumeEmbed ? (
+                <>
+                  {/* Phones rarely render PDFs inline, so they get buttons instead. */}
+                  <iframe
+                    src={`${resumeEmbed}#view=FitH&toolbar=0`}
+                    title={`${p.fullName}'s resume`}
+                    loading="lazy"
+                    className={`hidden h-[80vh] max-h-[1100px] w-full rounded-xl border md:block ${t.inner}`}
+                  />
+                  <div className={`flex flex-col items-center gap-3 rounded-xl border px-4 py-8 text-center md:hidden ${t.inner}`}>
+                    <FileText className={`h-8 w-8 ${t.accent}`} />
+                    <p className={`text-[12px] ${t.body}`}>Open the resume to read it on your phone.</p>
+                    <a
+                      href={resumeHref}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 rounded-lg bg-[#a3e635] px-4 py-2 text-[12px] font-bold text-black"
+                    >
+                      <Eye className="h-3.5 w-3.5" /> View resume
+                    </a>
+                  </div>
+                </>
+              ) : (
+                <p className={`text-[12px] ${t.body}`}>The preview couldn&apos;t load. Use Download PDF above.</p>
+              )}
+            </Section>
+          )}
 
           <Section t={t} icon={Star} title="Endorsements">
             {p.endorsements.length ? (
