@@ -3,10 +3,14 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/components/auth/auth-provider";
+import { isAdminEmail } from "@/lib/admin-emails";
 import { Logo, LogoClimb } from "@/components/ui/logo";
 import {
   ChevronsLeft,
   ChevronsRight,
+  ShieldCheck,
+  PenSquare,
   Search,
   TrendingUp,
   Trello,
@@ -72,7 +76,18 @@ const SECTIONS: NavSection[] = [
       { label: "Resume Analysis", icon: Target, href: "/resume-analysis" },
     ],
   },
-  { heading: "More", items: [{ label: "Blog", icon: BookOpen, href: "#blog" }] },
+  { heading: "More", items: [{ label: "Blog", icon: BookOpen, href: "/blog" }] },
+];
+
+/** Shown only to admin accounts (the pages themselves are checked on the server). */
+const ADMIN_SECTION: NavSection[] = [
+  {
+    heading: "Admin",
+    items: [
+      { label: "Admin Panel", icon: ShieldCheck, href: "/admin" },
+      { label: "Write a Blog Post", icon: PenSquare, href: "/blog/new" },
+    ],
+  },
 ];
 
 export function Sidebar({
@@ -87,6 +102,8 @@ export function Sidebar({
   onMobileClose: () => void;
 }) {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const admin = isAdminEmail(user?.email);
   const [query, setQuery] = useState("");
   const [expanded, setExpanded] = useState<string[]>([]);
   // Anchor links can't be resolved from the URL, so clicks on those track locally.
@@ -97,9 +114,10 @@ export function Sidebar({
   const searching = query.trim().length > 0 && !collapsed;
 
   const sections = useMemo(() => {
-    if (!searching) return SECTIONS;
+    const all = admin ? [...SECTIONS, ...ADMIN_SECTION] : SECTIONS;
+    if (!searching) return all;
     const q = query.trim().toLowerCase();
-    return SECTIONS.map((s) => ({
+    return all.map((s) => ({
       ...s,
       items: s.items.filter(
         (i) =>
@@ -107,7 +125,7 @@ export function Sidebar({
           i.children?.some((c) => c.label.toLowerCase().includes(q)),
       ),
     })).filter((s) => s.items.length > 0);
-  }, [query, searching]);
+  }, [query, searching, admin]);
 
   const empty = sections.length === 0;
 

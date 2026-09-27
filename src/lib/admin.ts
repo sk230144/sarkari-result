@@ -3,14 +3,10 @@ import { createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { costUsd } from "./ai-pricing";
+import { isAdminEmail } from "./admin-emails";
 
-/**
- * Who may see the admin section.
- *
- * Kept as a list rather than a single string so a second admin can be added
- * without a code change to the guard itself.
- */
-const ADMIN_EMAILS = ["risabht043@gmail.com"];
+// Who is an admin lives in ./admin-emails (shared with the browser, which
+// only uses it to show links; every admin action is checked here).
 
 /**
  * The signed-in reader's email, read from their session cookie on the
@@ -42,9 +38,7 @@ export async function currentUserEmail(): Promise<string | null> {
   return user?.email ?? null;
 }
 
-export function isAdminEmail(email: string | null | undefined): boolean {
-  return Boolean(email && ADMIN_EMAILS.includes(email.toLowerCase()));
-}
+export { isAdminEmail };
 
 export async function isAdmin(): Promise<boolean> {
   return isAdminEmail(await currentUserEmail());

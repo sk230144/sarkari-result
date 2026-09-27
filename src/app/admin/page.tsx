@@ -12,6 +12,8 @@ import {
 import { DashboardShell } from "@/components/dashboard/dashboard-shell";
 import { isAdmin, getAdminData, adminDb } from "@/lib/admin";
 import { AdminFeedback, type FeedbackItem } from "@/components/admin/admin-feedback";
+import { AdminBlogReview, type PendingPost } from "@/components/admin/admin-blog-review";
+import { AdminBlogPosts, type AdminPost } from "@/components/admin/admin-blog-posts";
 import { USD_TO_INR } from "@/lib/ai-pricing";
 
 /** "₹1.24" with the USD figure alongside; tiny amounts keep enough decimals to read. */
@@ -115,12 +117,23 @@ export default async function AdminPage() {
   // existence is not disclosed to anyone who is not an admin.
   if (!(await isAdmin())) notFound();
 
-  const [{ users, sections, totals, ai }, feedback] = await Promise.all([
+  const [{ users, sections, totals, ai }, feedback, pendingPosts, allPosts] = await Promise.all([
     getAdminData(),
     adminDb()
       .from("feedback")
       .select("id, name, email, category, rating, message, page, resolved_at, created_at")
       .order("created_at", { ascending: false })
+      .limit(500),
+    adminDb()
+      .from("blog_posts")
+      .select("id, slug, title, author_name, word_count, tags, submitted_at")
+      .eq("status", "pending")
+      .order("submitted_at", { ascending: true })
+      .limit(100),
+    adminDb()
+      .from("blog_posts")
+      .select("id, slug, title, author_name, status, views, word_count, updated_at")
+      .order("updated_at", { ascending: false })
       .limit(500),
   ]);
   const maxViews = sections[0]?.views ?? 1;
@@ -194,6 +207,10 @@ export default async function AdminPage() {
             </div>
           )}
         </section>
+
+        <AdminBlogReview initial={(pendingPosts.data ?? []) as PendingPost[]} ready={!pendingPosts.error} />
+
+        <AdminBlogPosts initial={(allPosts.data ?? []) as AdminPost[]} ready={!allPosts.error} />
 
         <AdminFeedback initial={(feedback.data ?? []) as FeedbackItem[]} ready={!feedback.error} />
 

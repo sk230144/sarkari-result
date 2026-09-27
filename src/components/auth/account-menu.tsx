@@ -5,13 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { User, LogOut, FileText, Loader2, Shield } from "lucide-react";
 import { useAuth } from "./auth-provider";
+import { isAdminEmail } from "@/lib/admin-emails";
 
-/**
- * Emails that see the admin link. This only controls whether the link is
- * rendered — the page itself is gated server-side, so hiding it here is a
- * convenience, not the security boundary.
- */
-const ADMIN_EMAILS = ["risabht043@gmail.com"];
 
 /**
  * Profile control in the header.
@@ -73,7 +68,8 @@ export function AccountMenu() {
     user.email?.split("@")[0] ||
     "Account";
   const initial = name.charAt(0).toUpperCase();
-  const isAdminUser = ADMIN_EMAILS.includes((user.email ?? "").toLowerCase());
+  // Only decides whether the link shows; /admin is gated on the server.
+  const isAdminUser = isAdminEmail(user.email);
 
   return (
     <div ref={boxRef} className="relative">
