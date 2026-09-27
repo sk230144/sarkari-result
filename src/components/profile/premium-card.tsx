@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Crown, Laptop, Sparkles } from "lucide-react";
+import { Crown, Sparkles } from "lucide-react";
 import { daysLeft, isPremiumActive } from "@/lib/premium";
 import { useEditor } from "./editor-context";
 import { Card } from "./ui";
@@ -42,7 +42,6 @@ export function PremiumCard() {
             <p className="mt-1.5 text-[10px] text-[var(--color-c-dim)]">
               {left} day{left === 1 ? "" : "s"} left{left <= 7 ? " · renew to keep PRO+ without a break" : ""}
             </p>
-            <AppLine until={profile.appAccessUntil} />
             <Link href="/pricing" className="mt-3 inline-flex text-[11px] font-semibold text-[var(--color-c-lime)] hover:underline">
               Extend PRO+ →
             </Link>
@@ -62,31 +61,5 @@ export function PremiumCard() {
         )}
       </div>
     </Card>
-  );
-}
-
-/** Whether the AI Interview Assistant add-on is part of this membership. */
-function AppLine({ until }: { until: string | null }) {
-  const on = isPremiumActive(until);
-  const date = until ? new Date(until).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) : "";
-  return (
-    <p className="mt-3 flex items-start gap-1.5 rounded-lg border border-[var(--color-c-border)] bg-[var(--color-c-canvas)] px-2.5 py-2 text-[11px] leading-relaxed text-[var(--color-c-muted)]">
-      <Laptop className={`mt-0.5 h-3.5 w-3.5 shrink-0 ${on ? "text-[var(--color-c-lime)]" : ""}`} />
-      {on ? (
-        <span>
-          AI Interview Assistant until <b className="text-[var(--color-c-text)]">{date}</b> ·{" "}
-          <Link href="/interview-assistant#download" className="font-semibold text-[var(--color-c-lime)] hover:underline">
-            Download
-          </Link>
-        </span>
-      ) : (
-        <span>
-          AI Interview Assistant not included ·{" "}
-          <Link href="/pricing?app=1" className="font-semibold text-[var(--color-c-lime)] hover:underline">
-            Add it
-          </Link>
-        </span>
-      )}
-    </p>
   );
 }

@@ -5,16 +5,13 @@ import { isAdminEmail } from "@/lib/admin-emails";
 import { fetchOrder, successfulPayment } from "./cashfree";
 
 export async function getPremiumStatus(db: SupabaseClient, userId: string): Promise<PremiumStatus> {
-  const { data } = await db.from("profiles").select("premium_until, premium_plan, premium_since, app_access_until").eq("id", userId).maybeSingle();
+  const { data } = await db.from("profiles").select("premium_until, premium_plan, premium_since").eq("id", userId).maybeSingle();
   const until = (data?.premium_until as string) ?? null;
-  const appUntil = (data?.app_access_until as string) ?? null;
   return {
     isPremium: isPremiumActive(until),
     premiumUntil: until,
     plan: isPlan(data?.premium_plan) ? data.premium_plan : null,
     since: (data?.premium_since as string) ?? null,
-    hasApp: isPremiumActive(appUntil),
-    appAccessUntil: appUntil,
   };
 }
 
@@ -61,15 +58,9 @@ export async function hasProAccess(db: SupabaseClient, user: { id: string; email
   return (await getPremiumStatus(db, user.id)).isPremium;
 }
 
-/** The AI Interview Assistant app (downloads, access key, desktop sign-in): admins, and members who added it to PRO+. */
-export async function hasAppAccess(db: SupabaseClient, user: { id: string; email?: string | null }) {
-  if (isAdminEmail(user.email)) return true;
-  return (await getPremiumStatus(db, user.id)).hasApp;
-}
-
 /** Same check when only the user id is known (a desktop app request carrying an access key). */
-export async function hasAppAccessById(db: SupabaseClient, userId: string) {
-  if ((await getPremiumStatus(db, userId)).hasApp) return true;
+export async function hasProAccessById(db: SupabaseClient, userId: string) {
+  if ((await getPremiumStatus(db, userId)).isPremium) return true;
   const { data } = await db.auth.admin.getUserById(userId);
   return isAdminEmail(data?.user?.email);
 }

@@ -2,19 +2,16 @@ import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 import { getSessionUser, serviceDb } from "@/lib/server-auth";
 import { CashfreeError, checkoutMode, createOrder } from "@/lib/payments/cashfree";
-import { APP_ADDON_PER_MONTH, PLANS, isPlan, orderTotal } from "@/lib/premium";
+import { PLANS, isPlan } from "@/lib/premium";
 
 export const dynamic = "force-dynamic";
 
-/**
- * Starts a PRO+ payment. Body: { plan: "monthly" | "quarterly", phone, includeApp? } -> { orderId, paymentSessionId, mode, amount }
- * includeApp adds the AI Interview Assistant app for the same period (priced server-side).
- */
+/** Starts a PRO+ payment. Body: { plan: "monthly" | "quarterly", phone } -> { orderId, paymentSessionId, mode } */
 export async function POST(request: Request) {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
 
-  let body: { plan?: unknown; phone?: unknown; includeApp?: unknown };
+  let body: { plan?: unknown; phone?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -31,12 +28,10 @@ export async function POST(request: Request) {
   if ((count ?? 0) >= 20) return NextResponse.json({ error: "Too many payment attempts today. Try again tomorrow." }, { status: 429 });
 
   const plan = PLANS[body.plan];
-  const includeApp = body.includeApp === true;
-  const amount = orderTotal(plan.key, includeApp);
   const orderId = `ja24_${Date.now().toString(36)}_${randomBytes(4).toString("hex")}`;
   const { data: prof } = await db.from("profiles").select("full_name").eq("id", user.id).maybeSingle();
 
-  const { error: insErr } = await db.from("payments").insert({ order_id: orderId, user_id: user.id, plan: plan.key, amount, currency: "INR", includes_app: includeApp, app_amount: includeApp ? APP_ADDON_PER_MONTH * plan.months : 0 });
+  const { error: insErr } = await db.from("payments").insert({ order_id: orderId, user_id: user.id, plan: plan.key, amount: plan.total, currency: "INR" });
   if (insErr) {
     console.error("payments insert failed", insErr.message);
     return NextResponse.json({ error: "Payments aren't set up yet. Please try again later." }, { status: 503 });
@@ -48,7 +43,7 @@ export async function POST(request: Request) {
   try {
     const order = await createOrder({
       order_id: orderId,
-      order_amount: amount,
+      order_amount: plan.total,
       order_currency: "INR",
       customer_details: {
         customer_id: user.id,
@@ -59,12 +54,12 @@ export async function POST(request: Request) {
       order_meta: https
         ? { return_url: `${origin}/pricing?order_id={order_id}`, notify_url: `${origin}/api/payments/webhook` }
         : undefined,
-      order_note: `PRO+ ${plan.label}${includeApp ? " + AI Interview Assistant" : ""}`,
-      order_tags: { plan: plan.key, app: includeApp ? "yes" : "no" },
+      order_note: `PRO+ ${plan.label}`,
+      order_tags: { plan: plan.key },
     });
     await db.from("payments").update({ cf_order_id: String(order.cf_order_id) }).eq("order_id", orderId);
     if (!order.payment_session_id) throw new CashfreeError("The payment gateway didn't start a session.");
-    return NextResponse.json({ orderId, paymentSessionId: order.payment_session_id, mode: checkoutMode, amount });
+    return NextResponse.json({ orderId, paymentSessionId: order.payment_session_id, mode: checkoutMode, amount: plan.total });
   } catch (e) {
     await db.from("payments").update({ status: "failed", updated_at: new Date().toISOString() }).eq("order_id", orderId);
     const err = e instanceof CashfreeError ? e : new CashfreeError("Couldn't start the payment.");

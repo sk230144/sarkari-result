@@ -8,8 +8,8 @@ import { BUILDS, type Build } from "@/lib/desktop-app";
 import { useCalm } from "@/components/landing/motion-kit";
 import { useAuth } from "@/components/auth/auth-provider";
 
-/** Where people without the app add-on go: pricing with the add-on already ticked. */
-const UNLOCK_HREF = "/pricing?app=1";
+/** Where people without PRO+ go. */
+const UNLOCK_HREF = "/pricing";
 
 const noop = () => () => {};
 
@@ -42,8 +42,8 @@ const Icon = ({ build, className }: { build: Build; className?: string }) =>
 type Access = "checking" | "locked" | "open";
 
 /**
- * Whether this visitor may download the app: signed in, with the app add-on
- * (or admin). Same rule the server applies to the access key and the app itself.
+ * Whether this visitor may download the app: signed in with PRO+ (or admin).
+ * Same rule the server applies to the access key and the app itself.
  */
 function useAppAccess(): Access {
   const { user, loading } = useAuth();
@@ -53,7 +53,7 @@ function useAppAccess(): Access {
     let live = true;
     fetch("/api/payments/status", { cache: "no-store" })
       .then((r) => (r.ok ? r.json() : null))
-      .then((j) => live && setOpen(Boolean(j?.appAccess)))
+      .then((j) => live && setOpen(Boolean(j?.proAccess)))
       .catch(() => live && setOpen(false));
     return () => {
       live = false;
@@ -64,7 +64,7 @@ function useAppAccess(): Access {
   return open === null ? "checking" : open ? "open" : "locked";
 }
 
-/** Shown instead of a download button until the visitor has the app add-on. */
+/** Shown instead of a download button until the visitor has PRO+. */
 function UnlockButton({ size = "lg", className = "" }: { size?: "lg" | "md"; className?: string }) {
   const calm = useCalm();
   const lg = size === "lg";
@@ -124,7 +124,7 @@ export function HeroDownloads() {
     return (
       <div className="flex flex-col items-center gap-2.5">
         <UnlockButton className="w-full sm:w-auto" />
-        <span className="text-xs text-[var(--color-c-text-dim)]">Add the app to PRO+ to download it for Windows or Mac.</span>
+        <span className="text-xs text-[var(--color-c-text-dim)]">Get PRO+ to download it for Windows or Mac.</span>
       </div>
     );
   }
@@ -164,7 +164,7 @@ export function DownloadCards() {
             className="mb-8 flex flex-col items-center gap-2.5 text-center"
           >
             <UnlockButton />
-            <span className="text-xs text-[var(--color-c-text-dim)]">Downloads unlock once the app is part of your PRO+.</span>
+            <span className="text-xs text-[var(--color-c-text-dim)]">Downloads unlock with PRO+.</span>
           </motion.div>
         )}
       </AnimatePresence>

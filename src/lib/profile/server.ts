@@ -87,7 +87,6 @@ export function rowToProfile(row: ProfileRow): ProfileData {
     // Shown unless the owner turned it off (also true before the column exists).
     showResume: row.show_resume !== false,
     premiumUntil: (row.premium_until as string) ?? null,
-    appAccessUntil: (row.app_access_until as string) ?? null,
   };
 }
 

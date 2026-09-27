@@ -89,11 +89,11 @@ export function AccessKeyCard() {
             <p className="mt-2.5 flex items-start gap-1.5 text-[11px] leading-relaxed text-[var(--color-c-muted)]">
               <Lock className="mt-0.5 h-3 w-3 shrink-0 text-[var(--color-c-lime)]" />
               <span>
-                Your access key signs you in to the AI Interview Assistant app.{" "}
-                <a href="/pricing?app=1" className="font-semibold text-[var(--color-c-lime)] hover:underline">
-                  Add the app to PRO+
+                Your access key is a PRO+ feature.{" "}
+                <a href="/pricing" className="font-semibold text-[var(--color-c-lime)] hover:underline">
+                  Upgrade to PRO+
                 </a>{" "}
-                to get it.
+                to use it.
               </span>
             </p>
           </>

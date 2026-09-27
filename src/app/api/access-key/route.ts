@@ -1,16 +1,16 @@
 import { NextResponse } from "next/server";
 import { getSessionUser, serviceDb } from "@/lib/server-auth";
 import { issueKey } from "@/lib/access-key";
-import { hasAppAccess } from "@/lib/payments/server";
+import { hasProAccess } from "@/lib/payments/server";
 
 export const dynamic = "force-dynamic";
 
-/** The signed-in user's current access key (members with the desktop app add-on, and admins). A new one is issued every 12 hours. */
+/** The signed-in user's current access key (PRO+ and admin only). A new one is issued every 12 hours. */
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
-  // Without the app add-on the section shows locked and no key is ever sent, so it can't be read from the network either.
-  if (!(await hasAppAccess(serviceDb(), user))) {
+  // Free accounts see the section but never receive a key, so it can't be read from the network either.
+  if (!(await hasProAccess(serviceDb(), user))) {
     return NextResponse.json({ locked: true }, { headers: { "Cache-Control": "no-store" } });
   }
   try {

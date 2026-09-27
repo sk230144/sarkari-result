@@ -5,7 +5,7 @@ import { isAdminEmail } from "@/lib/admin-emails";
 
 export const dynamic = "force-dynamic";
 
-/** The signed-in user's PRO+ status, whether they can use the desktop app, and their saved phone to prefill checkout. */
+/** The signed-in user's PRO+ status, plus their saved phone to prefill checkout. */
 export async function GET() {
   const user = await getSessionUser();
   if (!user) return NextResponse.json({ error: "Please sign in first." }, { status: 401 });
@@ -15,6 +15,6 @@ export async function GET() {
     db.from("profiles").select("apply_details").eq("id", user.id).maybeSingle(),
   ]);
   const phone = ((prof.data?.apply_details as Record<string, string> | null)?.phone ?? "").replace(/\D/g, "").slice(-10);
-  const appAccess = premium.hasApp || isAdminEmail(user.email);
-  return NextResponse.json({ ...premium, appAccess, phone }, { headers: { "Cache-Control": "no-store" } });
+  const proAccess = premium.isPremium || isAdminEmail(user.email);
+  return NextResponse.json({ ...premium, proAccess, phone }, { headers: { "Cache-Control": "no-store" } });
 }

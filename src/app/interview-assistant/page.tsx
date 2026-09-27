@@ -8,7 +8,6 @@ import { FlipGroup, FlipItem, Float, Reveal3D, Sweep, Tilt, Typewriter } from "@
 import { HudDemo } from "@/components/interview-assistant/hud-demo";
 import { DownloadCards, Faq, HeroDownloads, ProofVideo } from "@/components/interview-assistant/parts";
 import { APP_NAME, APP_VERSION } from "@/lib/desktop-app";
-import { APP_ADDON_PER_MONTH, inr } from "@/lib/premium";
 
 export const metadata: Metadata = {
   title: "AI Interview Assistant — Job Alert 24",
@@ -87,8 +86,8 @@ const FAQ = [
     q: "What do I need to use it?",
     a: (
       <>
-        A <Link href="/pricing?app=1" className="text-[var(--color-c-green)] underline underline-offset-4">PRO+ plan with the app added</Link> (+
-        {inr(APP_ADDON_PER_MONTH)} a month). After you sign in, your access key is on your <Link href="/profile" className="text-[var(--color-c-green)] underline underline-offset-4">profile</Link>. Keys change
+        A <Link href="/pricing" className="text-[var(--color-c-green)] underline underline-offset-4">PRO+ plan</Link>. After you sign in, your
+        access key is on your <Link href="/profile" className="text-[var(--color-c-green)] underline underline-offset-4">profile</Link>. Keys change
         every 12 hours for safety, so copy the current one when the app asks.
       </>
     ),
@@ -175,7 +174,7 @@ export default function InterviewAssistantPage() {
               <span aria-hidden>•</span>
               <span className="flex items-center gap-1.5">
                 <Crown className="h-4 w-4 text-[var(--color-c-green)]" />
-                PRO+ add-on · +{inr(APP_ADDON_PER_MONTH)}/month
+                Included with PRO+
               </span>
               <span aria-hidden>•</span>
               <a href="#proof" className="text-[var(--color-c-green)] underline-offset-4 hover:underline">
@@ -307,8 +306,8 @@ export default function InterviewAssistantPage() {
             </FlipGroup>
             <p className="mt-6 flex items-center justify-center gap-2 text-center text-xs text-[var(--color-c-text-dim)]">
               <KeyRound className="h-4 w-4 text-[var(--color-c-green)]" />
-              Needs PRO+ with the app add-on (+{inr(APP_ADDON_PER_MONTH)}/month).{" "}
-              <Link href="/pricing?app=1" className="font-semibold text-[var(--color-c-green)] underline-offset-4 hover:underline">
+              Needs PRO+.{" "}
+              <Link href="/pricing" className="font-semibold text-[var(--color-c-green)] underline-offset-4 hover:underline">
                 See plans
               </Link>
             </p>
