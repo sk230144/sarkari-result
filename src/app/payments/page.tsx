@@ -41,7 +41,7 @@ export default async function PaymentsPage() {
   const [{ data: rows, error }, premium] = await Promise.all([
     db
       .from("payments")
-      .select("order_id, plan, amount, status, payment_method, paid_at, created_at, period_start, period_end")
+      .select("order_id, plan, amount, status, payment_method, paid_at, created_at, period_start, period_end, includes_app")
       .eq("user_id", user.id)
       .or(`status.eq.paid,created_at.gte.${recentCutoff()}`)
       .order("created_at", { ascending: false })
@@ -109,7 +109,7 @@ export default async function PaymentsPage() {
                   <li key={p.order_id as string} className="flex flex-wrap items-center gap-3 rounded-2xl border border-white/[0.07] bg-[#141713] px-4 py-3.5">
                     <div className="min-w-0 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <p className="text-[14px] font-bold text-[var(--color-c-text)]">PRO+ {plan}</p>
+                        <p className="text-[14px] font-bold text-[var(--color-c-text)]">PRO+ {plan}{p.includes_app ? " + AI Interview Assistant" : ""}</p>
                         <span className={`rounded px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase ${st.cls}`}>{st.label}</span>
                       </div>
                       <p className="mt-0.5 font-mono text-[10px] text-[var(--color-c-dim)]">

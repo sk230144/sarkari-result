@@ -4,10 +4,10 @@ import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { BarChart3, CheckCircle2, Crown, Globe2, Loader2, Lock, Mail, Mic, ShieldCheck, Sparkles, Target, X, XCircle, Zap } from "lucide-react";
+import { BarChart3, CheckCircle2, Crown, Globe2, Laptop, Loader2, Lock, Mail, Mic, ShieldCheck, Sparkles, Target, X, XCircle, Zap } from "lucide-react";
 import { useAuth } from "@/components/auth/auth-provider";
 import { EASE } from "@/components/resume-analysis/motion";
-import { PLANS, QUARTERLY_SAVING, QUOTAS, daysLeft, inr, type PlanKey, type PremiumStatus } from "@/lib/premium";
+import { APP_ADDON_PER_MONTH, PLANS, QUARTERLY_SAVING, QUOTAS, daysLeft, inr, orderTotal, perMonthPrice, type PlanKey, type PremiumStatus } from "@/lib/premium";
 
 const FEATURES = [
   { icon: Target, tint: "text-red-400", label: "Fresh job alerts", free: "Limited", pro: "25x more jobs" },
@@ -23,7 +23,7 @@ type Phase =
   | { kind: "confirm" }
   | { kind: "starting" }
   | { kind: "verifying" }
-  | { kind: "success"; until: string | null }
+  | { kind: "success"; until: string | null; app: boolean }
   | { kind: "pending" }
   | { kind: "failed"; message: string };
 
@@ -60,7 +60,9 @@ export function Pricing() {
   const { user, loading } = useAuth();
   // Arriving from the home page keeps the plan chosen there (?plan=quarterly).
   const [plan, setPlan] = useState<PlanKey>(() => (params.get("plan") === "quarterly" ? "quarterly" : "monthly"));
-  const [status, setStatus] = useState<(PremiumStatus & { phone: string }) | null>(null);
+  // The desktop app add-on: off unless asked for (?app=1 from the app's page).
+  const [includeApp, setIncludeApp] = useState(() => params.get("app") === "1");
+  const [status, setStatus] = useState<(PremiumStatus & { phone: string; appAccess?: boolean }) | null>(null);
   const [phone, setPhone] = useState("");
   const [phase, setPhase] = useState<Phase>({ kind: "idle" });
   const verifying = useRef(false);
@@ -90,7 +92,7 @@ export function Pricing() {
           const j = await r.json().catch(() => ({}));
           if (r.ok && j.state === "paid") {
             setStatus((s) => ({ ...(s ?? { phone }), ...j.premium }));
-            setPhase({ kind: "success", until: j.premium?.premiumUntil ?? null });
+            setPhase({ kind: "success", until: j.premium?.premiumUntil ?? null, app: Boolean(j.premium?.hasApp) });
             return;
           }
           if (r.ok && j.state === "failed") return setPhase({ kind: "failed", message: "The payment didn't go through. No money was taken, or it will be refunded by your bank." });
@@ -121,7 +123,7 @@ export function Pricing() {
       const r = await fetch("/api/payments/order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, phone: digits }),
+        body: JSON.stringify({ plan, phone: digits, includeApp }),
       });
       const j = await r.json();
       if (!r.ok) throw new Error(j.error ?? "Couldn't start the payment.");
@@ -148,6 +150,7 @@ export function Pricing() {
 
   const active = status?.isPremium;
   const chosen = PLANS[plan];
+  const total = orderTotal(plan, includeApp);
   const card = (i: number) => ({
     initial: reduce ? false : { opacity: 0, y: 20 },
     animate: { opacity: 1, y: 0 },
@@ -171,7 +174,8 @@ export function Pricing() {
           className="mx-auto mt-6 flex max-w-2xl flex-wrap items-center justify-center gap-2 rounded-2xl border border-[var(--color-c-lime)]/30 bg-[var(--color-c-lime)]/[0.07] px-4 py-3 text-center text-[13px] text-[var(--color-c-lime)]"
         >
           <Crown className="h-4 w-4" />
-          You&apos;re PRO+ until <b>{fmtDate(status!.premiumUntil)}</b> ({daysLeft(status!.premiumUntil)} days left). Buying again adds time on top.
+          You&apos;re PRO+ until <b>{fmtDate(status!.premiumUntil)}</b> ({daysLeft(status!.premiumUntil)} days left)
+          {status!.hasApp && <> with the AI Interview Assistant until <b>{fmtDate(status!.appAccessUntil)}</b></>}. Buying again adds time on top.
         </motion.div>
       )}
 
@@ -231,16 +235,30 @@ export function Pricing() {
                   </span>
                   <span className="min-w-0 flex-1">
                     <span className="block text-[14px] font-bold text-[var(--color-c-text)]">{p.label}</span>
-                    <span className="block text-[11px] text-[var(--color-c-muted)]">{p.billed}</span>
+                    <span className="block text-[11px] text-[var(--color-c-muted)]">
+                      {p.months === 1 ? p.billed : `Billed ${inr(orderTotal(k, includeApp))} every ${p.months} months`}
+                    </span>
                   </span>
                   <span className="text-right">
-                    <span className="text-[18px] font-extrabold text-[var(--color-c-lime)]">{inr(p.perMonth)}</span>
+                    <AnimatePresence mode="popLayout" initial={false}>
+                      <motion.span
+                        key={perMonthPrice(k, includeApp)}
+                        className="inline-block text-[18px] font-extrabold text-[var(--color-c-lime)]"
+                        initial={reduce ? false : { y: -12, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 12, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        {inr(perMonthPrice(k, includeApp))}
+                      </motion.span>
+                    </AnimatePresence>
                     <span className="text-[11px] text-[var(--color-c-muted)]"> /mo</span>
                   </span>
                 </button>
               );
             })}
           </div>
+          <AppAddon on={includeApp} onChange={setIncludeApp} until={status?.hasApp ? status.appAccessUntil : null} reduce={Boolean(reduce)} />
           <p className="mt-4 text-[13px] leading-relaxed text-[var(--color-c-text-4)]">10x the AI toolkit every month, so a free-plan cap never stops you mid-search.</p>
           <ul className="mt-5 space-y-4 border-t border-white/10 pt-5">
             {FEATURES.map((f) => (
@@ -301,7 +319,17 @@ export function Pricing() {
                       <span className="text-[13px] text-[var(--color-c-muted)]">
                         {chosen.months === 1 ? "1 month" : `${chosen.months} months`} of PRO+
                       </span>
-                      <span className="text-[22px] font-extrabold text-[var(--color-c-text)]">{inr(chosen.total)}</span>
+                      <span className="text-[14px] font-semibold text-[var(--color-c-text)]">{inr(chosen.total)}</span>
+                    </div>
+                    {includeApp && (
+                      <div className="mt-1.5 flex items-baseline justify-between">
+                        <span className="text-[13px] text-[var(--color-c-muted)]">AI Interview Assistant app</span>
+                        <span className="text-[14px] font-semibold text-[var(--color-c-text)]">{inr(APP_ADDON_PER_MONTH * chosen.months)}</span>
+                      </div>
+                    )}
+                    <div className="mt-3 flex items-baseline justify-between border-t border-white/[0.08] pt-3">
+                      <span className="text-[13px] font-semibold text-[var(--color-c-text-4)]">Total</span>
+                      <span className="text-[22px] font-extrabold text-[var(--color-c-text)]">{inr(total)}</span>
                     </div>
                     <p className="mt-1 text-[11px] text-[var(--color-c-dim)]">
                       {active ? `Adds to your current PRO+ (until ${fmtDate(status!.premiumUntil)}).` : "Starts right after payment."} One-time payment, no auto-renewal.
@@ -328,7 +356,7 @@ export function Pricing() {
                     className="mt-5 flex w-full items-center justify-center gap-2 rounded-full bg-[var(--color-c-lime)] py-3.5 text-[14px] font-bold text-black disabled:opacity-70"
                   >
                     {phase.kind === "starting" ? <Loader2 className="h-4 w-4 animate-spin" /> : <ShieldCheck className="h-4 w-4" />}
-                    {phase.kind === "starting" ? "Opening secure checkout…" : `Pay ${inr(chosen.total)}`}
+                    {phase.kind === "starting" ? "Opening secure checkout…" : `Pay ${inr(total)}`}
                   </button>
                   <p className="mt-3 text-center text-[11px] text-[var(--color-c-dim)]">You&apos;ll choose UPI, card, net banking or wallet in Cashfree&apos;s secure window.</p>
                 </>
@@ -356,9 +384,23 @@ export function Pricing() {
                   <p className="mt-1 text-[13px] text-[var(--color-c-muted)]">
                     Active until <b className="text-[var(--color-c-text)]">{fmtDate(phase.until)}</b>. A receipt is on its way from Cashfree.
                   </p>
-                  <Link href="/resources" className="mt-6 w-full rounded-full bg-[var(--color-c-lime)] py-3 text-[14px] font-bold text-black">
-                    Start using PRO+
-                  </Link>
+                  {phase.app ? (
+                    <>
+                      <p className="mt-3 flex items-center gap-1.5 text-[13px] font-semibold text-[var(--color-c-lime)]">
+                        <Laptop className="h-4 w-4" /> AI Interview Assistant unlocked
+                      </p>
+                      <Link href="/interview-assistant#download" className="mt-5 w-full rounded-full bg-[var(--color-c-lime)] py-3 text-[14px] font-bold text-black">
+                        Download the app
+                      </Link>
+                      <Link href="/profile" className="mt-2 w-full rounded-full border border-white/10 py-3 text-[13px] font-semibold text-[var(--color-c-text)]">
+                        Get your access key
+                      </Link>
+                    </>
+                  ) : (
+                    <Link href="/resources" className="mt-6 w-full rounded-full bg-[var(--color-c-lime)] py-3 text-[14px] font-bold text-black">
+                      Start using PRO+
+                    </Link>
+                  )}
                 </div>
               )}
 
@@ -388,5 +430,50 @@ export function Pricing() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+/** The optional desktop app add-on on the PRO+ card. */
+function AppAddon({ on, onChange, until, reduce }: { on: boolean; onChange: (v: boolean) => void; until: string | null; reduce: boolean }) {
+  return (
+    <label
+      className={`relative mt-4 flex cursor-pointer items-start gap-3.5 overflow-hidden rounded-2xl border px-4 py-3.5 transition-colors ${
+        on ? "border-[var(--color-c-lime)]/70 bg-[var(--color-c-lime)]/[0.09]" : "border-dashed border-white/15 bg-black/10 hover:border-white/30"
+      }`}
+    >
+      {!on && !reduce && (
+        <motion.span
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-gradient-to-r from-transparent via-[var(--color-c-lime)]/10 to-transparent"
+          animate={{ x: ["0%", "450%"] }}
+          transition={{ duration: 2.2, repeat: Infinity, repeatDelay: 2.5, ease: "easeInOut" }}
+        />
+      )}
+      <input type="checkbox" className="peer sr-only" checked={on} onChange={(e) => onChange(e.target.checked)} />
+      <span
+        aria-hidden
+        className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-md border-2 transition-colors peer-focus-visible:ring-2 peer-focus-visible:ring-[var(--color-c-lime)]/60 ${
+          on ? "border-[var(--color-c-lime)] bg-[var(--color-c-lime)]" : "border-white/30"
+        }`}
+      >
+        <motion.svg viewBox="0 0 16 16" className="h-3.5 w-3.5 text-black" initial={false} animate={{ opacity: on ? 1 : 0, scale: on ? 1 : 0.5 }}>
+          <path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+        </motion.svg>
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex flex-wrap items-center gap-2 text-[14px] font-bold text-[var(--color-c-text)]">
+          <Laptop className="h-4 w-4 text-[var(--color-c-lime)]" />
+          Include AI Interview Assistant app
+        </span>
+        <span className="mt-0.5 block text-[11px] leading-relaxed text-[var(--color-c-muted)]">
+          Desktop app for Windows &amp; Mac, with its access key.{" "}
+          {until ? <>You have it until {fmtDate(until)}; this adds time on top.</> : <>Download unlocks after payment.</>}
+        </span>
+      </span>
+      <span className="shrink-0 text-right">
+        <span className="text-[15px] font-extrabold text-[var(--color-c-lime)]">+{inr(APP_ADDON_PER_MONTH)}</span>
+        <span className="text-[11px] text-[var(--color-c-muted)]"> /mo</span>
+      </span>
+    </label>
   );
 }

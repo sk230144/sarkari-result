@@ -26,6 +26,7 @@ export default async function InvoicePage({ params }: { params: Promise<{ orderI
   const planKey: unknown = p.plan;
   const plan = isPlan(planKey) ? PLANS[planKey] : null;
   const amount = Number(p.amount);
+  const appAmount = p.includes_app ? Number(p.app_amount) : 0;
   const number = `JA24-${String(orderId).split("_").slice(1).join("-").toUpperCase()}`;
   const buyer = (prof?.full_name as string) || (prof?.email as string) || "Customer";
 
@@ -84,8 +85,17 @@ export default async function InvoicePage({ params }: { params: Promise<{ orderI
               <td className="py-3.5 text-slate-600">
                 {date(p.period_start as string)} – {date(p.period_end as string)}
               </td>
-              <td className="py-3.5 text-right font-semibold text-slate-900">{inr(amount)}</td>
+              <td className="py-3.5 text-right font-semibold text-slate-900">{inr(amount - appAmount)}</td>
             </tr>
+            {p.includes_app && (
+              <tr className="border-b border-slate-100">
+                <td className="py-3.5 font-semibold text-slate-900">AI Interview Assistant app</td>
+                <td className="py-3.5 text-slate-600">
+                  {plan ? `${plan.months} month${plan.months === 1 ? "" : "s"}` : "—"}
+                </td>
+                <td className="py-3.5 text-right font-semibold text-slate-900">{inr(appAmount)}</td>
+              </tr>
+            )}
           </tbody>
         </table>
 

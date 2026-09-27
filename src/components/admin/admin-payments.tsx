@@ -7,6 +7,8 @@ export type AdminMember = {
   plan: string | null;
   since: string | null;
   until: string;
+  /** AI Interview Assistant add-on end, if ever bought. */
+  appUntil: string | null;
 };
 
 export type AdminPayment = {
@@ -18,6 +20,7 @@ export type AdminPayment = {
   paid_at: string | null;
   created_at: string;
   period_end: string | null;
+  includes_app: boolean;
   email: string | null;
 };
 
@@ -96,7 +99,12 @@ export function AdminPayments({ payments, members, ready }: { payments: AdminPay
                           <p className="truncate font-semibold text-[var(--color-c-text)]">{m.name || "—"}</p>
                           <p className="truncate text-[11px] text-[var(--color-c-dim)]">{m.email ?? "—"}</p>
                         </td>
-                        <td className="py-2 pr-3 capitalize">{m.plan ?? "—"}</td>
+                        <td className="py-2 pr-3 whitespace-nowrap capitalize">
+                          {m.plan ?? "—"}
+                          {m.appUntil && new Date(m.appUntil).getTime() > now && (
+                            <span className="ml-1.5 rounded bg-[var(--color-c-lime)]/15 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-[var(--color-c-lime)]">App</span>
+                          )}
+                        </td>
                         <td className="py-2 pr-3 whitespace-nowrap">{m.since ? new Date(m.since).toLocaleDateString("en-IN") : "—"}</td>
                         <td className="py-2 pr-3 whitespace-nowrap">{new Date(m.until).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}</td>
                         <td className="py-2 whitespace-nowrap">
@@ -138,7 +146,10 @@ export function AdminPayments({ payments, members, ready }: { payments: AdminPay
                     <tr key={p.order_id} className="border-t border-[var(--color-c-border)] text-[var(--color-c-text-4)]">
                       <td className="py-2 pr-3 whitespace-nowrap">{new Date(p.paid_at ?? p.created_at).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}</td>
                       <td className="max-w-[200px] truncate py-2 pr-3">{p.email ?? "—"}</td>
-                      <td className="py-2 pr-3 capitalize">{p.plan}</td>
+                      <td className="py-2 pr-3 whitespace-nowrap capitalize">
+                        {p.plan}
+                        {p.includes_app && <span className="ml-1.5 rounded bg-[var(--color-c-lime)]/15 px-1.5 py-0.5 font-mono text-[9px] font-bold uppercase text-[var(--color-c-lime)]">+ App</span>}
+                      </td>
                       <td className="py-2 pr-3 text-right font-semibold text-[var(--color-c-text)]">{inr(Number(p.amount))}</td>
                       <td className="py-2 pr-3 uppercase">{p.payment_method?.replace(/_/g, " ") ?? "—"}</td>
                       <td className="py-2 pr-3">

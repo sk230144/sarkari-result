@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { serviceDb } from "@/lib/server-auth";
 import { verifyKey } from "@/lib/access-key";
+import { hasAppAccessById } from "@/lib/payments/server";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +68,10 @@ export async function POST(request: Request) {
     return json({ valid: false, error: "Key service unavailable." }, 503);
   }
   if (!owner) return json({ valid: false, error: "Invalid or expired key." }, 401);
+  // A key issued before the app add-on ran out stops working as soon as it does.
+  if (!(await hasAppAccessById(db, owner.userId))) {
+    return json({ valid: false, error: "The AI Interview Assistant isn't part of this account's plan. Add it to PRO+ at jobalerts24.com/pricing." }, 403);
+  }
 
   const { data: profile } = await db.from("profiles").select("full_name").eq("id", owner.userId).maybeSingle();
   return json({ valid: true, name: (profile?.full_name as string | null)?.trim() || null, expiresAt: owner.expiresAt }, 200);

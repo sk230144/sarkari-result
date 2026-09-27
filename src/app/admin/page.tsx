@@ -140,12 +140,12 @@ export default async function AdminPage() {
       .limit(500),
     adminDb()
       .from("payments")
-      .select("order_id, user_id, plan, amount, status, payment_method, paid_at, created_at, period_end")
+      .select("order_id, user_id, plan, amount, status, payment_method, paid_at, created_at, period_end, includes_app")
       .order("created_at", { ascending: false })
       .limit(1000),
     adminDb()
       .from("profiles")
-      .select("id, full_name, premium_plan, premium_since, premium_until")
+      .select("id, full_name, premium_plan, premium_since, premium_until, app_access_until")
       .not("premium_until", "is", null)
       .order("premium_until", { ascending: false })
       .limit(1000),
@@ -163,6 +163,7 @@ export default async function AdminPage() {
     plan: (m.premium_plan as string) ?? null,
     since: (m.premium_since as string) ?? null,
     until: m.premium_until as string,
+    appUntil: (m.app_access_until as string) ?? null,
   }));
   const maxViews = sections[0]?.views ?? 1;
   const aiUsers = users.filter((u) => u.ai.calls > 0).sort((a, b) => b.ai.costUsd - a.ai.costUsd);

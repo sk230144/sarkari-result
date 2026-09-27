@@ -3,8 +3,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { Wand2, Crown } from "lucide-react";
-import { PLANS, QUARTERLY_SAVING, QUOTAS, inr } from "@/lib/premium";
+import { Wand2, Crown, Laptop } from "lucide-react";
+import { APP_ADDON_PER_MONTH, QUARTERLY_SAVING, QUOTAS, inr, orderTotal, perMonthPrice } from "@/lib/premium";
 import { Reveal3D, Tilt } from "./motion-kit";
 
 const FEATURES = [
@@ -36,6 +36,8 @@ const PRO_VALUES = [
 
 export function Pricing() {
   const [isQuarterly, setIsQuarterly] = useState(false);
+  const [withApp, setWithApp] = useState(false);
+  const planKey = isQuarterly ? "quarterly" : "monthly";
   const reduce = useReducedMotion();
 
   return (
@@ -136,21 +138,36 @@ export function Pricing() {
                   <span className="inline-block text-4xl font-extrabold text-[var(--color-c-green)]" style={{ perspective: 400 }}>
                     <AnimatePresence mode="wait" initial={false}>
                       <motion.span
-                        key={isQuarterly ? "q" : "m"}
+                        key={`${planKey}-${withApp}`}
                         className="inline-block"
                         initial={reduce ? false : { rotateX: -90, opacity: 0 }}
                         animate={{ rotateX: 0, opacity: 1 }}
                         exit={reduce ? undefined : { rotateX: 90, opacity: 0 }}
                         transition={{ duration: 0.25 }}
                       >
-                        {inr(isQuarterly ? PLANS.quarterly.perMonth : PLANS.monthly.perMonth)}
+                        {inr(perMonthPrice(planKey, withApp))}
                       </motion.span>
                     </AnimatePresence>
                   </span>
                   <span className="text-xs text-[var(--color-c-text-muted-2)]">
-                    {isQuarterly ? `/ month (${inr(PLANS.quarterly.total)} billed quarterly)` : "/ month"}
+                    {isQuarterly ? `/ month (${inr(orderTotal("quarterly", withApp))} billed quarterly)` : "/ month"}
                   </span>
                 </div>
+                <label
+                  className={`mb-5 mt-4 flex cursor-pointer items-center gap-3 rounded-xl border px-3.5 py-3 text-xs transition-colors ${
+                    withApp ? "border-[var(--color-c-green)]/60 bg-[var(--color-c-green)]/10" : "border-dashed border-[var(--color-c-forest-27)] hover:border-[var(--color-c-green)]/40"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={withApp}
+                    onChange={(e) => setWithApp(e.target.checked)}
+                    className="h-4 w-4 shrink-0 accent-[var(--color-c-green)]"
+                  />
+                  <Laptop className="h-4 w-4 shrink-0 text-[var(--color-c-green)]" />
+                  <span className="flex-1 font-semibold text-[var(--color-c-text)]">Include AI Interview Assistant app</span>
+                  <span className="font-bold text-[var(--color-c-green)]">+{inr(APP_ADDON_PER_MONTH)}/mo</span>
+                </label>
                 <p className="mb-8 text-xs text-[var(--color-c-text-muted-2)]">
                   10x the AI toolkit every month, so a free-plan cap never stops
                   you mid-search.
@@ -169,7 +186,7 @@ export function Pricing() {
                 </ul>
               </div>
               <Link
-                href={`/pricing?plan=${isQuarterly ? "quarterly" : "monthly"}`}
+                href={`/pricing?plan=${planKey}${withApp ? "&app=1" : ""}`}
                 className="block w-full rounded-xl bg-[var(--color-c-green)] px-4 py-3.5 text-center text-xs font-bold text-black shadow-lg transition-all hover:bg-[var(--color-c-green-2)]"
               >
                 Upgrade to PRO+

@@ -123,6 +123,8 @@ export type ProfileData = {
   showResume: boolean;
   /** PRO+ membership end (null if never bought). Premium while it's in the future. */
   premiumUntil: string | null;
+  /** AI Interview Assistant add-on end. Private, like premiumUntil. */
+  appAccessUntil: string | null;
 };
 
 export type Endorsement = {
@@ -163,7 +165,7 @@ export type ProfileExtras = {
 export type ProfileResponse = { profile: ProfileData; extras: ProfileExtras };
 
 /** Public page payload: never includes email, apply details or the resume's storage path. */
-export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic" | "showResume" | "premiumUntil"> & {
+export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic" | "showResume" | "premiumUntil" | "appAccessUntil"> & {
   /** Shows the PRO+ badge; the end date itself stays private. */
   isPremium: boolean;
   id: string;

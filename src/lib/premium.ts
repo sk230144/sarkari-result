@@ -13,6 +13,18 @@ export const PLANS: Record<PlanKey, { key: PlanKey; label: string; months: numbe
   monthly: { key: "monthly", label: "Monthly", months: 1, total: MONTHLY_PRICE, perMonth: MONTHLY_PRICE, billed: "Billed every month" },
 };
 
+/** The AI Interview Assistant desktop app, an optional add-on to PRO+, per month of the plan. */
+export const APP_ADDON_PER_MONTH = 200;
+
+/** What an order costs: the plan, plus the app add-on for each month when included. */
+export function orderTotal(plan: PlanKey, withApp: boolean) {
+  const p = PLANS[plan];
+  return p.total + (withApp ? APP_ADDON_PER_MONTH * p.months : 0);
+}
+
+/** Per-month price shown next to a plan. */
+export const perMonthPrice = (plan: PlanKey, withApp: boolean) => PLANS[plan].perMonth + (withApp ? APP_ADDON_PER_MONTH : 0);
+
 /** How much cheaper quarterly is than paying monthly, in whole percent. */
 export const QUARTERLY_SAVING = Math.max(0, Math.round((1 - PLANS.quarterly.perMonth / PLANS.monthly.perMonth) * 100));
 
@@ -27,6 +39,9 @@ export type PremiumStatus = {
   premiumUntil: string | null;
   plan: PlanKey | null;
   since: string | null;
+  /** Paid access to the AI Interview Assistant app. */
+  hasApp: boolean;
+  appAccessUntil: string | null;
 };
 
 export const inr = (n: number) => `₹${n.toLocaleString("en-IN")}`;

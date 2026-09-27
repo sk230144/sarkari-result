@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { isAdminEmail } from "@/lib/admin";
 import { logAiUsage, serviceDb } from "@/lib/server-auth";
 import { hashKey, lookupKey } from "@/lib/access-key";
+import { hasAppAccessById } from "@/lib/payments/server";
 import { InputError, LIMITS, parseChatInput, peekRequestId } from "@/lib/desktop/validate";
 import { ChatError, askGemini, type ChatResult } from "@/lib/desktop/gemini";
 
@@ -39,6 +40,7 @@ type Code =
   | "INVALID_REQUEST"
   | "ACCESS_KEY_INVALID"
   | "USER_DISABLED"
+  | "APP_ACCESS_REQUIRED"
   | "ACCESS_KEY_EXPIRED"
   | "PAYLOAD_TOO_LARGE"
   | "RATE_LIMITED"
@@ -130,6 +132,9 @@ export async function POST(request: Request) {
     return fail(403, rid, "USER_DISABLED", "This account has been disabled. Contact Job Alert 24 support.");
   }
   const userId = access.userId;
+  if (!(await hasAppAccessById(db, userId))) {
+    return fail(403, rid, "APP_ACCESS_REQUIRED", "The AI Interview Assistant isn't part of your plan. Add it to PRO+ at jobalerts24.com/pricing.");
+  }
   const keyFp = hashKey(key).slice(0, 16);
 
   /* ---- input ---- */
