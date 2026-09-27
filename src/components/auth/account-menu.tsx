@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { User, LogOut, FileText, Loader2, Shield } from "lucide-react";
+import { User, LogOut, FileText, Loader2, Shield, Crown } from "lucide-react";
 import { useAuth } from "./auth-provider";
 import { isAdminEmail } from "@/lib/admin-emails";
 
@@ -20,7 +20,17 @@ export function AccountMenu() {
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const [premium, setPremium] = useState<{ isPremium: boolean; premiumUntil: string | null } | null>(null);
   const boxRef = useRef<HTMLDivElement>(null);
+
+  // Membership is fetched the first time the menu opens, not on every page.
+  useEffect(() => {
+    if (!open || premium || !user) return;
+    fetch("/api/payments/status", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => j && setPremium({ isPremium: Boolean(j.isPremium), premiumUntil: j.premiumUntil ?? null }))
+      .catch(() => {});
+  }, [open, premium, user]);
 
   // Close on outside click or Escape — a menu that traps you is worse
   // than no menu.
@@ -96,7 +106,23 @@ export function AccountMenu() {
             <p className="truncate text-[11px] text-[var(--color-c-dim)]">
               {user.email}
             </p>
+            {premium?.isPremium && (
+              <p className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--color-c-lime)] px-2 py-0.5 text-[10px] font-bold text-black">
+                <Crown className="h-3 w-3" /> PRO+ until{" "}
+                {new Date(premium.premiumUntil!).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+              </p>
+            )}
           </div>
+
+          <Link
+            href="/pricing"
+            onClick={() => setOpen(false)}
+            role="menuitem"
+            className="flex items-center gap-2.5 px-3 py-2.5 text-[12px] font-semibold text-[var(--color-c-lime)] transition-colors hover:bg-[var(--color-c-surface-2)]"
+          >
+            <Crown className="h-3.5 w-3.5" />
+            {premium?.isPremium ? "Extend PRO+" : "Upgrade to PRO+"}
+          </Link>
 
           <Link
             href="/profile"

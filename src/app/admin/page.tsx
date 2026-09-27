@@ -14,6 +14,7 @@ import { isAdmin, getAdminData, adminDb } from "@/lib/admin";
 import { AdminFeedback, type FeedbackItem } from "@/components/admin/admin-feedback";
 import { AdminBlogReview, type PendingPost } from "@/components/admin/admin-blog-review";
 import { AdminBlogPosts, type AdminPost } from "@/components/admin/admin-blog-posts";
+import { AdminPayments, type AdminPayment } from "@/components/admin/admin-payments";
 import { USD_TO_INR } from "@/lib/ai-pricing";
 
 /** "₹1.24" with the USD figure alongside; tiny amounts keep enough decimals to read. */
@@ -117,7 +118,7 @@ export default async function AdminPage() {
   // existence is not disclosed to anyone who is not an admin.
   if (!(await isAdmin())) notFound();
 
-  const [{ users, sections, totals, ai }, feedback, pendingPosts, allPosts] = await Promise.all([
+  const [{ users, sections, totals, ai }, feedback, pendingPosts, allPosts, payments, members] = await Promise.all([
     getAdminData(),
     adminDb()
       .from("feedback")
@@ -135,7 +136,15 @@ export default async function AdminPage() {
       .select("id, slug, title, author_name, status, views, word_count, updated_at")
       .order("updated_at", { ascending: false })
       .limit(500),
+    adminDb()
+      .from("payments")
+      .select("order_id, user_id, plan, amount, status, payment_method, paid_at, created_at, period_end")
+      .order("created_at", { ascending: false })
+      .limit(1000),
+    adminDb().from("profiles").select("id", { count: "exact", head: true }).gt("premium_until", new Date().toISOString()),
   ]);
+  const emailOf = new Map(users.map((u) => [u.id, u.email]));
+  const paymentRows: AdminPayment[] = (payments.data ?? []).map((p) => ({ ...(p as Omit<AdminPayment, "email">), email: emailOf.get(p.user_id as string) ?? null }));
   const maxViews = sections[0]?.views ?? 1;
   const aiUsers = users.filter((u) => u.ai.calls > 0).sort((a, b) => b.ai.costUsd - a.ai.costUsd);
 
@@ -207,6 +216,8 @@ export default async function AdminPage() {
             </div>
           )}
         </section>
+
+        <AdminPayments payments={paymentRows} activeMembers={members.count ?? 0} ready={!payments.error} />
 
         <AdminBlogReview initial={(pendingPosts.data ?? []) as PendingPost[]} ready={!pendingPosts.error} />
 

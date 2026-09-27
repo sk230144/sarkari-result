@@ -3,6 +3,7 @@ import { createHash } from "crypto";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { extractResumeText } from "@/lib/resume-text";
 import { parseResume, pdfLinks } from "./resume-parse";
+import { isPremiumActive } from "@/lib/premium";
 import {
   APPLY_FIELDS,
   BANNERS,
@@ -85,6 +86,7 @@ export function rowToProfile(row: ProfileRow): ProfileData {
     noticePeriod: NOTICE_PERIODS.some((n) => n.key === row.notice_period) ? (row.notice_period as NoticePeriod) : null,
     // Shown unless the owner turned it off (also true before the column exists).
     showResume: row.show_resume !== false,
+    premiumUntil: (row.premium_until as string) ?? null,
   };
 }
 
@@ -111,6 +113,7 @@ export function rowToPublic(row: ProfileRow, endorsements: Endorsement[]): Publi
     layout: p.layout,
     theme: p.theme,
     noticePeriod: p.noticePeriod,
+    isPremium: isPremiumActive(p.premiumUntil),
     publicResume:
       p.showResume && p.resume.path ? { filename: p.resume.filename || "resume.pdf", uploadedAt: p.resume.uploadedAt } : null,
     endorsements,

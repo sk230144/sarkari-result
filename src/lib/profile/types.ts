@@ -121,6 +121,8 @@ export type ProfileData = {
   noticePeriod: NoticePeriod | null;
   /** Whether the resume is viewable and downloadable on the public profile. */
   showResume: boolean;
+  /** PRO+ membership end (null if never bought). Premium while it's in the future. */
+  premiumUntil: string | null;
 };
 
 export type Endorsement = {
@@ -161,7 +163,9 @@ export type ProfileExtras = {
 export type ProfileResponse = { profile: ProfileData; extras: ProfileExtras };
 
 /** Public page payload: never includes email, apply details or the resume's storage path. */
-export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic" | "showResume"> & {
+export type PublicProfile = Omit<ProfileData, "email" | "applyDetails" | "resume" | "isPublic" | "showResume" | "premiumUntil"> & {
+  /** Shows the PRO+ badge; the end date itself stays private. */
+  isPremium: boolean;
   id: string;
   endorsements: Endorsement[];
   /** Set when the owner has a resume and shows it publicly. */

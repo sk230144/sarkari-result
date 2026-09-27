@@ -15,6 +15,7 @@ import {
   Lock,
   Github,
   Clock,
+  Crown,
   Download,
   FileText,
   Eye,
@@ -341,8 +342,13 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
             </div>
             <div className="flex flex-col gap-4 pt-12 sm:flex-row sm:items-start sm:justify-between sm:pt-14 lg:pt-16">
               <div className="min-w-0">
-                <h1 className={`break-words text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px] ${t.strong}`}>
+                <h1 className={`flex flex-wrap items-center gap-x-2.5 gap-y-1 break-words text-[22px] font-extrabold leading-tight tracking-tight sm:text-[28px] lg:text-[32px] ${t.strong}`}>
                   {p.fullName}
+                  {p.isPremium && (
+                    <span title="PRO+ member" className="inline-flex items-center gap-1 rounded-full bg-[#a3e635] px-2 py-0.5 align-middle text-[11px] font-bold tracking-normal text-black">
+                      <Crown className="h-3 w-3" /> PRO+
+                    </span>
+                  )}
                 </h1>
                 {p.headline && <p className={`mt-1 break-words text-[14px] font-semibold sm:text-[15px] ${t.accent}`}>{p.headline}</p>}
                 <div className={`mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-[12px] ${t.body}`}>

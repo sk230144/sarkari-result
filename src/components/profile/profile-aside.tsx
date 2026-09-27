@@ -27,6 +27,7 @@ import { supabaseBrowser } from "@/lib/supabase-browser";
 import { APPLY_FIELDS, SECTION_LABELS, type ApplyKey, type SectionKey } from "@/lib/profile/types";
 import { useEditor, PUBLIC_TAB } from "./editor-context";
 import { AccessKeyCard } from "./access-key-card";
+import { PremiumCard } from "./premium-card";
 import { Card, SmallButton, TextInput, Toggle, moveItem } from "./ui";
 
 function useCopy() {
@@ -127,6 +128,7 @@ export function ProfileAside() {
 
   return (
     <div className="flex flex-col gap-4">
+      <PremiumCard />
       <AccessKeyCard />
 
       {/* Referrals */}
