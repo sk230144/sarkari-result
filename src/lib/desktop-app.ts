@@ -15,7 +15,7 @@ const RELEASES = (
 ).replace(/\/+$/, "");
 
 export const APP_NAME = "Job 24 Alert Tool";
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "1.0.1";
 
 export type Build = {
   id: "win" | "mac-arm" | "mac-intel";
