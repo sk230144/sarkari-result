@@ -65,7 +65,7 @@ export function SystemDesign() {
 
   // A shared link (…#two-phase-commit) must be visible regardless of the
   // HLD/LLD filter it was posted under.
-  useAnchorReveal((slug) => {
+  const linked = useAnchorReveal((slug) => {
     if (QUESTIONS.some((q) => q.slug === slug)) setFilter("all");
   });
 
@@ -225,8 +225,8 @@ export function SystemDesign() {
               key={q.slug}
               id={q.slug}
               className={`relative flex scroll-mt-24 flex-col overflow-hidden rounded-xl border p-4 transition-all ${t.card} ${t.border} ${
-                isDone ? "opacity-70" : ""
-              }`}
+                isDone && linked !== q.slug ? "opacity-70" : ""
+              } ${linked === q.slug ? "anchor-hit" : ""}`}
             >
               <CardWatermark motif={q.motif} />
 
@@ -333,7 +333,7 @@ export function SystemDesign() {
                   href={q.article}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className={`inline-flex items-center gap-1 text-[11px] font-bold ${t.title} hover:underline`}
+                  className={`inline-flex items-center gap-1 whitespace-nowrap text-[11px] font-bold ${t.title} hover:underline`}
                 >
                   Read article
                   <ArrowRight className="h-3 w-3" />
@@ -351,15 +351,11 @@ export function SystemDesign() {
                   >
                     <YouTubeIcon className="h-5 w-5" />
                   </a>
-                  <ShareLinkButton
-                    variant="card"
-                    anchor={q.slug}
-                    label={`Copy link to "${q.title}"`}
-                  />
+                  <ShareLinkButton variant="card" anchor={q.slug} label={`Copy link to ${q.title}`} />
                   <button
                     type="button"
                     onClick={() => openNote(q.slug)}
-                    className="inline-flex items-center gap-1 rounded border border-white/15 px-1.5 py-0.5 text-[10px] font-medium text-white/60 transition-colors hover:border-white/40 hover:text-[var(--color-c-text)]"
+                    className="inline-flex h-6 items-center gap-1 whitespace-nowrap rounded-md border border-white/15 px-1.5 text-[10px] font-medium text-white/60 transition-colors hover:border-white/40 hover:text-[var(--color-c-text)]"
                   >
                     <StickyNote className="h-3 w-3" />
                     {notes[q.slug] ? "Edit note" : "Add note"}

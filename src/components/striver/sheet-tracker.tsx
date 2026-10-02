@@ -99,7 +99,7 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
   }
 
   // A shared link (…#d3-p12) opens that problem's section and scrolls to it.
-  useAnchorReveal((id) => {
+  const linked = useAnchorReveal((id) => {
     const match = /^d(\d+)-p/.exec(id);
     const day = match ? Number(match[1]) : NaN;
     if (!Number.isNaN(day)) setExpanded((p) => (p.includes(day) ? p : [...p, day]));
@@ -385,7 +385,9 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
                         <li
                           key={p.n}
                           id={anchor}
-                          className="flex items-start gap-3 px-4 py-2.5 scroll-mt-24 transition-colors hover:bg-white/[0.02] target:bg-[var(--color-c-chip-easy)]/40"
+                          className={`flex scroll-mt-24 items-start gap-3 rounded-md px-4 py-2.5 transition-colors hover:bg-white/[0.02] ${
+                            linked === anchor ? "anchor-hit anchor-hit-inset bg-[var(--color-c-chip-easy)]" : ""
+                          }`}
                         >
                           <button
                             type="button"

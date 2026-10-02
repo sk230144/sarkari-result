@@ -4,33 +4,27 @@ import { useState } from "react";
 import { Check, Link2 } from "lucide-react";
 
 const VARIANTS = {
-  /** Bordered pill with a label — matches the "Copy link" style on blog articles. */
-  pill: "inline-flex items-center gap-1.5 rounded-md border border-[var(--color-c-border)] px-2 py-1 font-mono text-[10px] font-semibold text-[var(--color-c-muted)] hover:border-white/25 hover:text-[var(--color-c-text)]",
-  /** Bare icon — for a tight row of per-item icon buttons (DSA sheet rows). */
+  /** Bare icon, for a tight row of per-item icon buttons (DSA sheet rows). */
   bare: "shrink-0 text-[var(--color-c-border-strong)] hover:text-[var(--color-c-muted)]",
-  /** Bordered pill on a dark card tint — system design's footer action row. */
-  card: "inline-flex items-center gap-1 rounded border border-white/15 px-1.5 py-0.5 text-[10px] font-medium text-white/60 hover:border-white/40 hover:text-[var(--color-c-text)]",
+  /** Small square icon button on a tinted card (system design footer). */
+  card: "flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-white/15 text-white/60 hover:border-white/40 hover:text-[var(--color-c-text)]",
 } as const;
 
 /**
- * Copies a direct, shareable link to one question/pattern (the page URL plus
- * a #hash anchor). Used on DSA sheets, FAANG question lists and system
- * design, so a single question can be posted on LinkedIn instead of the
- * whole page.
+ * Copies a direct, shareable link to one question (the page URL plus a #hash
+ * anchor), so a single question can be posted on LinkedIn instead of the
+ * whole page. Icon only; `label` is the accessible name and tooltip.
  */
 export function ShareLinkButton({
   anchor,
   label = "Copy link",
-  variant = "pill",
-  showLabel = true,
+  variant = "bare",
   className = "",
 }: {
   anchor: string;
-  variant?: keyof typeof VARIANTS;
-  /** Pill/card variants: show the text label next to the icon (hidden once copied still reads "Copied"). */
-  showLabel?: boolean;
-  className?: string;
   label?: string;
+  variant?: keyof typeof VARIANTS;
+  className?: string;
 }) {
   const [copied, setCopied] = useState(false);
 
@@ -40,27 +34,23 @@ export function ShareLinkButton({
     try {
       await navigator.clipboard.writeText(url);
     } catch {
-      // Clipboard API unavailable (very old browser, or blocked) — fall back
-      // to moving the address bar there, which the reader can copy manually.
+      // Clipboard blocked: put the link in the address bar so it can be copied by hand.
       window.history.replaceState(null, "", `#${anchor}`);
     }
     setCopied(true);
     setTimeout(() => setCopied(false), 1600);
   }
 
-  const iconCls = variant === "bare" ? "h-3.5 w-3.5" : "h-3 w-3";
-  const limeWhenCopied = variant === "bare" ? (copied ? "text-[var(--color-c-lime)]" : "") : "";
-
+  const size = variant === "bare" ? "h-3.5 w-3.5" : "h-3 w-3";
   return (
     <button
       type="button"
       onClick={copy}
-      aria-label={label}
-      title={label}
-      className={`transition-colors ${VARIANTS[variant]} ${limeWhenCopied} ${className}`}
+      aria-label={copied ? "Link copied" : label}
+      title={copied ? "Link copied" : label}
+      className={`transition-colors ${VARIANTS[variant]} ${copied ? "!text-[var(--color-c-lime)]" : ""} ${className}`}
     >
-      {copied ? <Check className={`${iconCls} ${variant !== "bare" ? "text-[var(--color-c-lime)]" : ""}`} /> : <Link2 className={iconCls} />}
-      {variant !== "bare" && showLabel && (copied ? "Copied" : label)}
+      {copied ? <Check className={size} /> : <Link2 className={size} />}
     </button>
   );
 }

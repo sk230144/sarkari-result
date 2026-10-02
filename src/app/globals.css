@@ -1438,3 +1438,19 @@ h3 {
 @media (prefers-reduced-motion: reduce) {
   .ia-cta, .ia-cta-shine { animation: none; }
 }
+
+/* A question opened from a shared link (…#id): lime outline, glow pulses on arrival. */
+.anchor-hit {
+  outline: 2px solid var(--color-c-lime);
+  outline-offset: 3px;
+  animation: anchor-hit 1.1s ease-out 3;
+}
+@keyframes anchor-hit {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-c-lime) 55%, transparent); }
+  100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--color-c-lime) 0%, transparent); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .anchor-hit { animation: none; }
+}
+/* Rows inside a clipped list: draw the outline inside the row so the edges aren't cut off. */
+.anchor-hit-inset { outline-offset: -2px; }

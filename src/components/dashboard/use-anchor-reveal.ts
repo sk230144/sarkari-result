@@ -1,27 +1,36 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 /**
- * When the page loads with a #hash (someone followed a shared question
- * link), this opens the right group and scrolls the target into view.
- *
- * `reveal(id)` must synchronously return the set of group keys to expand so
- * the target becomes reachable (e.g. the section containing a problem, or
- * just [] if nothing needs opening) — the caller applies its own expand
- * state, this hook only triggers it and does the scrolling.
+ * Handles shared question links (…#some-id): when the page opens with a hash,
+ * or the hash changes later, `reveal(id)` lets the caller open whatever hides
+ * the target (a collapsed section, a filter), then the target is scrolled
+ * into view. Returns the id currently linked to, so the caller can highlight it.
  */
-export function useAnchorReveal(reveal: (id: string) => void) {
+export function useAnchorReveal(reveal: (id: string) => void): string | null {
+  const [active, setActive] = useState<string | null>(null);
+
   useEffect(() => {
-    const id = window.location.hash.slice(1);
-    if (!id) return;
-    reveal(id);
-    // Expand state renders on the next tick; wait a beat before measuring.
-    const t = setTimeout(() => {
-      document.getElementById(id)?.scrollIntoView({ block: "center" });
-    }, 80);
-    return () => clearTimeout(t);
-    // Only on first mount — the hash this page was opened with.
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const go = () => {
+      const id = decodeURIComponent(window.location.hash.slice(1));
+      setActive(id || null);
+      if (!id) return;
+      reveal(id);
+      // The opened section renders on the next tick; wait before measuring.
+      clearTimeout(timer);
+      timer = setTimeout(() => document.getElementById(id)?.scrollIntoView({ behavior: "smooth", block: "center" }), 80);
+    };
+    go();
+    window.addEventListener("hashchange", go);
+    return () => {
+      window.removeEventListener("hashchange", go);
+      clearTimeout(timer);
+    };
+    // `reveal` only touches state setters, so the first one is enough.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  return active;
 }
