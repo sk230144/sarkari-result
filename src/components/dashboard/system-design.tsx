@@ -4,6 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSheetProgress } from "@/components/striver/use-sheet-progress";
+import { ShareLinkButton } from "./share-link-button";
+import { useAnchorReveal } from "./use-anchor-reveal";
 import {
   Check,
   ChevronDown,
@@ -60,6 +62,12 @@ export function SystemDesign() {
   } = useSheetProgress("system-design");
 
   const pathname = usePathname();
+
+  // A shared link (…#two-phase-commit) must be visible regardless of the
+  // HLD/LLD filter it was posted under.
+  useAnchorReveal((slug) => {
+    if (QUESTIONS.some((q) => q.slug === slug)) setFilter("all");
+  });
 
   const visible = useMemo(
     () =>
@@ -343,6 +351,11 @@ export function SystemDesign() {
                   >
                     <YouTubeIcon className="h-5 w-5" />
                   </a>
+                  <ShareLinkButton
+                    variant="card"
+                    anchor={q.slug}
+                    label={`Copy link to "${q.title}"`}
+                  />
                   <button
                     type="button"
                     onClick={() => openNote(q.slug)}

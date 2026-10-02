@@ -24,6 +24,11 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Difficulty, SheetConfig } from "./sheet-types";
 import { useSheetProgress } from "./use-sheet-progress";
+import { ShareLinkButton } from "@/components/dashboard/share-link-button";
+import { useAnchorReveal } from "@/components/dashboard/use-anchor-reveal";
+
+/** Anchor id for one problem — stable per sheet, used in shared links (…#id). */
+const problemAnchor = (day: number, n: number | string) => `d${day}-p${n}`;
 
 type Filter = "all" | "todo" | "done";
 
@@ -92,6 +97,13 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
       p.includes(day) ? p.filter((d) => d !== day) : [...p, day],
     );
   }
+
+  // A shared link (…#d3-p12) opens that problem's section and scrolls to it.
+  useAnchorReveal((id) => {
+    const match = /^d(\d+)-p/.exec(id);
+    const day = match ? Number(match[1]) : NaN;
+    if (!Number.isNaN(day)) setExpanded((p) => (p.includes(day) ? p : [...p, day]));
+  });
 
   function saveNote() {
     if (noteFor === null) return;
@@ -367,10 +379,13 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
                       const isDone = doneSet.has(String(p.n));
                       const note = notes[p.n];
 
+                      const anchor = problemAnchor(d.day, p.n);
+
                       return (
                         <li
                           key={p.n}
-                          className="flex items-start gap-3 px-4 py-2.5 transition-colors hover:bg-white/[0.02]"
+                          id={anchor}
+                          className="flex items-start gap-3 px-4 py-2.5 scroll-mt-24 transition-colors hover:bg-white/[0.02] target:bg-[var(--color-c-chip-easy)]/40"
                         >
                           <button
                             type="button"
@@ -459,6 +474,13 @@ export function DsaSheetTracker({ config }: { config: SheetConfig }) {
                               </span>
                             )}
                           </span>
+
+                          <ShareLinkButton
+                            variant="bare"
+                            anchor={anchor}
+                            label={`Copy link to "${p.title}"`}
+                            className="mt-0.5"
+                          />
 
                           <button
                             type="button"
