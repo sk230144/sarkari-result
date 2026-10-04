@@ -152,3 +152,22 @@ export function parseChatInput(body: unknown): ChatInput {
   if (!text && !image) throw bad("Send message.text, an image, or both.");
   return { requestId, deviceId, appVersion, text, image, history };
 }
+
+/** Largest body POST /api/desktop/transcription-token accepts; a real one is ~120 bytes. */
+export const TOKEN_BODY_BYTES = 4 * 1024;
+const APP_VERSION = /^[0-9A-Za-z.+-]{1,32}$/;
+
+export type TokenInput = { requestId: string; deviceId: string; appVersion: string };
+
+/** Parses POST /api/desktop/transcription-token. Every problem is an INVALID_REQUEST. */
+export function parseTokenInput(body: unknown): TokenInput {
+  if (!body || typeof body !== "object" || Array.isArray(body)) throw bad("Body must be a JSON object.");
+  const b = body as Record<string, unknown>;
+
+  const requestId = peekRequestId(b);
+  if (!requestId) throw bad("requestId must be a UUID.");
+  if (typeof b.deviceId !== "string" || !UUID.test(b.deviceId)) throw bad("deviceId must be a UUID.");
+  const appVersion = typeof b.appVersion === "string" ? b.appVersion.trim() : "";
+  if (!APP_VERSION.test(appVersion)) throw bad("appVersion must be a version string such as 1.1.0.");
+  return { requestId, deviceId: b.deviceId.toLowerCase(), appVersion };
+}
