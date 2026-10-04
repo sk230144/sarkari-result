@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/auth-provider";
 import { isAdminEmail } from "@/lib/admin-emails";
 import { Logo, LogoClimb } from "@/components/ui/logo";
+import { AmbassadorForm } from "./ambassador-form";
 import {
   ChevronsLeft,
   ChevronsRight,
@@ -109,6 +110,7 @@ export function Sidebar({
   // Anchor links can't be resolved from the URL, so clicks on those track locally.
   const [anchorHref, setAnchorHref] = useState<string | null>(null);
   const activeHref = anchorHref ?? pathname;
+  const [ambassadorOpen, setAmbassadorOpen] = useState(false);
 
   // Collapsing hides labels, so a text filter has nothing to match against.
   const searching = query.trim().length > 0 && !collapsed;
@@ -355,6 +357,10 @@ export function Sidebar({
         <div className="px-1 pt-2">
           <button
             type="button"
+            onClick={() => {
+              setAmbassadorOpen(true);
+              onMobileClose();
+            }}
             title={collapsed ? "Become a Campus Ambassador" : undefined}
             className={`flex w-full items-center justify-center gap-1 rounded-full bg-white font-semibold text-[var(--color-c-ink)] shadow-sm transition-colors hover:bg-[var(--color-c-surface-subtle)] ${
               collapsed ? "h-10 px-0" : "px-3 py-2.5 text-[13px]"
@@ -367,6 +373,7 @@ export function Sidebar({
           </button>
         </div>
       </aside>
+      {ambassadorOpen && <AmbassadorForm onClose={() => setAmbassadorOpen(false)} />}
     </>
   );
 }
