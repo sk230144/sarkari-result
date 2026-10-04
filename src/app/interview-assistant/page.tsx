@@ -26,8 +26,8 @@ const FEATURES = [
   {
     icon: Mic,
     title: "Hears the question for you",
-    tag: "No typing",
-    body: "It listens to your computer's audio, turns the interviewer's question into text, and answers it. Speech is transcribed on your own computer.",
+    tag: "Powered by ElevenLabs",
+    body: "It listens to your computer's audio, turns the interviewer's question into text in real time, and answers it. No typing needed.",
   },
   {
     icon: Camera,
@@ -94,11 +94,12 @@ const FAQ = [
     ),
   },
   {
-    q: "Is my audio uploaded anywhere?",
+    q: "Where does my audio go?",
     a: (
       <>
-        No. Speech is turned into text on your own computer. Only the text of your question, and any screenshot you choose to send, goes to our
-        server to get an answer. Answers are kept for up to 48 hours so a dropped connection doesn&apos;t cost you a second request, then
+        Only while listening is on, the app streams your computer&apos;s audio straight to ElevenLabs, which turns it into text in real time.
+        The audio doesn&apos;t pass through our servers. Only the text of your question, and any screenshot you choose to send, goes to our server to
+        get an answer. Answers are kept for up to 48 hours so a dropped connection doesn&apos;t cost you a second request, then
         they&apos;re deleted.
       </>
     ),
@@ -119,6 +120,32 @@ function Eyebrow({ icon: I, children }: { icon: React.ElementType; children: Rea
     <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-[var(--color-c-green-dim-5)] px-3 py-1 text-xs font-semibold uppercase tracking-wider text-[var(--color-c-green)]">
       <I className="h-3.5 w-3.5" />
       {children}
+    </div>
+  );
+}
+
+/** ElevenLabs' two-bar mark; currentColor keeps it readable in both themes. */
+function ElevenLabsMark({ className }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden className={className} fill="currentColor">
+      <path d="M4.6035 0v24h4.9317V0zm9.8613 0v24h4.9317V0z" />
+    </svg>
+  );
+}
+
+function PoweredBy() {
+  return (
+    <div className="mt-4 inline-flex flex-wrap items-center justify-center gap-x-2.5 gap-y-1 rounded-full border border-[var(--color-c-forest-7)] bg-[var(--color-c-surface-3)]/90 px-4 py-1.5 text-xs text-[var(--color-c-text-dim)]">
+      <span>Powered by</span>
+      <span className="flex items-center gap-1.5 font-semibold text-[var(--color-c-text)]">
+        <ElevenLabsMark className="h-3.5 w-3.5" />
+        ElevenLabs
+      </span>
+      <span>and</span>
+      <span className="flex items-center gap-1.5 font-semibold text-[var(--color-c-text)]">
+        <Image src="/interview-assistant/gemini.svg" alt="" width={16} height={16} unoptimized className="h-4 w-4" />
+        Gemini
+      </span>
     </div>
   );
 }
@@ -182,6 +209,7 @@ export default function InterviewAssistantPage() {
                 Watch it work
               </a>
             </div>
+            <PoweredBy />
           </div>
 
           <Reveal3D className="relative mx-auto mt-14 max-w-6xl" delay={0.1}>

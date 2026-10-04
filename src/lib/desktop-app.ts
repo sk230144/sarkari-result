@@ -15,7 +15,7 @@ const RELEASES = (
 ).replace(/\/+$/, "");
 
 export const APP_NAME = "Job 24 Alert Tool";
-export const APP_VERSION = "1.0.2";
+export const APP_VERSION = "1.1.0";
 
 export type Build = {
   id: "win" | "mac-arm" | "mac-intel";
@@ -30,7 +30,7 @@ export type Build = {
 const build = (b: Omit<Build, "href">): Build => ({ ...b, href: `${RELEASES}/${b.file}` });
 
 export const BUILDS: Build[] = [
-  build({ id: "win", os: "windows", label: "Windows", detail: "Windows 10 / 11, 64-bit", file: `Job-24-Alert-Tool-Setup-${APP_VERSION}.exe`, size: "306 MB" }),
+  build({ id: "win", os: "windows", label: "Windows", detail: "Windows 10 / 11, 64-bit", file: `Job-24-Alert-Tool-Setup-${APP_VERSION}.exe`, size: "112 MB" }),
   build({ id: "mac-arm", os: "mac", label: "Mac (Apple Silicon)", detail: "M1, M2, M3, M4", file: `Job-24-Alert-Tool-${APP_VERSION}-arm64.dmg`, size: "328 MB" }),
   build({ id: "mac-intel", os: "mac", label: "Mac (Intel)", detail: "Intel-based Macs", file: `Job-24-Alert-Tool-${APP_VERSION}-x64.dmg`, size: "347 MB" }),
 ];
