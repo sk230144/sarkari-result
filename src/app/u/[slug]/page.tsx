@@ -28,7 +28,6 @@ import { GithubHeatmap } from "@/components/profile/github-heatmap";
 import { ProjectArt } from "@/components/profile/project-art";
 import { PublicActions, ViewBeacon } from "@/components/profile/public-actions";
 import { Logo } from "@/components/ui/logo";
-import { FlipGroup, FlipItem, Reveal3D, Tilt } from "@/components/landing/motion-kit";
 
 export const dynamic = "force-dynamic";
 
@@ -110,15 +109,13 @@ function Section({
   className?: string;
 }) {
   return (
-    <Reveal3D className={`min-w-0 ${className}`}>
-      <section className={`h-full min-w-0 break-words rounded-2xl border p-4 sm:p-6 ${t.card}`}>
-        <h2 className={`mb-3 flex items-center gap-2 text-[15px] font-bold ${t.strong}`}>
-          <Icon className={`h-4 w-4 ${t.accent}`} />
-          {title}
-        </h2>
-        {children}
-      </section>
-    </Reveal3D>
+    <section className={`min-w-0 break-words rounded-2xl border p-4 sm:p-6 ${t.card} ${className}`}>
+      <h2 className={`mb-3 flex items-center gap-2 text-[15px] font-bold ${t.strong}`}>
+        <Icon className={`h-4 w-4 ${t.accent}`} />
+        {title}
+      </h2>
+      {children}
+    </section>
   );
 }
 
@@ -131,16 +128,14 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
           {groupSkills(p.skills).map((g) => (
             <div key={g.label} className="mb-3 last:mb-0">
               <p className={`mb-1.5 text-[9px] font-semibold uppercase tracking-wider ${t.dim}`}>{g.label}</p>
-              <FlipGroup className="flex flex-wrap gap-1.5">
+              <div className="flex flex-wrap gap-1.5">
                 {g.items.map((s) => (
-                  <FlipItem key={s}>
-                    <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${t.chip}`}>
-                      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: skillColor(s) }} />
-                      {s}
-                    </span>
-                  </FlipItem>
+                  <span key={s} className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[11px] ${t.chip}`}>
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: skillColor(s) }} />
+                    {s}
+                  </span>
                 ))}
-              </FlipGroup>
+              </div>
             </div>
           ))}
         </Section>
@@ -258,12 +253,13 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
       return (
         <Section t={t} icon={FolderGit2} title="Projects" key={key}>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {p.projects.map((pr, i) => {
+            {p.projects.map((pr) => {
               const href = safeUrl(pr.url);
               return (
-                <Reveal3D key={pr.id} className="h-full" delay={(i % 3) * 0.1}>
-                <Tilt className="h-full rounded-xl" max={8}>
-                <div className={`group flex h-full flex-col overflow-hidden rounded-xl border ${t.inner}`}>
+                <div
+                  key={pr.id}
+                  className={`group flex flex-col overflow-hidden rounded-xl border transition-transform duration-300 hover:-translate-y-1 ${t.inner}`}
+                >
                   <ProjectArt project={pr} className="h-28" />
                   <div className="flex flex-1 flex-col p-3">
                     <p className={`text-[12px] font-bold ${t.strong}`}>{pr.name}</p>
@@ -284,8 +280,6 @@ function sectionContent(key: SectionKey, p: PublicProfile, t: T, light: boolean)
                     )}
                   </div>
                 </div>
-                </Tilt>
-                </Reveal3D>
               );
             })}
           </div>
@@ -333,7 +327,6 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
         )}
 
         {/* Identity */}
-        <Reveal3D>
         <div className={`overflow-hidden rounded-2xl border ${t.card}`}>
           <div className="h-28 sm:h-44 lg:h-60" style={bannerBackground(p)} />
           <div className="relative px-4 pb-5 sm:px-6 lg:px-8">
@@ -412,7 +405,6 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
             )}
           </div>
         </div>
-        </Reveal3D>
 
         <div className="mt-4 flex flex-col gap-4">
           {sections.map((k) => sectionContent(k, p, t, light))}
@@ -460,16 +452,14 @@ export default async function PublicProfilePage({ params }: { params: Promise<{ 
           <Section t={t} icon={Star} title="Endorsements">
             {p.endorsements.length ? (
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {p.endorsements.map((e, i) => (
-                  <Reveal3D key={e.id} className="h-full" delay={(i % 3) * 0.1}>
-                  <figure className={`h-full rounded-xl border p-3 ${t.inner}`}>
+                {p.endorsements.map((e) => (
+                  <figure key={e.id} className={`rounded-xl border p-3 ${t.inner}`}>
                     <blockquote className={`text-[12px] leading-relaxed ${t.body}`}>&ldquo;{e.body}&rdquo;</blockquote>
                     <figcaption className="mt-2">
                       <p className={`text-[11px] font-bold ${t.strong}`}>{e.authorName}</p>
                       <p className={`text-[10px] ${t.dim}`}>{[e.authorHeadline, e.relationship].filter(Boolean).join(" · ")}</p>
                     </figcaption>
                   </figure>
-                  </Reveal3D>
                 ))}
               </div>
             ) : (
