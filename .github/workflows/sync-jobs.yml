@@ -1,0 +1,49 @@
+# Pulls fresh jobs into Supabase once a day (replaces the cron on the Vultr box).
+# Runs jobs-worker as-is: fetch from every enabled ATS source, upsert, then
+# purge jobs past the retention window.
+#
+# Needs two repository secrets (Settings → Secrets and variables → Actions):
+#   NEXT_PUBLIC_SUPABASE_URL
+#   SUPABASE_SERVICE_ROLE_KEY
+name: Sync jobs
+
+on:
+  schedule:
+    # 00:17 UTC = 05:47 IST. Off the top of the hour, when GitHub's
+    # scheduled runs are most often delayed.
+    - cron: "17 0 * * *"
+  # "Run workflow" button in the Actions tab, for a manual sync.
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Never let two syncs write at the same time.
+concurrency:
+  group: sync-jobs
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    # A normal run takes ~3 minutes; stop a stuck one long before it eats minutes.
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: jobs-worker
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: jobs-worker/package-lock.json
+
+      - run: npm ci --omit=dev
+
+      - name: Sync all sources
+        run: npm run sync
+        env:
+          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
